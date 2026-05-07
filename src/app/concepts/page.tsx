@@ -32,8 +32,14 @@ const essays = [
     title: "The canonical thresholds",
     blurb:
       "Miller 1968's 17-transaction taxonomy, Card et al. 1991's perceptual / immediate-response / unit-task tiers, Doherty's 400 ms productivity cliff, and Nielsen's 1993 distillation. Why the clean 0.1 / 1 / 10 trichotomy is Nielsen's framing, not Miller's.",
-    citations: ["Miller 1968", "Card et al. 1991", "Doherty 1982", "Nielsen 1993"],
-    status: "drafting" as const,
+    citations: [
+      "Miller 1968",
+      "Card, Moran & Newell 1983",
+      "Card et al. 1991",
+      "Doherty 1982",
+      "Nielsen 1993",
+    ],
+    status: "published" as const,
   },
   {
     slug: "anatomy-of-a-wait",
@@ -73,7 +79,9 @@ const essays = [
   },
 ];
 
-const statusLabel: Record<(typeof essays)[number]["status"], string> = {
+type EssayStatus = "published" | "drafting" | "planned";
+
+const statusLabel: Record<EssayStatus, string> = {
   published: "Read",
   drafting: "Drafting",
   planned: "Planned",
