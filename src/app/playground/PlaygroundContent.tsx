@@ -201,8 +201,7 @@ export function PlaygroundContent() {
       <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
         Every demo on the platform, organised by the time band of the wait it
         addresses. The right perception cue depends on how long the user is
-        actually waiting — press Play on any card to compare the naive and
-        tuned implementations side by side.
+        actually waiting — Replay any card to re-run both sides in sync.
       </p>
 
       <div

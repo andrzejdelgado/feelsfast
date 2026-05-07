@@ -1,6 +1,5 @@
 "use client";
 
-import { Play, RotateCcw } from "lucide-react";
 import { useId, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -25,24 +24,18 @@ type DemoRunnerProps = {
  * DemoRunner — the canonical wrapper for every Scenario demo (PRD §8).
  *
  * Layout: side-by-side desktop, stacked mobile. Both panels are always
- * present, but the demo components themselves only mount when the user
- * clicks **Play**. Each Play press increments a `runId` so the
- * components remount and re-trigger their initial-load effects in
- * sync.
+ * visible; the Replay button re-runs both simultaneously by changing
+ * the `runId`, which keys the children and forces a remount + re-fire
+ * of their initial-load effects.
  *
- * Why no auto-play: if every visible demo started its timers on mount,
- * a single page (Scenario index → Pattern page → Playground with 17
- * demos) would have dozens of intervals running for waits the user is
- * not actually watching. Explicit Play makes the comparison
- * deliberate, makes the perception gap visible, and keeps the page
- * quiet until the user wants to look.
+ * Accessibility: ARIA live regions on each side, keyboard-operable
+ * Replay, motion-reduce honoured by child demos.
  */
 export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
   const [runId, setRunId] = useState(0);
   const headingId = useId();
 
-  const hasPlayed = runId > 0;
-  const play = () => setRunId((id) => id + 1);
+  const replay = () => setRunId((id) => id + 1);
 
   return (
     <section
@@ -70,38 +63,25 @@ export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
         ) : null}
       </header>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
+      <div className="mt-6 flex flex-wrap items-center gap-4">
         <button
           type="button"
-          onClick={play}
-          className="inline-flex items-center gap-1.5 rounded-md border border-primary bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97]"
+          onClick={replay}
+          className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary"
         >
-          {hasPlayed ? (
-            <RotateCcw aria-hidden className="size-3.5" />
-          ) : (
-            <Play aria-hidden className="size-3.5" />
-          )}
-          <span>{hasPlayed ? "Replay" : "Play"}</span>
+          Replay
         </button>
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
         <DemoSide label="Off">
-          {hasPlayed ? <Naive key={`naive-${runId}`} /> : <PressPlay />}
+          <Naive key={`naive-${runId}`} />
         </DemoSide>
         <DemoSide label="On" highlighted>
-          {hasPlayed ? <Tuned key={`tuned-${runId}`} /> : <PressPlay />}
+          <Tuned key={`tuned-${runId}`} />
         </DemoSide>
       </div>
     </section>
-  );
-}
-
-function PressPlay() {
-  return (
-    <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground/70">
-      Press Play to run
-    </p>
   );
 }
 
