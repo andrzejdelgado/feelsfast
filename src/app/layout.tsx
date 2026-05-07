@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SiteShell } from "@/components/SiteShell";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
@@ -49,8 +50,8 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full bg-page text-foreground">
-        {children}
+      <body className="min-h-full">
+        <SiteShell>{children}</SiteShell>
         <Analytics />
       </body>
     </html>
