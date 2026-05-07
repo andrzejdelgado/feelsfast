@@ -43,7 +43,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Percent-done indicator backed by real progress data. ~86 % preference over a blank wait in the original study.",
     primaryCitation: "Myers 1985 (CHI '85)",
-    status: "planned",
+    status: "published",
   },
   {
     number: "04",
@@ -103,7 +103,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Listen on press, not release. ~100–150 ms head-start per Fitch's Mechanical Turk study. Touch needs `touchmove` gating to avoid accidental fires while scrolling.",
     primaryCitation: "Eli Fitch's Mechanical Turk study; Jota et al. 2013",
-    status: "planned",
+    status: "published",
   },
   {
     number: "10",
@@ -214,7 +214,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "The decision rule per band: nothing < 1 s · spinner 1–2 s · progress 2–10 s · engagement 10 s+. Distilled into a single rule sheet.",
     primaryCitation: "Miller 1968; Eli Fitch",
-    status: "planned",
+    status: "published",
   },
   {
     number: "21",

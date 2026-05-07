@@ -1,0 +1,122 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/pattern-time-aware-feedback";
+
+export const metadata = {
+  title: "Time-aware feedback",
+  description:
+    "The decision rule for which loading affordance to show: nothing under 1 s, spinner 1–2 s, progress 2–10 s, engagement 10 s+. Distilled from Miller 1968, Nielsen 1993, Fitch, and Myers 1985.",
+};
+
+<RegisterReferences refs={references} />
+
+# Time-aware feedback
+
+Most UIs ship the wrong loading affordance for the wait they actually have. A spinner at 600 ms, a skeleton at 12 s, a progress bar at 200 ms — these are all common, and all wrong. Time-aware feedback is the rule sheet that picks the right affordance per band.
+
+The bands collapse from Miller 1968 <Cite id="miller-1968" label="Miller 1968" />, the trichotomy that Nielsen 1993 <Cite id="nielsen-1993" label="Nielsen 1993" /> popularised, and Fitch's <Cite id="fitch" label="Fitch" /> active-to-passive transition. Each band corresponds to a cognitive shift the user is going through; the affordance you show should match that shift.
+
+| Wait | What the user is feeling | Show |
+|---|---|---|
+| 0 – 1 s | Active mode; barely notices | **Nothing.** Pre-action feedback is enough. |
+| 1 – 2 s | Crossing into passive; suspects something happened | **Spinner**, only if duration is unknown |
+| 2 – 10 s | Passive; willing to wait if oriented | **Determinate progress** (real data) or **skeleton** (stable layout) |
+| 10 s+ | Disengaging; about to leave | **Engagement** — narrate the work, push to background, notify on complete |
+
+Two corollaries are worth surfacing because most teams violate them.
+
+The first is the **tip-the-hand rule.** Showing a loader for a sub-1-second wait pulls the user out of active mode prematurely — the wait was going to resolve before they noticed; the loader created a wait where there wasn't one. This is covered in [Concepts §4](/concepts/anatomy-of-a-wait) at length.
+
+The second is **don't fake progress.** Per Myers 1985 <Cite id="myers-1985" label="Myers 1985" />, users prefer determinate progress to a blank wait — but only when it reflects reality. A bar that animates to completion against a fixed CSS duration is worse than no bar; users notice the desync within a few exposures and lose trust in every progress bar that follows.
+
+## When to use
+
+This is the rule, not a pattern. Apply it everywhere a wait might happen.
+
+## When *not* to use
+
+There is no "do not use." The closest thing is: do not apply the rule mechanically without thinking about the surface. A search input in the responsive band (100 ms – 1 s) needs pre-action feedback in the input itself, not a spinner over the results — see [when perceived performance hurts you](/concepts/when-perceived-performance-hurts-you) for the consumption-vs-production distinction.
+
+## Code
+
+A small hook that picks the right affordance based on elapsed time. Components downstream consume the result and render accordingly.
+
+```tsx
+"use client";
+
+import { useEffect, useState } from "react";
+
+export type Affordance = "none" | "spinner" | "progress" | "engagement";
+
+export function useTimeAwareAffordance(
+  isLoading: boolean,
+  hasProgress: boolean,
+): Affordance {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setElapsed(0);
+      return;
+    }
+    const start = performance.now();
+    const timer = setInterval(() => {
+      setElapsed(performance.now() - start);
+    }, 100);
+    return () => clearInterval(timer);
+  }, [isLoading]);
+
+  if (!isLoading) return "none";
+  if (elapsed < 1000) return "none";
+  if (elapsed < 2000) return hasProgress ? "progress" : "spinner";
+  if (elapsed < 10000) return hasProgress ? "progress" : "spinner";
+  return "engagement";
+}
+```
+
+Then a consumer renders the right thing:
+
+```tsx
+function LoadingIndicator({
+  isLoading,
+  progress,
+}: {
+  isLoading: boolean;
+  progress?: number;
+}) {
+  const affordance = useTimeAwareAffordance(
+    isLoading,
+    typeof progress === "number",
+  );
+
+  switch (affordance) {
+    case "none":
+      return null;
+    case "spinner":
+      return <Spinner />;
+    case "progress":
+      return <ProgressBar value={progress!} />;
+    case "engagement":
+      return <EngagementShell progress={progress} />;
+  }
+}
+```
+
+The hook is the core of the pattern. It reads cleanly because the decision is encoded once: the consumer just renders. Notice that the 1 s threshold is treated as a hard boundary — between 0 s and 1 s, the consumer renders nothing, no matter what.
+
+## Accessibility
+
+1. **The transition from "nothing" to a loader needs an announcement.** Use a polite live region: when the affordance becomes `spinner` or `progress`, announce "Loading…".
+2. **Spinners need `aria-busy` plus `aria-label`** describing what is loading.
+3. **Progress bars need the `role="progressbar"` + `aria-value*` trio** — see [determinate progress](/patterns/determinate-progress).
+4. **Engagement states need a clear path to background work or cancellation** — leaving the user with no agency past 10 s is worse than no engagement.
+
+## Linked scenarios
+
+- [Page load (cold)](/scenarios/page-load-cold) — the skeleton-or-spinner branch decides at the boundary.
+- [Form submission](/scenarios/form-submission) — pre-action feedback below 1 s, progress above.
+- [File upload (single)](/scenarios/file-upload-single) — has progress data; the rule picks `progress` once past 1 s.
+
+## References
+
+<ReferencesList refs={references} />
