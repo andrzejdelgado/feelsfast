@@ -47,8 +47,8 @@ const essays = [
     title: "The anatomy of a wait",
     blurb:
       "Decompose every wait into pre-action signal → response → animation → completion. What you can tune at each stage. The tip-the-hand rule.",
-    citations: [],
-    status: "planned" as const,
+    citations: ["Fitch", "Card et al. 1991", "Card, Moran & Newell 1983", "Miller 1968"],
+    status: "published" as const,
   },
   {
     slug: "time-perception-illusions",

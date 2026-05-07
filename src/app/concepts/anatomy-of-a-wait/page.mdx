@@ -1,0 +1,111 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/anatomy-of-a-wait";
+
+export const metadata = {
+  title: "The anatomy of a wait",
+  description:
+    "Every wait has four phases: pre-action signal, response, animation, completion. What you can tune at each, what fails at each, and the tip-the-hand rule that prevents over-loadering. Cites Fitch, Card et al. 1991, Card-Moran-Newell 1983, Miller 1968.",
+};
+
+<RegisterReferences refs={references} />
+
+# The anatomy of a wait
+
+The previous three essays were about why perception matters. The next four are about what to do about it. Before we get to specific patterns and demos, it is worth slowing down for a moment on the structure of every wait — because every wait has the same anatomy, and most teams optimise the wrong stage of it.
+
+I'd argue every wait you can describe in a UI breaks down into four phases:
+
+1. **Pre-action signal** — the moment the user reaches to do something.
+2. **Response** — the moment the system acknowledges the input.
+3. **Animation** — the transition from old state to new state.
+4. **Completion** — the moment the new state is fully settled.
+
+Each phase has its own dominant time band, its own perception challenge, and its own toolkit. Understanding the anatomy is what makes it possible to spend perception budget where it matters and stop spending it where it does not.
+
+## Pre-action signal: the moment of intent
+
+The first phase is the easiest to ignore because nothing has technically happened yet. The user has reached for an action — they have not yet committed. The hand is on the button, the cursor is descending toward a link, the finger is hovering over a touch target. The system has done nothing.
+
+This is also the cheapest phase to make faster, because the system has absolute control over when "intent" turns into "action."
+
+Two free wins live here:
+
+1. **`mousedown` over `click`.** A click event fires when the mouse button is released, which is ~100–150 ms after it was pressed (Fitch's <Cite id="fitch" label="Fitch" /> Mechanical Turk study put the median in that range). If you start loading on `mousedown` instead, you have already done 100 ms of work by the time the user releases the button. The wait is shorter without the system having to be faster.
+2. **Predictive preloading on hover or mouse-deceleration.** If the cursor is decelerating toward a button, the user's intent is predictable before the click ever happens. Start loading on hover. The Future Link pattern documented in Fitch's talk <Cite id="fitch" label="Fitch" /> can buy 600 ms or more of head start in the right conditions.
+
+The risk in this phase is acting on intent that does not pan out — preloading a route the user never navigates to, firing a side-effect on `mousedown` that should not happen if they slide off the button. The mitigation is to keep preloads idempotent and reversible. Loading a JavaScript bundle is fine even if unused; charging a credit card is not.
+
+## Response: the system says "yes, I heard you"
+
+The second phase is where most teams are weakest. The user has clicked. Something is happening. The UI needs to confirm receipt.
+
+If this acknowledgment lands within ~50 ms, the click feels caused — Card-Moran-Newell's <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame is the upper bound. Past 50 ms or so, you start seeing the eye twitch toward "did it register?" Past 200 ms, the user is reaching for the button again. Past 1 s, they have entered passive mode and you have lost the active window.
+
+The response can be small. It does not need to be the actual operation — that takes longer — it needs to be a *confirmation that input was received*. The cheapest forms:
+
+1. `:active` pseudo-class on the button (a CSS-only acknowledgment).
+2. A tiny press animation on the affordance.
+3. A focus state moving forward.
+4. A cursor change.
+5. A loading indicator, but only if the wait is going to last longer than one second (more on this below).
+
+Fitch <Cite id="fitch" label="Fitch" /> measured a sweet spot of ~200 ms for the active-state animation duration — long enough to feel substantial, short enough not to feel sluggish. The user holds the button down ~50 ms longer when there is feedback to watch, which extends your free-budget window incidentally.
+
+The failure mode here is the "did the click work?" double-tap. Users who do not get response feedback within ~200 ms will press again. Sometimes their second click registers as a separate action. This is how forms get submitted twice and likes get unliked. The Response phase is where that gets prevented.
+
+## Animation: from old state to new state
+
+The third phase is the bridge. The system has the new state. The UI needs to get from the old state to the new state without jarring the user.
+
+Card, Robertson & Mackinlay <Cite id="card-1991" label="Card et al. 1991" /> recommended ~10 Hz refresh during transitions to maintain object permanence — a ~100-ms-per-frame budget. Modern animation libraries default to similar values. The View Transitions API spec uses ~150–250 ms cross-fades. Tailwind's default transition lands at ~150 ms.
+
+The interesting work in this phase is shape. Linear motion from A to B feels mechanical; eased motion feels alive; over-eased motion feels theatrical. A 200 ms ease-out is a sensible default for state changes — slides, fades, and scale changes all benefit.
+
+Two additional tools live here:
+
+1. **Skeleton screens.** The animation between "nothing" and "content" goes through a skeleton intermediate. The user's eye lands on roughly the right place by the time the real content arrives, so the perceived jump is smaller. This is a transition disguised as a loading state.
+2. **Progressive image loading (LQIP, blur-up).** A low-quality placeholder shows the rough shape and colour first, then sharpens to the full image. The perceptual transition is "seen this image gradually become itself" rather than "stared at a grey box, then the image popped in."
+
+The failure mode in this phase is animation that competes with the user's next action. If a button is animating its press response while the user is already moving the cursor toward the next thing, the animation is in the way. Keep transitions non-blocking and never lock the UI for the duration of the animation.
+
+## Completion: the new state is settled
+
+The fourth phase is the easiest to handle and the easiest to forget. The new state is rendered, the animation has finished, the system has nothing pending. The question is whether the user knows.
+
+If the new state is obviously different from the old (say a navigation to a different page), the user's eyes do most of the work. If the new state is subtly different (a "Save" that updated a single field), the user may not register it — and may save again. The fix is a confirmation that lasts long enough to be perceived but not so long that it becomes noise.
+
+A few tools:
+
+1. **Confirmation toast.** A small element appearing for ~2–4 s. Long enough to read, short enough to dismiss itself.
+2. **Inline confirmation.** A small "Saved" indicator near the affordance, fading out over ~2 s.
+3. **Focus management.** Moving focus to the changed area (or a stable landmark) so keyboard users register the change.
+
+The failure mode here is over-confirmation. If every save action triggers a toast, the toasts become noise. The user starts ignoring them. You then have a UI that is technically confirming everything and effectively confirming nothing.
+
+## The tip-the-hand rule
+
+One rule cuts across all four phases and is worth surfacing on its own.
+
+If the wait between phases is going to resolve in under one second, do not show a loader. Miller's <Cite id="miller-1968" label="Miller 1968" /> finer-grained taxonomy already implied this — many transactions sit comfortably in the "no feedback needed" range. Showing a loader for a sub-1-second wait does two things:
+
+1. It tells the user "you are now waiting" — pulling them out of the active mode they were happily in.
+2. It creates a visual noise pattern (loader appears, loader disappears, content appears) that registers as a longer wait than the single appear-content event would have.
+
+Spinners belong to the 1–2 s window. Skeletons belong to the 1–10 s window. Engagement belongs to the 10 s+ window. Below 1 s, the right answer is nothing — let the system resolve and update the UI directly. The `:active` press feedback you put in the Response phase is enough.
+
+This is the rule that distinguishes a polished product from a noisy one. Most apps that feel slow are not actually slow; they are over-loadered.
+
+## What to do with this
+
+Three takeaways before the next essay:
+
+1. **Audit your UI by phase.** Walk through one common interaction — pre-action, response, animation, completion. The weakest phase is probably where your perception budget is being burned.
+2. **Move work upstream when you can.** Anything you can do in the pre-action phase (preload, prefetch, head-start on `mousedown`) shrinks the visible wait without making the system faster.
+3. **Default to quiet.** No spinner under 1 s, no over-confirming, no animations that block the next click. The user feels speed by *not* feeling friction; quieter is faster.
+
+The next essay covers the time-perception illusions you can exploit when the wait is honest and unavoidable — Anstis on contrast and motion, Harrison and colleagues on backwards-decelerating progress bars, the geometric-mean indifference threshold. The wait is fixed, but how it *feels* is still negotiable.
+
+## References
+
+<ReferencesList refs={references} />
