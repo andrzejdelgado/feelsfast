@@ -2,11 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { seededGamma } from "@/lib/jitter";
-import { TARGET_VALUE, TOTAL_DURATION_P50_MS } from "./config";
+import {
+  COUNT_DURATION_MS,
+  TARGET_VALUE,
+  TOTAL_DURATION_P50_MS,
+} from "./config";
 
 /**
- * Naive — number snaps to the final value the moment data lands. The
- * result reads as a label. Honest, but flat.
+ * Naive — number snaps to the final value once data lands. The reveal
+ * is delayed by COUNT_DURATION_MS so it lands at the same wall-clock
+ * moment Tuned's counter reaches TARGET_VALUE — apples-to-apples on
+ * arrival time, different in *how* the number arrives (snap vs count).
  */
 export function NaiveCounter({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState(false);
@@ -14,12 +20,12 @@ export function NaiveCounter({ seed = 1 }: { seed?: number }) {
   useEffect(() => {
     ref.current = setTimeout(
       () => setLoaded(true),
-      seededGamma(seed, TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS) + COUNT_DURATION_MS,
     );
     return () => {
       if (ref.current !== null) clearTimeout(ref.current);
     };
-  }, []);
+  }, [seed]);
 
   return (
     <div className="grid min-h-[5rem] place-items-center rounded-md border border-border bg-background">
