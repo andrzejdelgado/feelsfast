@@ -23,8 +23,8 @@ const essays = [
     title: "How humans perceive time",
     blurb:
       "Active vs. passive phases, the dopamine pathway, filled vs. empty duration, prospective vs. retrospective duration judgments, and the one-second active-to-passive transition.",
-    citations: ["James 1890", "Ornstein 1969", "Block & Zakay 1997"],
-    status: "drafting" as const,
+    citations: ["James 1890", "Ornstein 1969", "Block & Zakay 1997", "Fitch", "Myers 1985"],
+    status: "published" as const,
   },
   {
     slug: "canonical-thresholds",

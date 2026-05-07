@@ -1,0 +1,91 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/how-humans-perceive-time";
+
+export const metadata = {
+  title: "How humans perceive time",
+  description:
+    "Active vs. passive phases, the one-second transition, filled vs. empty duration, and prospective vs. retrospective duration judgments. The cognitive mechanisms behind every loading-state pattern in this site. Cites William James 1890, Ornstein 1969, Block & Zakay 1997, Eli Fitch, Myers 1985.",
+};
+
+<RegisterReferences refs={references} />
+
+# How humans perceive time
+
+The previous essay treated perceived performance as the gap between objective time and felt time. The next question is the obvious one: how does felt time actually work? What changes inside a person waiting for a website to load, that makes one second feel quick or interminable?
+
+I'd argue the literature here is more useful than most designers realise. We have over a century of work on duration perception — William James, Ornstein, more recent meta-analyses by Block and Zakay — and it converges on a small number of mechanisms that show up in your dashboard, your search box, and your file upload.
+
+Three of them matter for practitioners.
+
+## Active vs. passive phases
+
+Watch a user — really watch them — fill out a checkout form. Most of the time they are in an active state: typing, scanning, moving the cursor. Then they hit "submit" and a wait begins. Within roughly one second their state changes. The hand stops, the gaze drifts, and they cross from active mental engagement into a passive waiting state.
+
+Eli Fitch's <Cite id="fitch" label="Fitch" /> framing of this is the cleanest I've seen. He observed in production data that users tend to make the active-to-passive transition at right around the one-second mark — fast enough that anything you can keep under a second can stay in the user's active mode entirely. Slower than that, and the experience changes shape.
+
+The neural mechanism is dopamine. When you are mentally engaged, the dopaminergic system fires steadily and time appears to pass quickly — what people mean when they say "time flies when you're having fun." When you stop being engaged — when you start staring at a spinner, in particular — dopamine production drops, and subjective time stretches. The same thirty seconds feels different in active mode than passive mode.
+
+This is not metaphor. The data backs it up. Humans tend to overestimate time spent in passive phases by about 36 % <Cite id="fitch" label="Fitch" />. A wait the clock measures at three seconds feels like four if the user crossed into passive mode during it.
+
+The practical consequence is severe and immediate. The first second of any wait is gold — keep the user active and the wait barely registers. Past one second, they enter passive mode and the time-stretching kicks in. This is exactly why patterns like pre-action feedback, optimistic UI, and predictive preloading carry their weight: they buy time inside the active window, where seconds count for less.
+
+## Filled vs. empty duration
+
+The second mechanism is older and more counterintuitive. William James <Cite id="james-1890" label="James 1890" /> noticed it in *The Principles of Psychology* and called it the paradox of time perception:
+
+1. **In the moment**, empty time feels long; filled time feels short.
+2. **In retrospect**, empty time feels short; filled time feels long.
+
+This is the watched-pot effect plus the reverse-vacation effect, in two sentences. Standing in a featureless line for ten minutes feels like an eternity *while you are in it*. Looking back on those same ten minutes from later in the day, you barely remember them. A ten-minute conversation full of new information whips by *while you are having it* — but in retrospect feels substantial because you remember its content.
+
+Robert Ornstein <Cite id="ornstein-1969" label="Ornstein 1969" /> formalised this as a storage-size theory. The mind reconstructs duration in retrospect by sampling how much it remembers from the interval. Empty time produces little to remember, so it shrinks in memory. Filled time produces lots to remember, so it expands in memory.
+
+A meta-analysis by Block and Zakay <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> went further by separating two judgment modes:
+
+1. **Prospective duration judgment**: the user is told ahead of time that they will need to estimate the duration. Attention is on the time itself. Empty intervals feel long, filled intervals feel short.
+2. **Retrospective duration judgment**: the user is asked about the duration after the fact, without warning. Memory of the interval drives the answer. Filled intervals feel long, empty intervals feel short.
+
+For UI work, prospective duration is what matters during the interaction (the user knows they are waiting and is judging in real time), and retrospective duration is what matters after the fact (what they tell their colleagues, what they remember tomorrow).
+
+The skeleton screen is the textbook intervention against the prospective-empty case. By giving the user something to encode during an otherwise-empty wait, you push the experience toward "filled," shrinking the felt duration. The user's wait is still 1.5 s long. It just registers as less.
+
+The trap is the retrospective-filled case. If you stuff the wait with too much content — animation, distraction, multi-step "engaging" loaders — the user remembers the experience as longer than the clock measured. This is how an elaborate boot sequence ends up filed under "this app takes forever to start" even when it does not. The retrospective layer caught up.
+
+## The asymmetry between modes
+
+The third mechanism is structural rather than perceptual. Most production UIs run users through both states constantly — active while typing, passive while waiting, active when results arrive, passive when navigating. The transitions matter.
+
+The one-second active-to-passive transition implies a clear playbook for sub-one-second waits: don't tip your hand. Showing a spinner inside that window tells the user "you are now waiting" and pushes them out of active mode prematurely. The wait was going to resolve before they noticed; the spinner created a wait where there wasn't one.
+
+The corresponding pattern for waits over one second: the user is going to enter passive mode regardless, so manage the passive experience well. Skeletons buy retrospective time back. Determinate progress turns "uncertain wait" into "managed wait," which has been measured to be substantially preferred to a blank one — Myers' 1985 study <Cite id="myers-1985" label="Myers 1985" /> found ~86 % of participants preferred the progress-bar version, and the preference held even when the bar was inaccurate. Engagement at the ten-second mark is the last move before the user simply leaves.
+
+A useful rule of thumb that falls out of this:
+
+1. **Under one second** — keep them active, no loaders.
+2. **One to ten seconds** — they are passive; fill the empty time with structure (skeleton, progress).
+3. **Over ten seconds** — they are leaving; engage them or warn them.
+
+This is the same time-band table the Skill installs into your AI tools. The bands are not arbitrary — they sit at the cognitive transitions humans actually go through.
+
+## What the science doesn't tell you
+
+Two cautions, because the literature gets misused.
+
+First, all of this is averaged behaviour. There are people who tolerate ten-second waits without flinching and people who churn at three. Your real users are a distribution, not the mean of a 1968 study. Treat the thresholds as design pressure, not as fixed constants.
+
+Second, none of this absolves you from making the actual UI fast. Perception research tells you how to spend the budget you have. It does not tell you how big the budget should be. If your app's TTI is fifteen seconds, a tuned loading sequence does not save you — Eizenberg's argument from the previous essay still applies. Perception engineering wins the close races. It does not win the lopsided ones.
+
+## What to do with this
+
+Three takeaways before the next essay:
+
+1. **Treat the one-second mark as a hard threshold, not a soft target.** Cross it and the user's mental state changes. Most patterns should be optimised either to stay below it or to manage what happens when they cross it.
+2. **Use the prospective/retrospective split when designing waits.** Skeleton screens make the in-the-moment wait feel shorter; they do not make the remembered wait shorter. For long waits, manage both.
+3. **Stop treating "engaging loading" as universally good.** It buys retrospective duration. Some products want that, some do not. A boot sequence with a motivational quote is honest engagement; a multi-step loading screen disguising slow code is not.
+
+The next essay is the canonical thresholds — Miller, Card et al., Doherty, Nielsen — and exactly what they did and did not say. Most of what you have read about the 0.1 / 1 / 10-second rule is either a paraphrase or a folkloric edit. We go to the originals.
+
+## References
+
+<ReferencesList refs={references} />
