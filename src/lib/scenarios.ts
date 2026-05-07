@@ -165,7 +165,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "WebSocket / SSE-driven live updates. Animation timing for state changes; SWR fallback if the socket drops.",
     linkedPatterns: ["Animation timing", "Pre-action feedback", "Stale-while-revalidate"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "15",
@@ -214,7 +214,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Pan, zoom, query a map. Direct-manipulation latency budget; adaptive tile loading; dedicated touch handling.",
     linkedPatterns: ["Animation timing", "Adaptive loading", "Touch latency budget"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "19",
@@ -225,7 +225,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Reorder, dock, drop. Touch-input latency under 33 ms; pre-action feedback on grab; optimistic placement.",
     linkedPatterns: ["Touch latency", "Pre-action feedback", "Optimistic UI"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "20",

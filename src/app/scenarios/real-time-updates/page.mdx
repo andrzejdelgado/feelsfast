@@ -1,0 +1,63 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveRealTimeUpdates } from "@/demos/real-time-updates/naive";
+import { TunedRealTimeUpdates } from "@/demos/real-time-updates/tuned";
+import { config as demoConfig } from "@/demos/real-time-updates/config";
+import { references } from "@/lib/refs/scenario-real-time-updates";
+
+export const metadata = {
+  title: "Real-time updates / live data",
+  description:
+    "0–100 MS band. WebSocket / SSE-driven live updates. Naive: items pop in instantly with no register. Tuned: items slide in with a brief highlight that fades, so the eye knows what is new.",
+};
+
+<RegisterReferences refs={references} />
+
+# Real-time updates / live data
+
+Live feeds — Slack threads, Linear activity, GitHub PR queues, build dashboards — share a perception failure mode that is easy to overlook because nothing is *broken*: when a new event arrives, the list reorders silently. The user, whose eyes were elsewhere, has to re-scan the entire list to find what changed. The new entry is delivered, but the user does not perceive it as new.
+
+The fix is not to make the data arrive faster — the WebSocket already did its job. The fix is a transient affordance that registers the arrival in the user's peripheral vision: a 200 ms slide-in motion, a primary-colour highlight that fades over a second or two, possibly a small "X new" pill if the user has scrolled past the top. The information itself is unchanged; what changes is whether the user *notices* the information.
+
+This scenario is in the 0–100 MS band Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> describe — a single perceptual frame at the start of the animation registers the change as motion. Card et al. 1991's <Cite id="card-1991" label="Card et al. 1991" /> ~10 Hz animation refresh covers the slide-in itself; the fade-out is decorative continuation. Harrison et al. 2007's <Cite id="harrison-2007" label="Harrison et al. 2007" /> finding that animation pattern alters perception applies as much to "what just changed?" affordances as it does to progress bars.
+
+<DemoRunner config={demoConfig} Naive={NaiveRealTimeUpdates} Tuned={TunedRealTimeUpdates} />
+
+## What is happening in the demo
+
+A simulated activity stream produces events at gamma-jittered intervals around a 1.5-second median. Both sides receive the same stream. The list keeps the most recent five events, with relative-time labels that update every 250 ms.
+
+The naive side appends new events to the top with no animation. If you look away for two seconds, you see a different list when you look back — but you cannot tell which item is new without reading. Worse, when two items arrive close in time, the user reads the older one as new because it is at the top.
+
+The tuned side slides each new event in over 200 ms (`translate-y(-6px)` → 0, opacity 0 → 1) and tints it with a primary-colour background that fades back to neutral over 700 ms. The slide-in motion grabs peripheral attention; the colour decay extinguishes that attention as the user reads the line. By the time the eye lands on the item, the highlight has faded enough that the line reads as a regular feed entry, not a flashing alert.
+
+The 200 ms motion-onset duration is not arbitrary. Below ~100 ms the slide is too fast to register as motion (it reads as a render glitch). Above ~300 ms it starts to feel ornamental — the user is waiting for the new item to "land" before they can read it. 200 ms is the band where the eye registers motion as motion and the cognitive load of waiting is still below threshold.
+
+## What to tune
+
+1. [Animation timing](/patterns/animation-timing) — the headline pattern. The 200 ms onset and 700 ms colour decay are both products of the perceptual frame, not arbitrary aesthetic choices.
+2. [Pre-action feedback](/patterns/pre-action-feedback) — the highlight is post-action feedback for the system's own action, but the perceptual mechanic is identical.
+3. [Stale-while-revalidate](/patterns/stale-while-revalidate) — for sockets that drop, fall back to the last known-good state and revalidate in the background. The user should not see "Disconnected" unless the disconnection persists.
+4. [Skeleton screens](/patterns/skeleton-screens) — for the initial load before the first event lands, a content-true skeleton beats a spinner.
+5. [Time-aware feedback](/patterns/time-aware-feedback) — at 0–100 MS the affordance is subliminal; pushing it past 200 ms turns the live feed into an attention-stealing strobe.
+
+## When perceived performance hurts you here
+
+The animation is correct only if it fires for *new* events. Re-running the highlight when the user scrolls back to an item, or after a network reconnect, makes everything look new and trains the user to ignore the highlight entirely. The component's freshness check has to be tied to the event's arrival timestamp, not to its first render in the current viewport.
+
+The other failure mode is the highlight that never decays. A persistent primary-colour background on every recent item turns the feed into a sea of orange — the user's eye filters it out within ten seconds. The decay is what makes the highlight perceptually expensive enough to be worth attending to.
+
+For high-frequency feeds — chat with hundreds of messages per minute, log streams, audit trails — individual highlights become noise. The right pattern is to highlight a *batch* (the last second's worth of events) rather than each event, or to suppress the animation entirely past a configurable rate threshold and rely on a "X new" pill at the top of the viewport instead.
+
+## Accessibility
+
+1. **`prefers-reduced-motion`** — replace the slide-in with a 200 ms colour pulse at full opacity. The highlight is still informative; the motion was decorative.
+2. **`aria-live="polite"`** on the feed announces incoming events to screen readers without interrupting them. Reserve `aria-live="assertive"` for genuinely urgent updates (errors, security alerts) — feed entries are polite by default.
+3. **Focus must not jump** when a new event arrives. Keyboard users mid-task will lose their place if the focused item gets reordered out from under them.
+4. **Time labels** — relative time ("3 s ago") is more useful than absolute on a fast feed, but include the absolute time in `title` or `aria-label` for users who need precision.
+5. **Pause control** for cognitive accessibility — users with attention-related disabilities benefit from a "Pause feed" control that suspends incoming animations without disconnecting the data flow.
+
+## References
+
+<ReferencesList refs={references} />

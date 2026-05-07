@@ -1,0 +1,63 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveDragAndDrop } from "@/demos/drag-and-drop/naive";
+import { TunedDragAndDrop } from "@/demos/drag-and-drop/tuned";
+import { config as demoConfig } from "@/demos/drag-and-drop/config";
+import { references } from "@/lib/refs/scenario-drag-and-drop";
+
+export const metadata = {
+  title: "Drag and drop",
+  description:
+    "0–100 MS band. Reorder a list by dragging. Naive: no in-flight feedback, server round-trip blocks the reorder. Tuned: live drop-target indicator, optimistic placement on drop, server commit in the background.",
+};
+
+<RegisterReferences refs={references} />
+
+# Drag and drop
+
+Drag-and-drop lives in the most demanding band on the platform — direct manipulation, where the cursor and the content are coupled in real time. The Jota et al. 2013 <Cite id="jota-2013" label="Jota et al. 2013" /> result puts the just-noticeable difference for direct-touch dragging at ~33 ms; experienced users in Ng et al. 2012 <Cite id="ng-2012" label="Ng et al. 2012" /> resolve down to single-millisecond differences. Deber et al. 2015 <Cite id="deber-2015" label="Deber et al. 2015" /> separates direct-touch from indirect-touch budgets — pointer-driven web reorder is on the indirect side, with somewhat looser perceptual tolerances, but only because the cursor has already abstracted the physical input.
+
+The perception failure mode in naive web reorder is rarely the latency of the actual drag — modern browsers handle pointer events well within 16 ms — but the absence of *in-flight feedback* and the *server round-trip* sitting between the drop and the reorder. The user drops, nothing visible changes, then a moment later the row is in a different place. The user has to re-locate the row and re-confirm it landed where they intended. The drag the user thought they were doing didn't happen until the network finished.
+
+This scenario sits in the 0–100 MS band the Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> perceptual frame defines. The grab itself, the drop-target indicator, and the post-drop landing animation all need to fire inside that frame for the manipulation to feel direct.
+
+<DemoRunner config={demoConfig} Naive={NaiveDragAndDrop} Tuned={TunedDragAndDrop} />
+
+## What is happening in the demo
+
+Both sides are a five-item to-do list backed by HTML5 drag-and-drop. Grab a row by its handle, drag it onto another row, and drop. Both sides simulate a 350 ms p50 server round-trip on the reorder.
+
+The naive side does what most ad-hoc drag-and-drop implementations do. The dragged row gets the browser's default ghost (which varies wildly by OS and rarely matches the row's appearance). Other rows do not move while you drag — there is no indication of where the row will land until you drop. After the drop, the row hangs in its original slot for the round-trip duration with a small "Saving…" spinner before snapping to its new position. The user is twice ambiguous: ambiguous about the destination during the drag, ambiguous about success after the drop.
+
+The tuned side fixes both. While dragging, the source row dims to ~50 % opacity in place — the user can see *both* "where I came from" and "where I'm pointing." The current drop-target row gets a primary-coloured top border — the "this is where it will land" indicator. On drop, the reorder commits *immediately* — optimistic placement. The server round-trip runs in the background; if it failed, the row would roll back, but in production code most reorder requests succeed and the optimistic UI pays for itself. A subtle background-tint cue pulses on the moved row for 600 ms after the drop, so the eye lands on the new position without having to re-scan the list.
+
+The 600 ms decay on the post-drop highlight is the same perceptual mechanic as the [real-time-updates](/scenarios/real-time-updates) highlight — the colour grabs peripheral attention, then fades while the user reads.
+
+## What to tune
+
+1. [Optimistic UI](/patterns/optimistic-ui) — the headline pattern. Commit the reorder visibly; reconcile with the server in the background.
+2. [Pre-action feedback](/patterns/pre-action-feedback) — the cursor change to `grab` / `grabbing` and the source-row opacity dim are pre-action signals that the grab took.
+3. [Touch / pointer down](/patterns/touch-pointer-down) — for touch devices, the grab fires on `pointerdown`, not on `click`. Touch dragging needs the head-start.
+4. [Animation timing](/patterns/animation-timing) — the 200 ms reorder transition and 600 ms post-drop highlight are tuned to the perceptual frame, not picked aesthetically.
+5. [Mousedown / pointerdown vs. click](/patterns/mousedown-vs-click) — the grab fires on the first pointer event, not after a release; the head-start applies to the same scenarios.
+
+## When perceived performance hurts you here
+
+Optimistic placement assumes a low rejection rate. If your reorder API has a 30 % failure rate (permission checks, schema constraints, server-side conflict resolution) you will roll back nearly every third drop, and users will learn the drag does not always do what it looks like it does. In that regime, drop the optimistic placement: drag-feedback during the gesture, then a determinate "Saving…" affordance after the drop, then the actual reorder once the server confirms.
+
+The other failure mode is the silent no-op — the user drops onto a row that cannot accept the move (drop target is locked, would create a cycle, etc.), and the UI quietly reverts. Always surface the *reason* the drop did not take, either as an inline message on the source row or as a transient toast. Without the reason, the user thinks the drag mechanic is broken.
+
+For touch devices, the HTML5 drag-and-drop API is famously weak — long-presses are reserved for browser context menus and gestures conflict with scroll. Library implementations (`@dnd-kit`, `react-beautiful-dnd`) sidestep this with custom pointer-event handlers that explicitly intercept the gesture. For production touch reorder, use one of those.
+
+## Accessibility
+
+1. **Keyboard alternative is mandatory.** Pure drag-and-drop is unusable without a pointer. Pair the drag handle with arrow-key reorder, or surface explicit "Move up / Move down" buttons on focus.
+2. **`aria-grabbed`** (deprecated but still useful for announcement) and `aria-dropeffect` describe the gesture state to screen readers. Modern guidance prefers a custom live-region announcement: "Wire up the new auth flow, grabbed. Press up or down arrow to move."
+3. **`aria-live="polite"`** announcement on every reorder: "Moved to position 3 of 5." Without this, screen-reader users have no signal that the drop took.
+4. **`prefers-reduced-motion`** — the 200 ms reorder transition, the post-drop highlight pulse, and the optimistic placement animation all reduce to instant state changes. The drop-target *indicator* (the primary-coloured border) stays — it is not motion, it is content.
+5. **Focus management** — after a successful drop, focus stays on the moved row. A reorder that loses focus mid-task forces the user to re-find their place.
+
+## References
+
+<ReferencesList refs={references} />

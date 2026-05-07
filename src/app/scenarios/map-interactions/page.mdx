@@ -1,0 +1,61 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveMapInteractions } from "@/demos/map-interactions/naive";
+import { TunedMapInteractions } from "@/demos/map-interactions/tuned";
+import { config as demoConfig } from "@/demos/map-interactions/config";
+import { references } from "@/lib/refs/scenario-map-interactions";
+
+export const metadata = {
+  title: "Map interactions",
+  description:
+    "0–100 MS band. Pan around a tile-backed map. Naive: pan locks input until the tiles load. Tuned: pan is always responsive — the viewport shifts immediately, tiles fade in underneath as each finishes loading.",
+};
+
+<RegisterReferences refs={references} />
+
+# Map interactions
+
+Maps are the canonical case for direct-manipulation perception failure. The user drags the canvas; tiles need to load; if the tile load *blocks* the drag, the manipulation stops feeling direct and starts feeling stop-and-go. The perceptual ceiling here is brutal — Jota et al. 2013 <Cite id="jota-2013" label="Jota et al. 2013" /> puts the just-noticeable-difference for direct-touch dragging at ~33 ms; Ng et al. 2012 <Cite id="ng-2012" label="Ng et al. 2012" /> resolved single-millisecond differences in trained users. There is no realistic budget for "pan, then wait for tiles, then update." The pan has to be free; the tiles have to catch up.
+
+This scenario sits in the 0–100 MS band Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> describe. Card et al. 1991 <Cite id="card-1991" label="Card et al. 1991" /> covers the ~10 Hz refresh rate at which progressive tile loads need to fire to register as continuous motion rather than as a series of discrete frames. The trick is to decouple input handling from data fetching, and to give the user a *visual* signal that tiles are still loading without making them wait for it.
+
+<DemoRunner config={demoConfig} Naive={NaiveMapInteractions} Tuned={TunedMapInteractions} />
+
+## What is happening in the demo
+
+A 4×4 viewport over a tile grid that extends in every direction. Each tile's colour is deterministic from its (x, y) coordinate — you will recognise tiles when you pan back. Both sides simulate a tile load at p50 of 450 ms (gamma-distributed) on first encounter; subsequent visits to the same tile are instant in the tuned implementation but re-fetch in the naive one.
+
+The naive side disables the pan controls during the tile load. Press an arrow; the controls grey out; a "Loading tiles…" overlay appears; ~450 ms later the viewport shifts to the new position and the controls re-enable. Your finger is on the next arrow key but you cannot use it. Stop-and-go.
+
+The tuned side never disables the controls. Press an arrow; the viewport shifts immediately. Tiles you have already seen render at full saturation; tiles that have not finished loading render at 60 % opacity and 50 % saturation — the dominant colour is in place, the detail is on its way. As each tile completes its simulated load, it fades to full saturation over 300 ms. You can pan continuously, faster than the tiles can load, and the map *catches up* without you ever waiting on it.
+
+The cached-tile mechanic is the second perception lever: tiles only "load" once. Pan back to a tile you have seen and it is already at full saturation. Real maps (Mapbox, Google Maps, the Apple Maps web client) all use this — the tile cache is what makes long pan sessions feel responsive even on poor networks.
+
+## What to tune
+
+1. [Animation timing](/patterns/animation-timing) — the headline pattern. The 300 ms tile fade matches the perceptual frame; the pan response is sub-frame.
+2. [Adaptive loading](/patterns/adaptive-loading) — under `Save-Data` or slow-network signals, ship lower-resolution tiles and skip the high-res step.
+3. [Stale-while-revalidate](/patterns/stale-while-revalidate) — the cached tiles are SWR shaped for spatial data: show the last known version, fetch a fresh version in the background.
+4. [Predictive preloading on hover](/patterns/predictive-preloading-hover) — for cursor-driven panning, prefetch the tiles in the direction the cursor is decelerating toward.
+5. [LQIP / blur-up](/patterns/image-progressive-loading) — the 60 %-opacity desaturated state is an LQIP without the actual low-resolution image. Production maps use real low-resolution tiles for the same effect.
+
+## When perceived performance hurts you here
+
+Decoupling input from tile loads only works if the cached map state is honest about what it has. A user who pans far past the loaded zone and sees a smooth grid of placeholder tiles for ten seconds without any progress signal will conclude the map is broken, not that it is loading. Past a pan distance threshold, surface a determinate "Loading map data…" affordance — the failure mode of the tuned pattern is too much smoothness for too long.
+
+The other failure is over-aggressive prefetching. Loading every tile within ten cells of the cursor wastes bandwidth and triggers tile-cache eviction for tiles the user is actually looking at. Production maps tune the prefetch radius to the user's recent pan velocity and direction — a slow drag prefetches narrow, a fast pan prefetches wider in the pan direction.
+
+For touch devices, the gesture is `pointermove` with high-frequency events; the tile fetch must be debounced so a continuous swipe does not fire fifty individual fetches. Map libraries handle this with quad-tree-keyed request batching — the implementation is complex but the perceptual lesson is the same: the user's gesture is the source of truth, not the network.
+
+## Accessibility
+
+1. **Keyboard pan** — arrow keys (with optional modifier for larger steps) must move the viewport. The pan controls in the demo are visible buttons for clarity, but production maps usually accept arrow keys directly when the canvas is focused.
+2. **`aria-label`** describing the visible region after each pan ("Map centred at coordinates 3, -2, viewing 4 by 4 tiles"). Without this, screen-reader users have no signal the pan moved them.
+3. **`prefers-reduced-motion`** — the tile fade and the pan transition both reduce to instant state changes. The cursor-to-content coupling is content, not motion.
+4. **Touch targets** — pan controls should be ≥ 44×44 px (Apple HIG / Material guidance). The demo's 28×28 px controls are visual only; production maps would size them up.
+5. **Focus return** — after a pan, focus stays on the control that was pressed (or on the map canvas itself if the user was using arrow keys). Never reset focus to the page top.
+
+## References
+
+<ReferencesList refs={references} />
