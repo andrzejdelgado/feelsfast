@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+/*
+  feelsfast.fyi — color tokens
+  Light: Anthropic ivory/slate (read from anthropic.com brand CSS)
+  Accent: Claude orange #d97757 — Anthropic's `--swatch--clay` and Claude.ai's `--accent-brand` are the same hex
+  Dark: Claude.ai dark surfaces; accent unchanged across themes
+*/
+
+:root {
+  --bg-page: #faf9f5;
+  --bg-secondary: #f0eee6;
+  --bg-tertiary: #e8e6dc;
+  --surface: #ffffff;
+  --text-primary: #141413;
+  --text-secondary: #3d3d3a;
+  --text-muted: #5e5d59;
+  --border: rgba(20, 20, 19, 0.1);
+  --border-hover: rgba(20, 20, 19, 0.2);
+  --accent: #d97757;
+  --accent-hover: #c6613f;
+  --on-accent: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-page: #0f0f0f;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #242424;
+    --surface: #141413;
+    --text-primary: #ffffff;
+    --text-secondary: #faf9f5;
+    --text-muted: #a7a6a4;
+    --border: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(255, 255, 255, 0.2);
+    --accent: #d97757;
+    --accent-hover: #e08964;
+    --on-accent: #ffffff;
+  }
+}
+
+[data-theme="dark"] {
+  --bg-page: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #242424;
+  --surface: #141413;
+  --text-primary: #ffffff;
+  --text-secondary: #faf9f5;
+  --text-muted: #a7a6a4;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --accent: #d97757;
+  --accent-hover: #e08964;
+  --on-accent: #ffffff;
+}
+
+@theme inline {
+  --color-page: var(--bg-page);
+  --color-secondary: var(--bg-secondary);
+  --color-tertiary: var(--bg-tertiary);
+  --color-surface: var(--surface);
+  --color-foreground: var(--text-primary);
+  --color-muted: var(--text-secondary);
+  --color-faint: var(--text-muted);
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-on-accent: var(--on-accent);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@layer base {
+  body {
+    background: var(--bg-page);
+    color: var(--text-primary);
+    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+}
+
+/*
+  Reusable typographic markers for supporting text.
+  Geist Mono UPPERCASE per PRD §7.1 — sidebar group titles, eyebrows, time-band tags, code language labels, footnote markers, metadata.
+*/
+@utility eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+@utility timeband {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+@utility group-title {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
