@@ -73,11 +73,6 @@ export default function SkillPage() {
         <CodeBlock>
           <code>{FEELSFAST_SKILL_SOURCE}</code>
         </CodeBlock>
-
-        <p className="mt-3 text-sm text-muted-foreground">
-          Voice and citations land Andrzej Delgado&apos;s writing style — the skill aims
-          to teach the AI to apply the same standards it would in a real review.
-        </p>
       </section>
     </article>
   );

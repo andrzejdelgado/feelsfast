@@ -28,15 +28,19 @@ export function CopyButton({ value, label = "Copy", className }: CopyButtonProps
       type="button"
       onClick={onClick}
       aria-live="polite"
+      aria-label={copied ? "Copied to clipboard" : label}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium transition-colors hover:bg-secondary",
+        "inline-flex items-center gap-1 rounded-md border px-2 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
+        copied
+          ? "border-primary bg-primary/10 text-primary"
+          : "border-border bg-card text-muted-foreground hover:border-primary hover:text-primary",
         className,
       )}
     >
       {copied ? (
-        <Check className="size-3.5 text-primary" />
+        <Check aria-hidden className="size-3" />
       ) : (
-        <Copy className="size-3.5" />
+        <Copy aria-hidden className="size-3" />
       )}
       <span>{copied ? "Copied" : label}</span>
     </button>

@@ -263,11 +263,6 @@ export function PlaygroundContent() {
       <h1 className="mt-2 text-4xl font-medium leading-tight tracking-tight">
         Playground
       </h1>
-      <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-        Every demo on the platform, organised by the time band of the wait it
-        addresses. The right perception cue depends on how long the user is
-        actually waiting — Replay any card to re-run both sides in sync.
-      </p>
 
       <div
         className="mt-10 flex flex-wrap items-center gap-2"

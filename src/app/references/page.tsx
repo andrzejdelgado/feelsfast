@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Asterisk } from "lucide-react";
 import { ReferencesList } from "@/components/References";
 import { ALL_CATEGORIES } from "@/lib/refs/all";
 
@@ -68,9 +69,9 @@ function SectionDivider() {
   return (
     <div
       aria-hidden
-      className="my-16 text-center font-mono text-base text-muted-foreground"
+      className="my-16 flex justify-center text-muted-foreground"
     >
-      *
+      <Asterisk className="size-4" />
     </div>
   );
 }
