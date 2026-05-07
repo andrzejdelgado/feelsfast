@@ -174,7 +174,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Service Worker Background Sync API + offline-first IndexedDB. Defer the wait until the user is no longer waiting.",
     primaryCitation: "Doherty & Thadani 1982",
-    status: "planned",
+    status: "published",
   },
   {
     number: "17",
@@ -194,7 +194,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Touch-input latency JNDs: ~33 ms drag, ~82 ms tap. The '100 ms feels instant' myth on direct manipulation; the fix is engineering, not perception.",
     primaryCitation: "Deber et al. 2015; Jota et al. 2013",
-    status: "planned",
+    status: "published",
   },
   {
     number: "19",
@@ -224,7 +224,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Pace token reveals to a natural reading rhythm. Instant per-token feels jarring; constant rate feels mechanical; variable chunk sizes feel right. (Live demo on /playground.)",
     primaryCitation: "Card et al. 1991; James 1890; Anthropic / OpenAI streaming guides (industry)",
-    status: "drafting",
+    status: "published",
   },
   {
     number: "22",
@@ -234,7 +234,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Animated state before the first token arrives. Distinct from a generic spinner because it implies process, not stall. (Live demo on /playground.)",
     primaryCitation: "Myers 1985; recent CHI/UIST chatbot-trust literature; Claude / ChatGPT / Cursor (industry)",
-    status: "drafting",
+    status: "published",
   },
   {
     number: "23",
@@ -244,7 +244,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Surface what the agent is doing — \"Reading file…\", \"Searching…\", \"Running tests…\". Compresses retrospective duration; builds trust during long agentic work.",
     primaryCitation: "Block & Zakay 1997; IUI/CHI agent-explainability work; Claude Code / Cursor agent mode (industry)",
-    status: "planned",
+    status: "published",
   },
   {
     number: "24",
@@ -254,6 +254,6 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "The stop button must respond within ~100 ms; mid-stream cancel must not lose state.",
     primaryCitation: "Doherty 1982 (control = perceived productivity); ChatGPT / Claude stop-button patterns (industry)",
-    status: "planned",
+    status: "published",
   },
 ];

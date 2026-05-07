@@ -1,0 +1,116 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/pattern-ai-tool-call-transparency";
+
+export const metadata = {
+  title: "Tool-call transparency",
+  description:
+    "Surface what the agent is doing: 'Reading file…', 'Searching…', 'Running tests…'. Compresses retrospective duration; builds trust during long agentic work.",
+};
+
+<RegisterReferences refs={references} />
+
+# Tool-call transparency
+
+An agent that runs for thirty seconds with a generic spinner is a black box. The user has no signal what the agent is actually doing, no way to judge whether it is on track, and no idea whether to wait or cancel. Tool-call transparency replaces the black box with a narrated stream of activity — *Reading user-controller.ts*, *Searching for `validateInput`*, *Running tests…* — so the user follows along with the work.
+
+The literature framing is Block & Zakay 1997's <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> filled-duration principle generalised: a wait the user is *encoding* feels shorter and remembers shorter than an unstructured one. Myers 1985's <Cite id="myers-1985" label="Myers 1985" /> indeterminate-feedback baseline applies — any visible signal beats none — but transparency is much stronger than a generic spinner. The user is not just told "loading"; they are shown the *actual work happening*.
+
+The pattern is the headline distinction between modern agentic tools (Claude Code, Cursor agent mode) and older AI surfaces. The transparency itself is what makes a 30-second agent run feel collaborative rather than wasted.
+
+## When to use
+
+1. **Agentic AI workflows** — multi-step tool execution, file editing, code search, test runs.
+2. **Long-running AI inference** with measurable phases (retrieval, reasoning, generation).
+3. **Anywhere the user might lose trust during the wait.** Trust is what transparency buys; spend it on surfaces where you actually need it.
+
+## When *not* to use
+
+1. **Very fast tool calls** (<300 ms). The transparency itself becomes flicker — narration that appears and disappears before the user can read it.
+2. **When the tool calls reveal sensitive content** (private file paths, customer data) the user should not see. Redact or summarise.
+3. **For end-users who do not benefit from the technical detail.** A consumer chat interface narrating "calling search-tool with parameters {q: 'pizza near me'}" is over-sharing.
+
+## Code
+
+A minimal log-style narrator. Each tool call begins as a "started" entry, transitions to "complete" or "error" once it resolves.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+
+type ToolCallState = {
+  id: string;
+  description: string;
+  status: "started" | "complete" | "error";
+};
+
+export function ToolCallNarrator({
+  events,
+}: {
+  events: ToolCallState[];
+}) {
+  return (
+    <ol
+      aria-live="polite"
+      className="space-y-1.5 font-mono text-xs"
+    >
+      {events.map((event) => (
+        <li
+          key={event.id}
+          className="flex items-baseline gap-2"
+        >
+          <StatusIcon status={event.status} />
+          <span
+            className={
+              event.status === "complete"
+                ? "text-muted-foreground"
+                : "text-foreground"
+            }
+          >
+            {event.description}
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function StatusIcon({ status }: { status: ToolCallState["status"] }) {
+  if (status === "started") {
+    return (
+      <span
+        aria-hidden="true"
+        className="size-1.5 rounded-full bg-primary motion-safe:animate-pulse"
+      />
+    );
+  }
+  if (status === "complete") {
+    return (
+      <span aria-hidden="true" className="size-1.5 rounded-full bg-muted-foreground" />
+    );
+  }
+  return (
+    <span aria-hidden="true" className="size-1.5 rounded-full bg-destructive" />
+  );
+}
+```
+
+The visual hierarchy matters. Active steps should be slightly more prominent than completed ones — a small pulsing dot vs. a static one, full text colour vs. dimmed. The user's eye is drawn to the *current* work without losing the context of what came before.
+
+## Accessibility
+
+1. **`aria-live="polite"`** on the container so screen readers announce new tool calls without interrupting other speech.
+2. **Don't announce every micro-update.** A polite live region announces additions; if you update the *content* of a step (progress within a single tool call), do it in a way that doesn't re-announce the whole list.
+3. **`motion-safe:`** on the pulsing indicator — static for reduced-motion users, but the colour/state distinction still does the work.
+4. **Sufficient contrast** between in-progress, completed, and errored states. Don't rely on dot colour alone — pair with text-style or icon differences.
+
+## Linked scenarios
+
+- [AI agentic workflow](/scenarios/ai-agentic-workflow) — the canonical use.
+- [AI tool execution / agentic step](/scenarios/ai-tool-execution) — single-step transparency.
+- [AI long compute / inference](/scenarios/ai-long-compute-inference) — narrating phases of a long inference.
+
+## References
+
+<ReferencesList refs={references} />
