@@ -29,7 +29,7 @@ export function BackToSection() {
   return (
     <Link
       href={`/${sectionSlug}`}
-      className="inline-flex items-center gap-1 font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
+      className="mb-2 flex w-fit items-center gap-1 font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
     >
       <ChevronLeft aria-hidden className="size-3" />
       <span>{label}</span>

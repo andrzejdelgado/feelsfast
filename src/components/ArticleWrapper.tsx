@@ -26,9 +26,7 @@ export function ArticleWrapper({ children }: { children: React.ReactNode }) {
     <article
       className={`mx-auto ${maxWidth} px-8 py-12 lg:px-12 xl:px-16`}
     >
-      <div className="mb-2">
-        <BackToSection />
-      </div>
+      <BackToSection />
       {children}
     </article>
   );
