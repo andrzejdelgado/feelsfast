@@ -1,0 +1,110 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/performance-budgets-with-perception";
+
+export const metadata = {
+  title: "Performance budgets that include perception",
+  description:
+    "Web Vitals (LCP, INP, CLS) as the floor; a four-tier perception-aware budget on top; the performance-scaler pattern (Fitch) for adaptive loading; the integration point with sprint planning.",
+};
+
+<RegisterReferences refs={references} />
+
+# Performance budgets that include perception
+
+The previous six essays established that perceived performance is a real thing, that humans experience time non-linearly, that the canonical thresholds come from a small number of papers, and that perception engineering wins consumption races but loses production ones. This last essay closes the loop: how do you turn all of that into something a sprint-planning meeting can act on?
+
+I'd argue every team that ships a non-trivial product needs a performance budget that *includes* perception, not just objective Web Vitals. Web Vitals are necessary; they are the floor. The floor is not the ceiling. A team that hits LCP 2.4 s and INP 180 ms and stops there has done the engineering half of the job and skipped the design half.
+
+This essay is short on theory and long on the actual checklist.
+
+## What Web Vitals give you and what they don't
+
+The Core Web Vitals as of 2025 are:
+
+1. **LCP (Largest Contentful Paint)** — when the largest above-the-fold element is rendered. Below 2.5 s is "good"; above 4 s is "poor."
+2. **INP (Interaction to Next Paint)** — the worst response time across all interactions on the page. Below 200 ms is "good"; above 500 ms is "poor." This replaced FID in 2024.
+3. **CLS (Cumulative Layout Shift)** — visual stability, scored 0 to 1. Below 0.1 is "good."
+
+These are non-negotiable. Below the "good" thresholds your product is rendered at a competitive speed; above the "poor" thresholds your product is broken. INP under 200 ms in particular maps directly to Doherty's <Cite id="doherty-1982" label="Doherty 1982" /> 400 ms productivity cliff with margin to spare.
+
+What the vitals do not measure:
+
+1. **Pre-action feedback latency.** The vitals do not capture whether your button shows an `:active` state within 50 ms of click. INP starts measuring after the click; the user's perception starts measuring at finger contact.
+2. **The shape of the wait.** Two pages with identical LCP and INP can feel completely different — one with a skeleton screen at 80 ms, one with a blank canvas until LCP. Lighthouse calls these the same.
+3. **The retrospective experience.** A multi-step boot sequence and a single 4-second blank wait have different vitals (the boot sequence is technically slower) but different *retrospective* duration once the user has used the app a few times.
+
+The perception layer is what fills these gaps. The vitals tell you whether the engineering is good. The perception layer tells you whether the experience is.
+
+## The perception-aware budget
+
+Below is a practical budget that pairs with the vitals and adds the perception layer explicitly.
+
+### Tier 1 — Pre-action feedback (the 50 ms tier)
+
+1. **Visible response within 50 ms** of every input — `:active`, focus state, button-press animation, cursor change. Card-Moran-Newell's <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame is the upper bound; staying under 50 ms keeps the interaction feeling caused.
+2. **No spinner under 1 s.** Per the tip-the-hand rule established earlier in this site.
+
+### Tier 2 — Active window (the 1 s tier)
+
+3. **Sub-1 s response for routine interactions** (page navigation, form submit, search-as-you-type completion). This is the active-to-passive transition <Cite id="fitch" label="Fitch" />; missing it costs you the active-mode wait.
+4. **Optimistic UI for actions with rejection rates ≤ ~1 %.** Render and reconcile, with visible failure paths.
+5. **Pre-action feedback always within Tier 1 even when Tier 2 fails.** A 3 s submit should still show pressed-button feedback within 50 ms; the wait is the long tail, not the front.
+
+### Tier 3 — Engaged window (the 10 s tier)
+
+6. **Skeleton screens for content waits in the 1–10 s band.** Layout-matching skeletons, not generic shimmers.
+7. **Determinate progress where you have real progress data.** Backwards-decelerating animation per the previous essay for the ~12 % perceived-speed bonus.
+8. **Streaming over batch where feasible.** AI responses, large lists, paginated tables — show parts as they arrive.
+
+### Tier 4 — Long wait (the 10 s+ tier)
+
+9. **Engagement, not skeleton, past 10 s.** The user is leaving. Either commit to an engaging loading sequence (with the retrospective-duration trade-off acknowledged) or push the work to the background and notify on completion.
+10. **Cancellation always available.** Stop button responds within Tier 1.
+
+### Always-on
+
+11. **`prefers-reduced-motion` honoured everywhere.** No animations that ignore the system preference.
+12. **ARIA live regions during loading.** Screen-reader users get the same perception layer.
+
+The above is twelve numbered items. Eleven of them can be hit by a frontend team without backend changes. One — Tier 2's sub-1-second response budget — usually requires backend optimisation. That is the item to negotiate with engineering. The other eleven are unilateral.
+
+## The performance scaler
+
+The most underused idea in this space is what Fitch <Cite id="fitch" label="Fitch" /> calls the performance scaler — adaptive perception based on what the current user's connection actually delivers, not what your dev machine delivers.
+
+The shape of the idea: every API call's actual round-trip time is measured. The ratio between that and your expected baseline becomes a scaler. Future loading indicators, animation durations, and skeleton timings adapt to the scaler. A user on a fast connection sees no spinner where a user on a slow connection sees a determinate progress bar with adaptive timing. The same code path produces appropriate perception treatment for the user's actual conditions.
+
+This is not a perception trick. It is honesty engineering. A fixed 800 ms skeleton is a guess at what most users experience; a scaler-driven skeleton matches each user's reality. Implementation is a small client-side timer that records actual response times and divides by expected baselines — perhaps a hundred lines of code total. The gain is that every other perception pattern in your product reads correctly across the connection-quality distribution instead of being calibrated to one slice of it.
+
+## Where this fits in sprint planning
+
+The integration point with engineering is roughly:
+
+1. **Vitals targets are commitments**, not aspirations. LCP under 2.5 s, INP under 200 ms, CLS under 0.1. If a feature lands and any of these regress, the feature does not ship.
+2. **Tier 1 (50 ms feedback) is non-negotiable**, costs essentially nothing, and lives in CSS plus a bit of JS. It should be reviewed in every PR.
+3. **Tier 2 sub-1 s response** is where the engineering and design conversation happens. Some endpoints can be made faster; some cannot. The scaler shifts how aggressively you load on each.
+4. **Tier 3 and 4 patterns** are designer-led and do not require engineering coordination beyond being able to express loading states. Ship them as design work.
+5. **Always-on items** (reduced motion, ARIA) are part of the platform, not per-feature decisions. They live in the design system.
+
+A team that runs this budget for one quarter typically finds two surprises: pre-action feedback was inconsistent across the product (some buttons had `:active` states, some did not), and loading patterns were over-applied (spinners under 1 s, skeleton screens on interactive surfaces). Both are cheap to fix once they are visible.
+
+## Closing
+
+This essay closes the Concepts section. The science under perceived performance is not new, but it is rarely synthesised into something a working team can apply. The takeaways across the seven essays:
+
+1. **The gap between objective and perceived time is the product**, not a soft polish layer.
+2. **Humans perceive time non-linearly** — active vs. passive, filled vs. empty, prospective vs. retrospective.
+3. **The 0.1 / 1 / 10-second trichotomy is Nielsen's distillation** of Miller, Card-Moran-Newell, and forty years of human-factors research.
+4. **Every wait has four phases** (pre-action, response, animation, completion) and the weakest one is where your perception budget burns.
+5. **The literature documents three honest illusions** — low-contrast slowdown, backwards-decelerating progress, the geometric-mean indifference threshold — that buy you 10–20 % perceptual speed-up for the cost of CSS.
+6. **Perception engineering wins consumption races, not production ones** — direct manipulation, optimistic UI failure, and the looks-fast / is-fast gap are the surfaces where it backfires.
+7. **A budget that includes perception**, layered over Web Vitals, gives a team a concrete checklist to ship against.
+
+The Scenarios section that follows applies these principles to twenty-four interaction types, each with a side-by-side naive/tuned demo you can feel. The Patterns section gives you the techniques. The Skill installs the whole thing into your AI tools.
+
+You have read enough. Go make something feel faster.
+
+## References
+
+<ReferencesList refs={references} />

@@ -82,8 +82,8 @@ const essays = [
     title: "Performance budgets that include perception",
     blurb:
       "INP and Web Vitals as a starting point. How to add perception to a quantitative budget. The role of adaptive loading and the performance scaler.",
-    citations: ["Eli Fitch"],
-    status: "planned" as const,
+    citations: ["Doherty 1982", "Card, Moran & Newell 1983", "Fitch"],
+    status: "published" as const,
   },
 ];
 
