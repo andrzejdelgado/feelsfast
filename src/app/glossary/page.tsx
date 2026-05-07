@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function GlossaryPage() {
   return (
-    <article className="mx-auto max-w-3xl px-8 py-12 lg:px-12 xl:px-16">
+    <article className="mx-auto max-w-4xl px-8 py-12 lg:px-12 xl:px-16">
       <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
         ~40 terms
       </p>

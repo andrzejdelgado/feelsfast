@@ -2,7 +2,7 @@ import { siteConfig } from "@/lib/site-config";
 
 export default function HomePage() {
   return (
-    <article className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-3xl flex-col justify-center px-8 py-24 lg:px-12 xl:px-16">
+    <article className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-4xl flex-col justify-center px-8 py-24 lg:px-12 xl:px-16">
       <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
         feelsfast.fyi · v0.1
       </p>
