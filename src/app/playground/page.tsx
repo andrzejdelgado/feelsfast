@@ -3,6 +3,9 @@ import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as listFetchConfig } from "@/demos/list-fetch/config";
+import { NaiveSearchAsYouType } from "@/demos/search-as-you-type/naive";
+import { TunedSearchAsYouType } from "@/demos/search-as-you-type/tuned";
+import { config as searchConfig } from "@/demos/search-as-you-type/config";
 
 export const metadata: Metadata = {
   title: "Playground",
@@ -21,21 +24,26 @@ export default function PlaygroundPage() {
       </h1>
       <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
         Compose patterns into a single demo and toggle the perception layer across all
-        of them at once. The first working demo lives below — more land in Phase 3 as
-        Scenarios fill in.
+        of them at once. Working demos live below — more land in Phase 3 as Scenarios
+        fill in.
       </p>
 
-      <div className="mt-10">
+      <div className="mt-10 space-y-6">
         <DemoRunner
           config={listFetchConfig}
           Naive={NaiveListFetch}
           Tuned={TunedListFetch}
         />
+        <DemoRunner
+          config={searchConfig}
+          Naive={NaiveSearchAsYouType}
+          Tuned={TunedSearchAsYouType}
+        />
       </div>
 
       <p className="mt-10 font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        Demo runner — proof of concept · gamma-distributed latency · Replay re-runs both
-        sides · Perception toggle mirrors the naive into the right column when off
+        Demo runner · gamma-distributed latency · Replay re-runs both sides · Perception
+        toggle mirrors the naive into the right column when off
       </p>
     </article>
   );
