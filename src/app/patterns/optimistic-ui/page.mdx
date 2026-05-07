@@ -1,0 +1,118 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/pattern-optimistic-ui";
+
+export const metadata = {
+  title: "Optimistic UI",
+  description:
+    "Render the user's action as if it succeeded; reconcile when the response lands. Works at ~99 % success rates. Includes the AI submit-and-render variant for chat surfaces.",
+};
+
+<RegisterReferences refs={references} />
+
+# Optimistic UI
+
+The user clicks "like." The system updates the UI immediately to show the like as applied — heart filled, count incremented, animation played. The actual server request is in flight. When the response comes back, the UI either does nothing (success — the optimistic state is already correct) or rolls back with a visible failure path.
+
+The trick is real: at ~99 % success rates, the user's experience is sub-perceptible feedback, near-zero latency, no spinner. It is the difference between a social-feed feeling instant and feeling like a 1990s message board. The underlying cognitive principle is Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> and Doherty 1982 <Cite id="doherty-1982" label="Doherty 1982" />: instant response keeps the user in the active phase; sub-second response lifts measured productivity. Optimistic rendering buys you those gains for the cost of a state-management pattern.
+
+There is no peer-reviewed study specifically titled "optimistic UI." Frame the claim through the response-time literature, not as a standalone empirical result.
+
+## When to use
+
+1. **Single-tap actions with rejection rates ≤ ~1 %** — likes, saves, deletes-with-undo, simple toggles. The 99 % case is a free win; the 1 % case has a recoverable failure path.
+2. **Chat composers (AI variant).** Render the user's message immediately on submit; stream the assistant response in parallel. Both halves of the latency become non-blocking.
+3. **Forms where the next step does not depend on server validation.** Move the user forward optimistically; reconcile later if validation fails.
+
+## When *not* to use
+
+1. **Rejection rates above ~5 %.** Pessimistic actions misrepresented as optimistic mean every 1-in-20 click rolls back visibly. The pattern erodes trust faster than it earns it.
+2. **Operations whose result the user cannot easily verify.** A failed payment that rolls back silently is a disaster; a failed like is recoverable.
+3. **Surfaces without a visible failure path.** If you cannot make the rollback honest, do not render optimistically.
+
+## Code
+
+```tsx
+"use client";
+
+import { useState, useTransition } from "react";
+
+type State =
+  | { status: "idle"; liked: boolean }
+  | { status: "rolling-back"; liked: boolean; error: string };
+
+export function LikeButton({ initialLiked }: { initialLiked: boolean }) {
+  const [state, setState] = useState<State>({
+    status: "idle",
+    liked: initialLiked,
+  });
+  const [, startTransition] = useTransition();
+
+  const handleClick = () => {
+    const previous = state.liked;
+    // Optimistic flip — the UI moves before the server hears about it.
+    setState({ status: "idle", liked: !previous });
+
+    startTransition(async () => {
+      try {
+        await api.toggleLike({ liked: !previous });
+        // Success path: the optimistic state is already correct.
+      } catch (error) {
+        // Failure path: roll back with a visible, dismissible error.
+        setState({
+          status: "rolling-back",
+          liked: previous,
+          error: "Couldn't save your like. Try again?",
+        });
+      }
+    });
+  };
+
+  return (
+    <div>
+      <button
+        type="button"
+        aria-pressed={state.liked}
+        onClick={handleClick}
+        className="…"
+      >
+        {state.liked ? "♥ Liked" : "♡ Like"}
+      </button>
+      {state.status === "rolling-back" ? (
+        <p role="alert" className="text-sm text-destructive">
+          {state.error}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+```
+
+`useTransition` keeps the click responsive while the network call runs. The error path uses `role="alert"` so the rollback is announced to assistive technology — the failing 1 % is *visible*, not silent.
+
+## Accessibility
+
+1. **Visible failure path.** Use `role="alert"` (or a polite live region depending on urgency) so screen readers announce a rollback.
+2. **`aria-pressed`** on toggle buttons reflects the *optimistic* state; keep it in sync with the rollback if it fires.
+3. **Don't lose user-typed content.** If an optimistic action runs while the user is typing nearby (composer, comment box), the rollback must not clobber their in-progress input.
+4. **Honour `prefers-reduced-motion`.** Optimistic animations (heart pulses, success flashes) should reduce to opacity changes or skip entirely.
+
+## AI submit-and-render variant
+
+For chat composers, the optimistic principle extends naturally. When the user hits send:
+
+1. Render the user's message in the conversation immediately, with a "sending…" affordance if you want the honest signal.
+2. Begin the streaming response in parallel; show the thinking state while waiting for the first token.
+3. On success, the user's message simply settles into history. On failure, surface a retry control on the message itself, not a generic toast.
+
+The user's perception is "I sent a message, the assistant started thinking" — both happen instantly. The assistant's response then streams into the active phase. The whole interaction feels live.
+
+## Linked scenarios
+
+- [Optimistic actions](/scenarios/optimistic-actions) — like, save, undo.
+- [Form submission](/scenarios/form-submission) — optimistic submit when rejection is rare.
+- [AI chat / streaming response](/scenarios/ai-chat-streaming-response) — submit-and-render variant.
+
+## References
+
+<ReferencesList refs={references} />

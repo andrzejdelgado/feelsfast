@@ -1,0 +1,79 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/pattern-skeleton-screens";
+
+export const metadata = {
+  title: "Skeleton screens",
+  description:
+    "Layout-matching placeholders that fill the prospective wait. Anchor framing in the filled-duration asymmetry, not in blog folklore. Citations: William James 1890, Ornstein 1969, Block & Zakay 1997.",
+};
+
+<RegisterReferences refs={references} />
+
+# Skeleton screens
+
+A skeleton screen is a placeholder layout that matches the shape of the content it will eventually display. The user sees roughly the right structure within ~80 ms; the real content swaps in once data arrives. The wait is the same in clock terms; the experience is meaningfully shorter.
+
+The mechanism is the prospective-vs-retrospective asymmetry — empty time feels long while passing, filled time feels short. A blank panel during a 1.5 s fetch is empty in the prospective sense; a skeleton is filled. James 1890 <Cite id="james-1890" label="James 1890" />, Ornstein 1969 <Cite id="ornstein-1969" label="Ornstein 1969" />, and Block & Zakay 1997 <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> are the source-of-record for this distinction; the modern UX folklore around skeletons (the "30 % faster than spinners" figure) is a much later, less-supported simplification.
+
+The skeleton has to *match* the layout. A generic shimmer at the top of an empty page is still empty in the relevant sense — the user's eye has nothing to anchor on. A skeleton with the right number of cards, the right column widths, the right vertical rhythm gives the eye a real layout to land on, so when the data arrives the visual transition is small.
+
+## When to use
+
+1. **Content waits in the 1–10 s band** where the layout can be predicted in advance.
+2. **List, grid, or article shells** — the structure is stable; only the content is loading.
+3. **Initial page renders** where the server can stream the layout before the data is ready.
+
+## When *not* to use
+
+1. **Sub-1-second waits.** The skeleton appears, dismisses, and content arrives — three visual events for what would have been one. Tip-the-hand: don't.
+2. **Primarily-interactive surfaces.** A search input, a slider, a button — the user wants to *act* on these, not read them. A skeleton tells them they cannot.
+3. **When the layout is not predictable** ahead of time. Don't ship a guessed skeleton; ship a small spinner instead.
+
+## Code
+
+```tsx
+function SkeletonRow() {
+  return (
+    <div className="rounded border border-border bg-card px-3 py-2">
+      <div className="h-3.5 w-32 animate-pulse rounded bg-muted motion-reduce:animate-none" />
+      <div className="mt-1.5 h-3 w-48 animate-pulse rounded bg-muted/60 motion-reduce:animate-none" />
+    </div>
+  );
+}
+
+export function ListSkeleton({ count = 5 }: { count?: number }) {
+  return (
+    <ul
+      aria-busy="true"
+      aria-label="Loading list"
+      className="space-y-2"
+    >
+      {Array.from({ length: count }).map((_, i) => (
+        <li key={i}>
+          <SkeletonRow />
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+The shimmer uses Tailwind's `animate-pulse` with a `motion-reduce` override; the `aria-busy` / `aria-label` pair tells screen-reader users they are looking at a loading state. Crucially, the skeleton's row dimensions (`h-3.5`, `w-32`, `w-48`) match the real rendered row that follows — so when the data arrives the visual transition is a swap, not a jump.
+
+## Accessibility
+
+1. `aria-busy="true"` on the parent loading container; flip to `false` once content arrives.
+2. `aria-label="Loading [thing]"` so screen readers announce *what* is loading, not just that something is loading.
+3. `motion-reduce:animate-none` on the shimmer — for users with `prefers-reduced-motion`, hold a static state instead of pulsing.
+4. Manage focus across the swap. If the user triggered the load, move focus to the new content (or to a stable landmark) so keyboard users do not lose their place.
+
+## Linked scenarios
+
+- [Page load (cold)](/scenarios/page-load-cold) — the skeleton on first arrival, layout streaming in.
+- [Data table loading](/scenarios/data-table-loading) — column-aligned skeleton rows.
+- [Long list / pagination](/scenarios/long-list-pagination) — skeleton rows for the next page during fetch.
+
+## References
+
+<ReferencesList refs={references} />

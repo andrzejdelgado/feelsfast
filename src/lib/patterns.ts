@@ -22,7 +22,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Layout-matching placeholders that fill the prospective wait. Anchor framing in the filled-duration asymmetry, not blog folklore.",
     primaryCitation: "James 1890; Ornstein 1969; Block & Zakay 1997",
-    status: "planned",
+    status: "published",
   },
   {
     number: "02",
@@ -33,7 +33,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Render the user's action as if it succeeded; reconcile when the response lands. AI variant: render the user's message immediately on submit, stream the assistant response in parallel.",
     primaryCitation: "Miller 1968; Card et al. 1991",
-    status: "planned",
+    status: "published",
   },
   {
     number: "03",
@@ -133,7 +133,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "CSS-only acknowledgment within ~50 ms of input. The `:active` pseudo-class plus a 200 ms press animation; ~50 ms behavioural extension as a bonus (Fitch).",
     primaryCitation: "Eli Fitch (200 ms active-state sweet spot); Card et al. 1991",
-    status: "planned",
+    status: "published",
   },
   {
     number: "13",

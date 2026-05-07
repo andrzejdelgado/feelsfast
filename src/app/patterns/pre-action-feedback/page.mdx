@@ -1,0 +1,95 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/pattern-pre-action-feedback";
+
+export const metadata = {
+  title: "Pre-action feedback (`:active`, button press)",
+  description:
+    "CSS-only acknowledgment within ~50 ms of input. The cheapest perception-layer pattern in the catalog: nearly free, and prevents the double-tap failure mode.",
+};
+
+<RegisterReferences refs={references} />
+
+# Pre-action feedback
+
+The user clicks a button. Before anything happens at the server, the system needs to confirm that the input was received. If the acknowledgment lands within ~50 ms, the click feels caused by the user. If it lands past 200 ms, the user is reaching for the button again, suspecting nothing happened. If it lands past 1 s, they have entered the passive phase and the active-mode budget is gone.
+
+This is the cheapest pattern in the catalog. The implementation is a few lines of CSS and a click handler. The cost is functionally zero. The benefit is the difference between an interface that feels alive and one that feels dead.
+
+The boundary is set by Card-Moran-Newell's <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame — responses inside the frame feel caused, responses outside it feel like a delay. Miller's <Cite id="miller-1968" label="Miller 1968" /> first transaction tier (keystroke / button-press echo) sits at the same 100 ms mark. The 50 ms target gives you margin against jitter.
+
+Eli Fitch <Cite id="fitch" label="Fitch" /> measured a 200 ms sweet spot for the duration of the press animation itself — long enough to feel substantial, short enough not to feel sluggish. He also observed an incidental ~50 ms behavioural extension: users hold the button down a few extra frames when there is feedback to watch. That extension is free latency budget.
+
+## When to use
+
+1. **Every interactive control.** Buttons, links, form inputs, toggles, sliders, drag handles. There is no surface where pre-action feedback hurts.
+2. **Especially when the response itself takes longer than 100 ms.** The press feedback is the bridge that prevents the "did it work?" double-tap.
+
+## When *not* to use
+
+There is essentially no when-not-to-use. The only failure modes are *bad* feedback — animations that block the next click, transitions that compete with input, or feedback that lasts too long and makes the interaction feel sluggish. The 200 ms sweet spot is the upper bound; below 100 ms is fine, below 50 ms reads as instant.
+
+## Code
+
+```css
+/* Cheapest version: a CSS-only press state. */
+button {
+  transition: transform 200ms ease-out, background-color 150ms ease-out;
+}
+
+button:active {
+  /* Subtle scale feels physical without being noisy. */
+  transform: scale(0.97);
+  background-color: var(--secondary);
+}
+
+/* Always pair with a focus ring for keyboard users. */
+button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+```
+
+```tsx
+// JS version when you need to fire animation alongside the action.
+function PrimaryButton({ onClick, children }: ButtonProps) {
+  return (
+    <button
+      type="button"
+      onMouseDown={(event) => {
+        // Pressing this listener instead of `click` buys ~100–150 ms
+        // of head start — see the mousedown / pointerdown pattern.
+        onClick?.();
+      }}
+      className="
+        rounded-md bg-primary px-3 py-1.5 text-primary-foreground
+        transition-transform duration-200 ease-out
+        active:scale-[0.97]
+        focus-visible:outline-2 focus-visible:outline-primary
+        focus-visible:outline-offset-2
+      "
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+Stack with the [mousedown / pointerdown pattern](/patterns/mousedown-vs-click) for the additional ~100–150 ms head-start, and with [animation timing for state changes](/patterns/animation-timing) so the press feedback duration sits in the right cognitive band.
+
+## Accessibility
+
+1. **`:focus-visible` ring** alongside `:active`. Keyboard users get the same acknowledgment as mouse users.
+2. **Sufficient contrast on the active state.** The default WCAG 1.4.11 (Non-Text Contrast) requirement applies — 3:1 against the surrounding background.
+3. **Honour `prefers-reduced-motion`.** Replace the scale transform with a colour change, or use `motion-reduce:scale-100` so the press still registers visually but without the motion.
+4. **Announce destructive or irreversible actions** in a polite live region when the action fires; the press feedback alone is not enough confirmation that something happened.
+
+## Linked scenarios
+
+- [Optimistic actions](/scenarios/optimistic-actions) — pre-action feedback on the press, optimistic flip on release.
+- [Form submission](/scenarios/form-submission) — press feedback within 50 ms even when the actual submit takes seconds.
+- [AI chat input](/scenarios/chat-input) — instant input echo plus press feedback on the send button.
+
+## References
+
+<ReferencesList refs={references} />
