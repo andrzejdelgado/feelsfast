@@ -34,7 +34,7 @@ export function TunedSkeletonPulse({ seed = 1 }: { seed?: number }) {
       <style>{`
         @keyframes skeleton-pulse {
           0%, 100% { background-color: var(--muted); }
-          50%      { background-color: color-mix(in oklch, var(--muted) 55%, var(--muted-foreground)); }
+          50%      { background-color: color-mix(in oklch, var(--muted) 78%, var(--muted-foreground)); }
         }
       `}</style>
     </div>

@@ -58,7 +58,7 @@ function ShimmerBlock({ className }: { className: string }) {
       className={`rounded motion-reduce:animate-none ${className}`}
       style={{
         backgroundImage:
-          "linear-gradient(90deg, var(--muted) 0%, color-mix(in oklch, var(--muted) 55%, var(--muted-foreground)) 50%, var(--muted) 100%)",
+          "linear-gradient(90deg, var(--muted) 0%, color-mix(in oklch, var(--muted) 78%, var(--muted-foreground)) 50%, var(--muted) 100%)",
         backgroundSize: "200% 100%",
         animation: "shimmer-sweep 1400ms linear infinite",
       }}
