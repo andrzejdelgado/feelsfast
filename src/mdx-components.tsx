@@ -1,5 +1,5 @@
 import type { MDXComponents } from "mdx/types";
-import { BackToSection } from "@/components/BackToSection";
+import { ArticleWrapper } from "@/components/ArticleWrapper";
 import { Cite } from "@/components/Cite";
 import { CodeBlock } from "@/components/CodeBlock";
 
@@ -134,13 +134,6 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       );
     },
     Cite,
-    wrapper: ({ children }) => (
-      <article className="mx-auto max-w-3xl px-8 py-12 lg:px-12 xl:px-16">
-        <div className="mb-6">
-          <BackToSection />
-        </div>
-        {children}
-      </article>
-    ),
+    wrapper: ({ children }) => <ArticleWrapper>{children}</ArticleWrapper>,
   };
 }
