@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import {
   OVERSHOOT_AT_MS,
   OVERSHOOT_TARGET,
@@ -27,7 +27,7 @@ type Phase = "trickle" | "idle-loop" | "complete";
  * The same simulated wait drives both sides of the demo, so it is
  * apples-to-apples: same wall-clock time, very different felt time.
  */
-export function TunedTopBar() {
+export function TunedTopBar({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<Phase>("trickle");
   const [progress, setProgress] = useState(0);
   const startedAt = useRef(performance.now());
@@ -35,7 +35,7 @@ export function TunedTopBar() {
 
   useEffect(() => {
     startedAt.current = performance.now();
-    totalRef.current = gammaJitter(TOTAL_DURATION_P50_MS);
+    totalRef.current = seededGamma(seed, TOTAL_DURATION_P50_MS);
 
     const tick = setInterval(() => {
       const elapsed = performance.now() - startedAt.current;
@@ -62,7 +62,7 @@ export function TunedTopBar() {
     }, 50);
 
     return () => clearInterval(tick);
-  }, []);
+  }, [seed]);
 
   const widthPct = Math.round(progress * 100);
   const showBar = phase !== "complete";

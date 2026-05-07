@@ -16,28 +16,33 @@ export function TunedAIStreaming({ seed = 1 }: { seed?: number }) {
 
     // Carve up the same total Naive uses (same seed → same total) into
     // a brief "thinking" pre-token state and the streaming reveal, so
-    // both sides finish at the same wall-clock moment.
+    // both sides finish at the same wall-clock moment. Reveal is
+    // time-driven (not chunk-driven) so the last character lands on
+    // the same wall-clock tick as the Naive panel's content snap.
     const totalMs = seededGamma(seed, TOTAL_DURATION_P50_MS);
     const thinkingMs = totalMs * THINKING_FRACTION;
     const streamMs = totalMs - thinkingMs;
-    const charIntervalMs = Math.max(8, streamMs / RESPONSE.length);
+    const tickMs = 32;
 
     const thinkingHandle = setTimeout(() => {
       if (cancelled) return;
       setPhase("streaming");
+      const streamStart = performance.now();
 
-      let index = 0;
       intervalHandle = setInterval(() => {
         if (cancelled) return;
-        if (index >= RESPONSE.length) {
+        const elapsed = performance.now() - streamStart;
+        if (elapsed >= streamMs) {
           if (intervalHandle !== null) clearInterval(intervalHandle);
+          setShown(RESPONSE);
           setPhase("done");
           return;
         }
-        const chunkSize = Math.random() < 0.7 ? 1 : 2;
-        index = Math.min(index + chunkSize, RESPONSE.length);
-        setShown(RESPONSE.slice(0, index));
-      }, charIntervalMs);
+        const targetIndex = Math.floor(
+          (elapsed / streamMs) * RESPONSE.length,
+        );
+        setShown(RESPONSE.slice(0, targetIndex));
+      }, tickMs);
     }, thinkingMs);
 
     return () => {
