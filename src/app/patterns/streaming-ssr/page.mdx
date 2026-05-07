@@ -1,0 +1,88 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/pattern-streaming-ssr";
+
+export const metadata = {
+  title: "Streaming SSR / Suspense",
+  description:
+    "Server-rendered chunks streamed as data arrives. React Suspense + the App Router make this composable per component. Card et al. 1991 unit-task levels under the priority order.",
+};
+
+<RegisterReferences refs={references} />
+
+# Streaming SSR / Suspense
+
+Server-side rendering used to be a binary: the server held the whole response until every part was ready, then shipped it as one HTML document. Streaming flips the unit. The server starts shipping HTML as soon as the *shell* is ready and continues sending chunks as each section's data resolves. The browser parses and paints what it has; the user sees the layout in tens of milliseconds and the slow data fills in incrementally.
+
+The pattern aligns with Card et al. 1991's <Cite id="card-1991" label="Card et al. 1991" /> three-tier cognitive timing — perceptual processing (~100 ms), immediate response (~1 s), unit task (~10 s). Streaming SSR lets you map your page's regions to those tiers explicitly: ship the layout in the perceptual frame, the primary content in the immediate-response window, the secondary content within the unit task. The user crosses the cognitive transitions on a schedule the page is actually meeting.
+
+In React 19 + Next.js App Router, the primitive is `<Suspense>`. Wrap a section in a Suspense boundary, give it a fallback (typically a [skeleton screen](/patterns/skeleton-screens)), and async data inside the boundary streams independently of everything else. Other frameworks expose the same idea: SvelteKit's `+page.server.ts` streaming, Remix's `defer()`, Solid's Suspense.
+
+## When to use
+
+1. **Page loads where some sections are fast and some are slow** — a header that needs nothing, a hero that needs static data, a sidebar that needs personalised data, a feed that needs a slow query. Stream them in priority order.
+2. **Dashboards** where each panel has its own data source and load time.
+3. **AI surfaces** where a deterministic shell ships first and the LLM-generated section streams in.
+
+## When *not* to use
+
+1. **Pages that need full data before any meaningful render.** A login form, a single-purpose action page, anything where the layout depends on the data.
+2. **Sub-1-s pages.** The streaming machinery has overhead; for waits that resolve in the active window, the synchronous render is simpler and just as fast.
+3. **Routes that already deliver static HTML.** If the page is fully prerendered, there is nothing to stream.
+
+## Code
+
+```tsx
+// Next.js App Router — server component with Suspense boundaries.
+import { Suspense } from "react";
+import { SkeletonRow } from "@/components/skeletons";
+
+export default function DashboardPage() {
+  return (
+    <main>
+      {/* Shell ships first. */}
+      <h1 className="text-3xl font-medium">Dashboard</h1>
+      <p className="mt-2 text-muted-foreground">
+        Today&apos;s view across your accounts.
+      </p>
+
+      {/* Each Suspense boundary streams independently. */}
+      <Suspense fallback={<SkeletonRow count={3} />}>
+        <FastWidget />
+      </Suspense>
+
+      <Suspense fallback={<SkeletonRow count={5} />}>
+        <SlowFeed />
+      </Suspense>
+    </main>
+  );
+}
+
+async function SlowFeed() {
+  const items = await fetchFeedFromSlowDatabase();
+  return (
+    <ul>{items.map((item) => <li key={item.id}>{item.title}</li>)}</ul>
+  );
+}
+```
+
+The fallbacks should match the layout of what is being replaced — see [skeleton screens](/patterns/skeleton-screens) for the contract. Don't ship a generic shimmer; ship a placeholder that matches the row dimensions of the resolved content. Otherwise the fallback-to-content swap creates a layout shift the streaming was supposed to eliminate.
+
+For finer-grained control of priority, group Suspense boundaries: above-the-fold content in one boundary, below-the-fold in another. The browser will paint the first as soon as it arrives.
+
+## Accessibility
+
+1. **`aria-busy="true"`** on the suspended region; flips to `false` once content arrives. The Suspense fallback should declare it.
+2. **Keep landmarks in the shell.** `<main>`, `<nav>`, `<aside>` ship with the initial chunk so screen-reader navigation works before the content fills in.
+3. **Polite live region for major updates** — when a slow region resolves with substantively new content, an announcement helps screen-reader users notice.
+4. **Focus stability** — if the user clicks something inside a Suspense boundary that re-renders, manage focus on resolution.
+
+## Linked scenarios
+
+- [Page load (cold)](/scenarios/page-load-cold) — the foundational case for streaming.
+- [Data table loading](/scenarios/data-table-loading) — table shell streams with skeleton rows; data fills in.
+- [AI long compute / inference](/scenarios/ai-long-compute-inference) — deterministic UI shell streams first; the AI section streams independently.
+
+## References
+
+<ReferencesList refs={references} />
