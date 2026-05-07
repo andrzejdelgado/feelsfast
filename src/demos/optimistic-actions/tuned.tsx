@@ -45,14 +45,13 @@ export function TunedOptimisticActions() {
         />
         <span className="text-lg tabular-nums">{count}</span>
       </button>
-      {error ? (
-        <p
-          role="alert"
-          className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-destructive"
-        >
-          {error}
-        </p>
-      ) : null}
+      <p
+        role="alert"
+        aria-hidden={!error}
+        className={`font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-destructive transition-opacity ${error ? "opacity-100" : "opacity-0"}`}
+      >
+        {error ?? "Couldn't save — try again"}
+      </p>
     </div>
   );
 }

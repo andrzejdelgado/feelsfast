@@ -40,11 +40,12 @@ export function NaiveOptimisticActions() {
         />
         <span className="text-lg tabular-nums">{count}</span>
       </button>
-      {pending ? (
-        <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
-          Saving…
-        </span>
-      ) : null}
+      <span
+        aria-hidden={!pending}
+        className={`font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground transition-opacity ${pending ? "opacity-100" : "opacity-0"}`}
+      >
+        Saving…
+      </span>
     </div>
   );
 }
