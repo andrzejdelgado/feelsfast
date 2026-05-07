@@ -1,0 +1,109 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/pattern-spinners";
+
+export const metadata = {
+  title: "Spinners (when appropriate)",
+  description:
+    "Spinners aren't 'always bad' — they have a narrow but real use case. The 1–2 s window where duration is unknown but a wait must be acknowledged.",
+};
+
+<RegisterReferences refs={references} />
+
+# Spinners (when appropriate)
+
+Spinners get a bad rap. Half the perceived-performance literature uses "spinner" as a stand-in for *bad loading affordance*, and most of the time the criticism is right. But the spinner is not always wrong — it has a narrow, defensible window.
+
+The literature splits cleanly: Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> showed that *any* feedback beats none, and that *determinate* feedback beats *indeterminate* when the duration is estimable. Fitch <Cite id="fitch" label="Fitch" /> sharpened the rule by carving out the band where indeterminate feedback is the right tool: 1–2 s waits where the duration is genuinely unknown.
+
+Below 1 s, no loader at all — see the [tip-the-hand rule](/concepts/anatomy-of-a-wait). Above 2 s, switch to a [skeleton screen](/patterns/skeleton-screens) or [determinate progress](/patterns/determinate-progress); a spinner that runs for 5 seconds tells the user they are waiting without giving them anything to anchor on. The 1–2 s window is the spinner's home.
+
+The other defensible use is as the *first* affordance in a longer wait, before the system knows enough to render a more useful one. A "thinking" state on an AI surface (covered separately as [thinking state](/patterns/ai-thinking-state)) is essentially a styled spinner that gets replaced once the first token arrives.
+
+## When to use
+
+1. **1–2 s waits with unknown duration.** The narrow window where a spinner is doing real work.
+2. **As a placeholder for the first ~500 ms of a longer wait** before you have enough information to render a skeleton or progress bar.
+3. **Inline next to a small affordance** — a button submitting, an icon updating — where a skeleton would be visually overweight.
+
+## When *not* to use
+
+1. **Sub-1-second waits.** Tip-the-hand. The spinner appears, dismisses, and content arrives — three visual events for what would have been one.
+2. **Above 2 s.** A skeleton (1–10 s, stable layout) or a progress bar (1–10 s, real progress data) carries more weight.
+3. **On primarily-interactive surfaces.** A search input with a spinner over it tells the user they cannot search; the input should stay live.
+4. **Indefinitely.** A spinner that runs for 30 seconds is not communicating that something is happening — it is communicating that the system has hung.
+
+## Code
+
+```tsx
+import { Loader2 } from "lucide-react";
+
+type SpinnerProps = {
+  /** Accessible label. Required: a spinner with no description is dead air. */
+  label: string;
+  className?: string;
+};
+
+export function Spinner({ label, className }: SpinnerProps) {
+  return (
+    <span
+      role="status"
+      aria-live="polite"
+      className={className}
+    >
+      <Loader2
+        aria-hidden="true"
+        className="size-4 animate-spin motion-reduce:animate-none"
+      />
+      <span className="sr-only">{label}</span>
+    </span>
+  );
+}
+```
+
+The CSS spin animation reduces to nothing under `prefers-reduced-motion`. For users who have asked for less motion, the static icon plus the live-region announcement ("Loading…") still does the work — they know something is happening, the visual just is not animated.
+
+For a "delayed spinner" that respects the tip-the-hand rule:
+
+```tsx
+import { useEffect, useState } from "react";
+
+const SHOW_AFTER_MS = 500;
+
+export function DelayedSpinner({ isLoading, label }: {
+  isLoading: boolean;
+  label: string;
+}) {
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setShown(false);
+      return;
+    }
+    const timer = setTimeout(() => setShown(true), SHOW_AFTER_MS);
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
+  return shown ? <Spinner label={label} /> : null;
+}
+```
+
+The 500 ms delay is the cheap way to enforce the rule — if the wait resolves before then, no spinner appears at all. Below 1 s most teams should not show one; this helper makes that the default.
+
+## Accessibility
+
+1. **`role="status"`** plus `aria-live="polite"` so screen readers announce when the loading state begins.
+2. **`sr-only` label** describing what is loading. "Loading" alone is not enough; "Loading search results" is.
+3. **`motion-reduce:animate-none`** on the spin. Static icon plus live-region announcement still communicates state.
+4. **Pair with a cancellation control** when the wait might extend past the spinner's polite window. Anything past ~3–4 seconds of a spinner needs an out.
+
+## Linked scenarios
+
+- [Form submission](/scenarios/form-submission) — the 1–2 s submit wait.
+- [Auth / OAuth flow](/scenarios/auth-oauth) — round-trip handshake; spinner on the button is appropriate.
+- [Search as you type](/scenarios/search-as-you-type) — spinner is *not* appropriate on the input itself, but a small one in the result panel can work.
+
+## References
+
+<ReferencesList refs={references} />

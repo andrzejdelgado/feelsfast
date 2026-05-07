@@ -53,7 +53,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Backwards-moving, decelerating bands inside a forwards-moving progress bar. ~11–12 % perceived speed-up over a plain bar.",
     primaryCitation: "Harrison, Yeo & Hudson 2010 (CHI '10)",
-    status: "planned",
+    status: "published",
   },
   {
     number: "05",
@@ -63,7 +63,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Indeterminate feedback for the narrow 1–2 s window where duration is unknown but a wait must be acknowledged. Not 'always bad' — just narrow.",
     primaryCitation: "Myers 1985; Eli Fitch",
-    status: "planned",
+    status: "published",
   },
   {
     number: "06",
@@ -73,7 +73,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Browser-orchestrated cross-document and same-document animations. Eliminates most manual route-transition orchestration.",
     primaryCitation: "Card et al. 1991 (100 ms transition principle)",
-    status: "planned",
+    status: "published",
   },
   {
     number: "07",
@@ -83,7 +83,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Low-quality placeholder establishes shape and colour; full image swaps in. Edge contrast as the perceived-speed lever.",
     primaryCitation: "Anstis 2001; James 1890",
-    status: "planned",
+    status: "published",
   },
   {
     number: "08",

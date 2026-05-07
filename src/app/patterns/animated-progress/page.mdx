@@ -1,0 +1,101 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/pattern-animated-progress";
+
+export const metadata = {
+  title: "Animated progress (backwards-decelerating ribs)",
+  description:
+    "Backwards-moving, decelerating bands inside a forwards-moving progress bar. ~11–12 % perceived speed-up over a plain bar (Harrison et al. 2010). Free with a CSS keyframe.",
+};
+
+<RegisterReferences refs={references} />
+
+# Animated progress (backwards-decelerating ribs)
+
+A determinate progress bar with bands moving backwards and decelerating over the wait feels meaningfully shorter than a plain bar of the same duration. Chris Harrison and colleagues <Cite id="harrison-2010" label="Harrison et al. 2010" /> measured the effect at CHI 2010: a 5.0-second bar with this pattern felt equivalent to a ~5.6-second plain bar, a ~11–12 % perceptual speed-up. Their earlier UIST 2007 paper <Cite id="harrison-2007" label="Harrison et al. 2007" /> set up the broader finding — animation pattern measurably alters perceived duration even with identical real duration.
+
+The mechanism is the train-passing-by-train illusion. When two objects move in opposite directions, your perceptual system reads relative speed as the sum of both. Backwards-moving bands inside a forwards-moving bar exaggerate the apparent forward speed. The deceleration adds a second layer: a bar that finishes strong feels faster than one that crawls to the line.
+
+This pattern is a refinement on [determinate progress](/patterns/determinate-progress), not a replacement. It only earns its keep when the bar reflects real progress — the gain is perceptual, not behavioural, and a fake bar with this animation is still a fake bar.
+
+## When to use
+
+1. **Determinate progress bars in the 1–10 s band** where the cost of the perceptual gain is one CSS keyframe.
+2. **Long-running visible operations** where the user has decided to wait and the perception layer needs to do work — file uploads, data exports, generative renders.
+
+## When *not* to use
+
+1. **Indeterminate operations.** This is a *progress* pattern; without real progress data, the animation is decorative at best and dishonest at worst.
+2. **Sub-1-second bars.** No bar at sub-1 s; this pattern inherits that constraint.
+3. **Reduced-motion contexts.** The animation must reduce to nothing when `prefers-reduced-motion` is set.
+
+## Code
+
+```tsx
+type AnimatedProgressProps = {
+  /** 0–1; clamp inside the component. */
+  value: number;
+  label?: string;
+};
+
+export function AnimatedProgress({ value, label }: AnimatedProgressProps) {
+  const clamped = Math.max(0, Math.min(1, value));
+  const percent = Math.round(clamped * 100);
+
+  return (
+    <div
+      role="progressbar"
+      aria-label={label ?? "Progress"}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={percent}
+      className="h-2 w-full overflow-hidden rounded-full bg-muted"
+    >
+      <div
+        className="h-full bg-primary transition-[width] duration-200 ease-out"
+        style={{ width: `${percent}%` }}
+      >
+        {/* Backwards-decelerating ribs over the filled portion. */}
+        <div
+          aria-hidden
+          className="
+            h-full w-full bg-[length:24px_24px]
+            bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.4)_25%,rgba(255,255,255,0.4)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.4)_75%)]
+            motion-safe:[animation:rib-slide_1.2s_cubic-bezier(0,0,0.2,1)_infinite]
+            motion-reduce:opacity-0
+          "
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+```css
+/* In globals.css alongside the rest of the keyframes. */
+@keyframes rib-slide {
+  /* Move the diagonal stripe pattern backwards. The cubic-bezier
+     deceleration matches Harrison et al.'s "decelerating" condition. */
+  from { background-position: 0 0; }
+  to   { background-position: -24px 0; }
+}
+```
+
+The rib animation is gated by `motion-safe:` so reduced-motion users see a plain bar. The bar itself still updates from the `width` transition — that is a property change, not an animation, and is exempt.
+
+## Accessibility
+
+1. **`prefers-reduced-motion: reduce`** — the rib animation must be off. The rest of the bar (width transition, ARIA value updates) stays.
+2. **`role="progressbar"` and the `aria-value*` trio** — same as the [determinate progress](/patterns/determinate-progress) pattern; assistive tech reads percent-done independently of the visual.
+3. **The rib is decorative** — `aria-hidden="true"` on the inner element so screen readers ignore it.
+4. **Sufficient contrast** between the bar fill and the rib pattern (3:1 minimum). Faint ribs at the perceived-speed cost of looking unintentional are not a trade worth making.
+
+## Linked scenarios
+
+- [File upload (single)](/scenarios/file-upload-single) — the per-byte progress where the gain shows.
+- [File upload (batch)](/scenarios/file-upload-batch) — aggregate progress; ribs help most on the slower bars.
+- [Data export / download](/scenarios/data-export-download) — server-generated downloads with reportable progress.
+
+## References
+
+<ReferencesList refs={references} />
