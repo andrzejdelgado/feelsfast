@@ -77,7 +77,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "User scrolls or paginates through a long list. Skeleton rows for the next page; predictive preload as the user approaches the boundary.",
     linkedPatterns: ["Skeleton screens", "Predictive preloading on scroll"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "07",
@@ -143,7 +143,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Sort, filter, paginate a table. Skeleton rows that match column widths; SWR for repeat queries.",
     linkedPatterns: ["Skeleton screens", "Stale-while-revalidate"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "13",
@@ -236,7 +236,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Single-tap action with low rejection rate. Render success immediately; reconcile in the background; honest visible failure path.",
     linkedPatterns: ["Optimistic UI", "Pre-action feedback", "Reconciliation on failure"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "21",

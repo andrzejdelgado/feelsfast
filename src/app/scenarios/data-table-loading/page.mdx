@@ -1,0 +1,60 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveListFetch } from "@/demos/list-fetch/naive";
+import { TunedListFetch } from "@/demos/list-fetch/tuned";
+import { config as demoConfig } from "@/demos/list-fetch/config";
+import { references } from "@/lib/refs/scenario-data-table-loading";
+
+export const metadata = {
+  title: "Data table loading",
+  description:
+    "100 MS – 1 S band. Sort, filter, paginate a table. Column-aligned skeleton rows; stale-while-revalidate on repeated queries.",
+};
+
+<RegisterReferences refs={references} />
+
+# Data table loading
+
+The user clicks a column header to sort, types into a filter box, or changes the page size. The table re-queries; the user waits for the new data. The naive answer is to blank the table during the query. The tuned answer is to keep the layout intact, render skeleton rows that match the column widths, and dim the previous data while the new query is in flight.
+
+This scenario sits in the 100 MS – 1 S band. Most data-table queries on cached data should land here; complex aggregations push into the 1–10 S band where [skeleton screens](/patterns/skeleton-screens) become the primary affordance. Myers 1985's <Cite id="myers-1985" label="Myers 1985" /> indeterminate-feedback principle is the underlying reason a skeleton beats a blank table; James 1890 <Cite id="james-1890" label="James 1890" /> is why the skeleton fills the prospective-empty wait; Doherty 1982 <Cite id="doherty-1982" label="Doherty 1982" /> explains why stale-while-revalidate on repeated queries pays off in measured productivity.
+
+<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+
+## What is happening in the demo
+
+The demo is the list-fetch demo in different framing. Imagine the rows are table rows — name and role columns, sortable. The naive side blanks the table on query; the tuned side renders skeleton rows that match the column widths and swaps the real data in on arrival.
+
+For a real data table, the skeleton rows should match the *resolved* row count where possible. If the previous result had 12 rows, render 12 skeletons; if the user changed the page size to 50, render 50. The user's eye lands on the right vertical extent, not on a 5-row placeholder for what becomes a 50-row table.
+
+The full implementation also pairs with [stale-while-revalidate](/patterns/stale-while-revalidate). For repeated queries — re-sorting on the same data, paginating back to a page already visited — the cached result lands instantly; the background revalidation is invisible. The skeleton only ever appears on truly new queries.
+
+## What to tune
+
+The patterns at work:
+
+1. [Skeleton screens](/patterns/skeleton-screens) — column-aligned, row-count-matching placeholders.
+2. [Stale-while-revalidate](/patterns/stale-while-revalidate) — repeat queries serve from cache, refresh in the background.
+3. [Time-aware feedback](/patterns/time-aware-feedback) — at the 100 MS – 1 S band, skeleton over spinner; no loader at all if the query resolves under 500 ms.
+4. [Animation timing](/patterns/animation-timing) — the dim-stale → fade-in-fresh transition at ~150 ms.
+
+## When perceived performance hurts you here
+
+The skeleton-row pattern is honest only when the layout is predictable. A table whose column widths change with each query (auto-sizing tables that recompute on every render) defeats the perception gain — the skeleton rows in 100-px columns are followed by real rows in 250-px columns, and the swap is a layout shift, not a transition.
+
+Lock the column widths via the schema, not via auto-sizing. If you must auto-size, do it once on the *first* render and keep the widths stable across subsequent queries.
+
+The other failure: skeleton rows for *interactive* table operations. A search input above the table that the user is typing into should stay live; the input should not get a skeleton. See the [search-as-you-type scenario](/scenarios/search-as-you-type) for that case — production surfaces inside consumption surfaces need separate treatment.
+
+## Accessibility
+
+1. **`aria-busy="true"`** on the table during the query.
+2. **`role="status"` plus polite live region** for row-count updates ("Showing 12 of 247 results").
+3. **Keep table headers and column structure visible** during the load — only the cells should skeleton-fade. Otherwise screen readers lose orientation.
+4. **Match `tabular-nums` font feature** on numeric columns so the skeleton's width prediction holds.
+5. **Stale-state dim should not strip ARIA**. The previous row data is still announceable; an opacity change is purely visual.
+
+## References
+
+<ReferencesList refs={references} />

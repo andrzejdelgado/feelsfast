@@ -1,0 +1,60 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
+import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
+import { config as demoConfig } from "@/demos/optimistic-actions/config";
+import { references } from "@/lib/refs/scenario-optimistic-actions";
+
+export const metadata = {
+  title: "Optimistic actions (like, save, undo)",
+  description:
+    "0–100 MS band. Single-tap actions with low rejection rate — likes, saves, deletes-with-undo. Optimistic flip plus honest visible rollback on the rare failure.",
+};
+
+<RegisterReferences refs={references} />
+
+# Optimistic actions (like, save, undo)
+
+The user clicks "Like." The naive answer is to wait for the server before the heart fills in — a small button with a small wait, but a wait the user feels every time. The tuned answer is to flip the heart immediately, send the request in the background, and roll back visibly if the rare failure case fires. At 99 % success the user's experience is sub-perceptible feedback; at 1 % they get an honest, recoverable error.
+
+This scenario sits in the 0–100 MS band, but only because the optimistic flip *moves* it there. The actual server round-trip is in the 100 MS – 1 S band; the perception layer is what compresses the perceived response into the perceptual frame Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> describe. Miller 1968's <Cite id="miller-1968" label="Miller 1968" /> button-press tier and Doherty 1982's <Cite id="doherty-1982" label="Doherty 1982" /> productivity-cliff finding both get cleared — for free — by skipping the wait the user would otherwise experience.
+
+<DemoRunner config={demoConfig} Naive={NaiveOptimisticActions} Tuned={TunedOptimisticActions} />
+
+## What is happening in the demo
+
+Click the heart on either side. Both run the same simulated server round-trip — a 600 ms p50 wait drawn from a gamma distribution. The naive side waits the full duration before flipping the heart and updating the count; you can feel the lag on every press. The tuned side flips the heart immediately, increments the count, and runs the simulated commit in the background.
+
+The tuned side has a 10 % simulated failure rate. When the failure fires (try clicking 5–10 times), the heart rolls back, the count corrects, and an error message appears in `role="alert"`. The user is *told* the action failed — silently rolling back would be the polished-lie failure mode covered in [Concepts §6](/concepts/when-perceived-performance-hurts-you).
+
+The visual flip uses an `active:scale-[0.97]` press feedback in addition to the optimistic state change — the [pre-action feedback](/patterns/pre-action-feedback) layer is still doing its work on every press, even when the optimistic state change is the visible result.
+
+## What to tune
+
+The patterns at work:
+
+1. [Optimistic UI](/patterns/optimistic-ui) — the foundational pattern for this scenario. Render the action as if it succeeded, reconcile in the background.
+2. [Pre-action feedback](/patterns/pre-action-feedback) — the press animation under 50 ms. Even when the optimistic flip is the visible state change, the press itself needs a separate cue.
+3. [Animation timing](/patterns/animation-timing) — the heart fill / unfill transition at ~200 ms. Short enough to feel responsive; long enough to register as a state change.
+4. [Mousedown / pointerdown vs. click](/patterns/mousedown-vs-click) — for actions where you can begin the network request early, buy the additional ~100–150 ms head-start.
+
+## When perceived performance hurts you here
+
+The pattern fails when the failure rate is too high. At 1 % rejection the rollback is a rare event and the trust budget pays for itself; at 30 % rejection — pessimistic actions misrepresented as optimistic — the user sees three rollbacks in every ten interactions and learns that the system lies. The perception layer becomes a tax on trust.
+
+The other failure mode: silent rollback. If the action visibly succeeded, then quietly reverted because the server rejected it, the user has no signal anything went wrong. They notice the wrong state hours later and lose confidence in everything they have done since. The error state in the demo is the *minimum* — a `role="alert"` text label tied to the action that failed. Production implementations should also offer a retry control on the failed item itself.
+
+For irreversible actions — payments, deletions without undo, irreversible state changes — optimistic UI is the wrong tool. Surface the irreversibility *before* the action runs (a confirmation dialog, an explicit submit button), and run the action with a real progress indicator afterwards.
+
+## Accessibility
+
+1. **`aria-pressed`** reflects the optimistic state on toggle buttons.
+2. **`role="alert"`** on the rollback message — interrupts to announce the failure, since the user thought the action succeeded.
+3. **Don't lose mid-flight user input.** If an optimistic action runs while the user is typing nearby, the rollback must not clobber their in-progress work.
+4. **`prefers-reduced-motion`** — the heart's fill transition reduces to an instant colour change.
+5. **Keyboard parity** — Space and Enter trigger the same optimistic flip on focused buttons. The press animation can be skipped for keyboard activations.
+
+## References
+
+<ReferencesList refs={references} />

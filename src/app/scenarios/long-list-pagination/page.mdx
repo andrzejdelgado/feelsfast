@@ -1,0 +1,60 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveListFetch } from "@/demos/list-fetch/naive";
+import { TunedListFetch } from "@/demos/list-fetch/tuned";
+import { config as demoConfig } from "@/demos/list-fetch/config";
+import { references } from "@/lib/refs/scenario-long-list-pagination";
+
+export const metadata = {
+  title: "Long list / pagination",
+  description:
+    "100 MS – 1 S band. The user scrolls or paginates through a long list. Skeleton rows for the next page; predictive preload as the user approaches the boundary so the wait is invisible most of the time.",
+};
+
+<RegisterReferences refs={references} />
+
+# Long list / pagination
+
+The user scrolls through a 200-item list, or clicks "Next" on a paginated table. The naive answer is to wait for the next page's data, then drop it in. The tuned answer is to render skeleton rows for the next page immediately and to predictively preload before the user reaches the boundary — most of the time, the data is already there when the skeleton renders.
+
+This scenario sits in the 100 MS – 1 S band. Miller 1968's <Cite id="miller-1968" label="Miller 1968" /> simple-inquiry tier is roughly the latency budget for a paginated query. James 1890's <Cite id="james-1890" label="James 1890" /> filled-duration principle frames why the skeleton rows fill the wait. Fitch's <Cite id="fitch" label="Fitch" /> predictive-preloading framing is what shrinks the wait further by starting the fetch before the user signals.
+
+<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+
+## What is happening in the demo
+
+The demo is the same list-fetch you saw in [page-load-cold](/scenarios/page-load-cold), framed differently. Imagine the wait you are watching is the next-page fetch, triggered when the user approached the bottom of the visible list. The naive side waits silently; the tuned side renders five skeleton rows that match the final-row dimensions exactly, so the visual transition when data arrives is a swap, not a jump.
+
+The skeleton rows are honest — they reflect the layout the data will take. A different number of rows, or rows of different heights, would create a layout shift the user sees. Layout-matching is the only configuration that earns the perception gain.
+
+The full implementation also includes the [predictive preloading on scroll](/patterns/predictive-preloading-hover) trick: as the user scrolls into the last 30 % of the visible list, kick off the next-page fetch in the background. By the time the user reaches the boundary, the data is often already there — the skeleton appears and disappears in the same frame, or never appears at all.
+
+## What to tune
+
+The patterns at work, in priority order:
+
+1. [Skeleton screens](/patterns/skeleton-screens) — layout-matching placeholders for the next page's rows.
+2. [Predictive preloading](/patterns/predictive-preloading-hover) — start the next-page fetch when the user is within ~70 % of the current page's bottom.
+3. [Stale-while-revalidate](/patterns/stale-while-revalidate) — for repeated visits, serve cached pages while validating in the background.
+4. [Time-aware feedback](/patterns/time-aware-feedback) — at the 100 MS – 1 S band, no spinner under 1 s; skeleton rows are the right affordance.
+
+## When perceived performance hurts you here
+
+Predictive preloading on scroll has the same trap as the broader [predictive-preloading-on-hover](/patterns/predictive-preloading-hover) pattern: false positives. A user who scrolls down and then back up costs you a wasted page fetch. With infinite scroll the cost is small (the next page would have loaded eventually); with paginated rows that the user might never visit, the cost is wasted bandwidth.
+
+Tune the trigger threshold against your real user behaviour. 70 % is a starting point. If your false-positive rate is high, push to 80 % or 85 %; if your hit rate is high, drop to 60 % to extend the head-start.
+
+The other failure: shipping skeleton rows that do not match the final row. A skeleton with three lines per row when the data has two creates a layout shift on swap. CLS spikes; the perceived gain reverses.
+
+## Accessibility
+
+1. **`aria-busy="true"`** on the next-page skeleton container.
+2. **`aria-label="Loading more items"`** describing what is loading.
+3. **Live region announcement** when a substantial batch of new items appears, so screen-reader users on long lists know the count changed.
+4. **Keyboard navigation**: arrow keys / page-down should reach new content as it becomes available, not get stuck at the previous boundary.
+5. **Don't hijack scroll position.** When new content appears at the bottom, the user's scroll position must not jump.
+
+## References
+
+<ReferencesList refs={references} />
