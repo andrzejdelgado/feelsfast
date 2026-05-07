@@ -43,9 +43,9 @@ export function TunedShimmerSkeleton({ seed = 1 }: { seed?: number }) {
       <ShimmerBlock className="h-2.5 w-5/6" />
       <ShimmerBlock className="h-2.5 w-2/3" />
       <style>{`
-        @keyframes shimmer-sweep {
-          0%   { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
+        @keyframes shimmer-pulse {
+          0%, 100% { opacity: 0.85; }
+          50%      { opacity: 1;    }
         }
       `}</style>
     </div>
@@ -59,8 +59,8 @@ function ShimmerBlock({ className }: { className: string }) {
       style={{
         backgroundImage:
           "linear-gradient(90deg, var(--muted) 0%, color-mix(in oklch, var(--muted) 78%, var(--muted-foreground)) 50%, var(--muted) 100%)",
-        backgroundSize: "200% 100%",
-        animation: "shimmer-sweep 1400ms linear infinite",
+        backgroundSize: "100% 100%",
+        animation: "shimmer-pulse 1400ms ease-in-out infinite",
       }}
     />
   );
