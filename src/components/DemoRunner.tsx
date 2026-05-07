@@ -1,5 +1,6 @@
 "use client";
 
+import { Play, RotateCcw } from "lucide-react";
 import { useId, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -23,24 +24,25 @@ type DemoRunnerProps = {
 /**
  * DemoRunner — the canonical wrapper for every Scenario demo (PRD §8).
  *
- * Layout: side-by-side desktop, stacked mobile. Both sides are always
- * visible. The Replay button re-runs both simultaneously by changing the
- * keys, forcing a remount.
+ * Layout: side-by-side desktop, stacked mobile. Both panels are always
+ * present, but the demo components themselves only mount when the user
+ * clicks **Play**. Each Play press increments a `runId` so the
+ * components remount and re-trigger their initial-load effects in
+ * sync.
  *
- * The Perception toggle controls the right ("On") side: when on, it
- * renders the tuned component; when off, it mirrors the naive one — so
- * the user can flip the switch and see exactly what perception techniques
- * add (rather than guessing from a single side-by-side view).
- *
- * Accessibility: ARIA live regions on each side, switch role on the
- * toggle, keyboard-operable Replay, motion-reduce honored by child demos.
+ * Why no auto-play: if every visible demo started its timers on mount,
+ * a single page (Scenario index → Pattern page → Playground with 17
+ * demos) would have dozens of intervals running for waits the user is
+ * not actually watching. Explicit Play makes the comparison
+ * deliberate, makes the perception gap visible, and keeps the page
+ * quiet until the user wants to look.
  */
 export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
-  const [perceptionOn, setPerceptionOn] = useState(true);
   const [runId, setRunId] = useState(0);
   const headingId = useId();
 
-  const replay = () => setRunId((id) => id + 1);
+  const hasPlayed = runId > 0;
+  const play = () => setRunId((id) => id + 1);
 
   return (
     <section
@@ -68,65 +70,38 @@ export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
         ) : null}
       </header>
 
-      <div className="mt-6 flex flex-wrap items-center gap-4">
-        <PerceptionToggle value={perceptionOn} onChange={setPerceptionOn} />
+      <div className="mt-6 flex flex-wrap items-center gap-3">
         <button
           type="button"
-          onClick={replay}
-          className="ml-auto rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary"
+          onClick={play}
+          className="inline-flex items-center gap-1.5 rounded-md border border-primary bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97]"
         >
-          Replay
+          {hasPlayed ? (
+            <RotateCcw aria-hidden className="size-3.5" />
+          ) : (
+            <Play aria-hidden className="size-3.5" />
+          )}
+          <span>{hasPlayed ? "Replay" : "Play"}</span>
         </button>
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
         <DemoSide label="Off">
-          <Naive key={`naive-${runId}`} />
+          {hasPlayed ? <Naive key={`naive-${runId}`} /> : <PressPlay />}
         </DemoSide>
-        <DemoSide label="On" highlighted={perceptionOn}>
-          {perceptionOn ? (
-            <Tuned key={`tuned-${runId}`} />
-          ) : (
-            <Naive key={`mirror-${runId}`} />
-          )}
+        <DemoSide label="On" highlighted>
+          {hasPlayed ? <Tuned key={`tuned-${runId}`} /> : <PressPlay />}
         </DemoSide>
       </div>
     </section>
   );
 }
 
-function PerceptionToggle({
-  value,
-  onChange,
-}: {
-  value: boolean;
-  onChange: (next: boolean) => void;
-}) {
+function PressPlay() {
   return (
-    <div className="flex items-center gap-2.5">
-      <button
-        type="button"
-        role="switch"
-        aria-checked={value}
-        aria-label="Perception techniques"
-        onClick={() => onChange(!value)}
-        className={cn(
-          "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
-          value ? "bg-primary" : "bg-muted",
-        )}
-      >
-        <span
-          aria-hidden
-          className={cn(
-            "inline-block size-4 transform rounded-full bg-card shadow transition-transform",
-            value ? "translate-x-6" : "translate-x-1",
-          )}
-        />
-      </button>
-      <span className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider">
-        Perception · {value ? "On" : "Off"}
-      </span>
-    </div>
+    <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground/70">
+      Press Play to run
+    </p>
   );
 }
 
