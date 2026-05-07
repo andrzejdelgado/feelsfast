@@ -41,7 +41,7 @@ export const FOUNDATIONAL_HCI: readonly ReferenceWithKind[] = [
     label: "Doherty 1982",
     kind: "academic",
     citation:
-      "Doherty, W. J., & Thadani, A. J. (1982). The Economic Value of Rapid Response Time. IBM Technical Report GE20-0752-0. Empirical productivity-vs-response-time curve breaking sharply at ~400 ms — the basis of the 'Doherty threshold' framing.",
+      "Doherty, W. J., & Thadani, A. J. (1982). The Economic Value of Rapid Response Time. IBM Technical Report GE20-0752-0. Empirical productivity-vs-response-time curve breaking sharply at ~400 ms — the basis of the 'Doherty threshold' framing. PDF: https://www.ibm.com/support/pages/sites/default/files/inline-files/EconomicValueofResponseTime.pdf",
   },
   {
     id: "nielsen-1993",
@@ -186,7 +186,53 @@ export const INDUSTRY_PRIMARY: readonly ReferenceWithKind[] = [
     label: "Mishunov 2015",
     kind: "industry",
     citation:
-      "Mishunov, D. (2015). *Why Performance Matters, Part 1: The Perception Of Time*. Smashing Magazine. Surfaces the Weber–Fechner law and the geometric-mean indifference threshold for the UX community.",
+      "Mishunov, D. (2015). *Why Performance Matters, Part 1: The Perception Of Time*. Smashing Magazine. Surfaces the Weber–Fechner law and the geometric-mean indifference threshold for the UX community. https://www.smashingmagazine.com/2015/09/why-performance-matters-the-perception-of-time/",
+  },
+  {
+    id: "wroblewski-2013",
+    label: "Wroblewski 2013",
+    kind: "industry",
+    citation:
+      "Wroblewski, L. (2013). *Mobile Design Details: Avoid The Spinner*. The post that named the skeleton-screen pattern — argues blank-template UIs that load content incrementally shift user attention from the wait to the arriving content. Used as the canonical naming citation in place of the unrecoverable Mobify Engineering article. https://www.lukew.com/ff/entry.asp?1797",
+  },
+];
+
+/**
+ * Recent AI-UX academic research (CHI / UIST / arXiv, 2025–2026).
+ * Used by the AI-tagged scenarios where the older HCI literature is
+ * about response time *in general* but does not address the
+ * agent-specific perception questions — visible thinking state,
+ * latency-as-perceived-quality, generation cues during long compute,
+ * and tool-call transparency for non-expert oversight.
+ */
+export const AI_UX_RESEARCH: readonly ReferenceWithKind[] = [
+  {
+    id: "cox-2026",
+    label: "Cox et al. 2026",
+    kind: "academic",
+    citation:
+      "Cox, S. R., Martin-Lise, J., Hosio, S., & van Berkel, N. (2026). *Watching AI Think: User Perceptions of Visible Thinking in Chatbots*. arXiv preprint. Mixed-design experiment varying \"thinking content\" (none / emotionally-supportive / expertise-supportive) finds visible pre-response reflections anthropomorphise the agent and shift perceived empathy, warmth, and competence vs. a typing indicator. https://arxiv.org/abs/2601.16720",
+  },
+  {
+    id: "llm-latency-2026",
+    label: "LLM Latency 2026",
+    kind: "academic",
+    citation:
+      "*The Impact of Response Latency and Task Type on Human–LLM Interaction and Perception* (CHI 2026). Controlled experiment with TTFT at 2 s / 9 s / 20 s across Creation vs. Advice tasks: participants who experienced 2 s latencies rated outputs *less* thoughtful and useful than those at 9 s or 20 s — moderate delay raises perceived quality, very long delay shifts attribution from \"deliberation\" to \"unreliability.\" https://dl.acm.org/doi/full/10.1145/3772318.3790716",
+  },
+  {
+    id: "joshi-vogel-2025",
+    label: "Joshi & Vogel 2025",
+    kind: "academic",
+    citation:
+      "Joshi, N., & Vogel, D. (2025). *While We Wait… How Users Perceive Waiting Times and Generation Cues during AI Image Generation*. CHI EA '25. Semi-structured interviews (n = 11): users accept and sometimes value wait time when it is framed as part of the creative process; generation cues (progress bars, descriptive text, skeleton-style cues) shape that framing. https://dl.acm.org/doi/10.1145/3706599.3719725",
+  },
+  {
+    id: "epperson-2025",
+    label: "Epperson et al. 2025",
+    kind: "academic",
+    citation:
+      "Epperson, W., et al. (2025). *Interactive Debugging and Steering of Multi-Agent AI Systems (AGDebugger)*. CHI 2025. User-study finding: ability to steer agents was gated by users' technical understanding of how each agent processes instructions and uses tools — supports tool-call transparency in agent UIs as necessary for non-expert oversight, not just preference. https://dl.acm.org/doi/10.1145/3706598.3713581",
   },
 ];
 
@@ -225,5 +271,12 @@ export const ALL_CATEGORIES = [
     description:
       "Conference talks, blog posts, and case studies that document patterns the academic literature has not yet caught up to. Labelled with the industry tag.",
     refs: INDUSTRY_PRIMARY,
+  },
+  {
+    id: "ai-ux-research",
+    title: "AI-UX research (2025–2026)",
+    description:
+      "Recent CHI / UIST / arXiv papers on agent-specific perception — visible thinking, LLM latency-as-quality, generation cues during long compute, and tool-call transparency. Used by the AI-tagged scenarios where the older HCI literature does not address the agent case directly.",
+    refs: AI_UX_RESEARCH,
   },
 ] as const;

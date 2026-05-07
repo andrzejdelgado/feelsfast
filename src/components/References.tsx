@@ -39,18 +39,39 @@ export function ReferencesList({ refs }: { refs: readonly Reference[] }) {
   );
 }
 
-/** Inline parser for asterisk-italics in citation strings. */
+/**
+ * Inline parser for citation strings. Handles two micro-formats:
+ *   - `*foo*` → `<em>foo</em>` for journal / book titles
+ *   - bare `https://example.com/path` → `<a href>` so PDFs and source pages
+ *     are clickable straight from the bibliography
+ */
 function CitationText({ text }: { text: string }) {
-  const parts = text.split(/(\*[^*]+\*)/g);
+  const tokens = text.split(/(\*[^*]+\*|https?:\/\/[^\s)]+)/g);
   return (
     <>
-      {parts.map((part, i) =>
-        part.startsWith("*") && part.endsWith("*") && part.length > 2 ? (
-          <em key={i}>{part.slice(1, -1)}</em>
-        ) : (
-          part
-        ),
-      )}
+      {tokens.map((token, i) => {
+        if (
+          token.startsWith("*") &&
+          token.endsWith("*") &&
+          token.length > 2
+        ) {
+          return <em key={i}>{token.slice(1, -1)}</em>;
+        }
+        if (/^https?:\/\//.test(token)) {
+          return (
+            <a
+              key={i}
+              href={token}
+              target="_blank"
+              rel="noreferrer"
+              className="break-all text-primary underline-offset-2 hover:underline"
+            >
+              {token}
+            </a>
+          );
+        }
+        return <span key={i}>{token}</span>;
+      })}
     </>
   );
 }
