@@ -6,6 +6,9 @@ import { config as listFetchConfig } from "@/demos/list-fetch/config";
 import { NaiveSearchAsYouType } from "@/demos/search-as-you-type/naive";
 import { TunedSearchAsYouType } from "@/demos/search-as-you-type/tuned";
 import { config as searchConfig } from "@/demos/search-as-you-type/config";
+import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
+import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
+import { config as aiStreamingConfig } from "@/demos/ai-streaming/config";
 
 export const metadata: Metadata = {
   title: "Playground",
@@ -38,6 +41,11 @@ export default function PlaygroundPage() {
           config={searchConfig}
           Naive={NaiveSearchAsYouType}
           Tuned={TunedSearchAsYouType}
+        />
+        <DemoRunner
+          config={aiStreamingConfig}
+          Naive={NaiveAIStreaming}
+          Tuned={TunedAIStreaming}
         />
       </div>
 
