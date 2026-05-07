@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react";
 import type { Reference } from "./ReferencesProvider";
 
 /**
@@ -67,6 +68,10 @@ function CitationText({ text }: { text: string }) {
               className="break-all text-primary underline-offset-2 hover:underline"
             >
               {token}
+              <ArrowUpRight
+                aria-hidden
+                className="ml-0.5 inline-block size-[0.85em] -translate-y-[0.05em] align-baseline"
+              />
             </a>
           );
         }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { glossary } from "@/lib/glossary";
 
@@ -39,9 +40,10 @@ export default function GlossaryPage() {
                   {" "}
                   <Link
                     href={entry.seeAlso.href}
-                    className="font-mono text-[0.75rem] font-medium uppercase tracking-wider text-primary hover:underline"
+                    className="inline-flex items-center gap-1 font-mono text-[0.75rem] font-medium uppercase tracking-wider text-primary hover:underline"
                   >
-                    See {entry.seeAlso.label} →
+                    <span>See {entry.seeAlso.label}</span>
+                    <ArrowRight aria-hidden className="size-3" />
                   </Link>
                 </>
               ) : null}

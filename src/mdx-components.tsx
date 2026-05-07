@@ -1,7 +1,17 @@
 import type { MDXComponents } from "mdx/types";
+import { ArrowUpRight } from "lucide-react";
 import { ArticleWrapper } from "@/components/ArticleWrapper";
 import { Cite } from "@/components/Cite";
 import { CodeBlock } from "@/components/CodeBlock";
+
+/**
+ * True when the href points off-site. Anchor links (`#foo`), site-relative
+ * links (`/concepts/...`), and protocol-relative `//` are all internal.
+ */
+function isExternal(href: string | undefined): boolean {
+  if (!href) return false;
+  return /^https?:\/\//.test(href);
+}
 
 /**
  * Global MDX components for feelsfast.fyi.
@@ -77,14 +87,25 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </strong>
     ),
-    a: ({ children, ...props }) => (
-      <a
-        className="text-primary underline-offset-2 hover:underline"
-        {...props}
-      >
-        {children}
-      </a>
-    ),
+    a: ({ children, href, ...props }) => {
+      const external = isExternal(href);
+      return (
+        <a
+          href={href}
+          className="text-primary underline-offset-2 hover:underline"
+          {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+          {...props}
+        >
+          {children}
+          {external ? (
+            <ArrowUpRight
+              aria-hidden
+              className="ml-0.5 inline-block size-[0.85em] -translate-y-[0.05em] align-baseline"
+            />
+          ) : null}
+        </a>
+      );
+    },
     dl: ({ children, ...props }) => (
       <dl className="mt-4 space-y-4 text-sm" {...props}>
         {children}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CodeBlock } from "@/components/CodeBlock";
 import { CopyButton } from "@/components/CopyButton";
 import { FEELSFAST_SKILL_SOURCE } from "@/lib/feelsfast-skill";
 
@@ -65,16 +66,13 @@ export default function SkillPage() {
       </section>
 
       <section className="mt-12">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Source
-          </h2>
-          <CopyButton value={FEELSFAST_SKILL_SOURCE} label="Copy skill" />
-        </div>
+        <h2 className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Source
+        </h2>
 
-        <pre className="mt-4 max-h-[640px] overflow-auto rounded-lg border border-border bg-card p-4 font-mono text-xs leading-relaxed">
+        <CodeBlock>
           <code>{FEELSFAST_SKILL_SOURCE}</code>
-        </pre>
+        </CodeBlock>
 
         <p className="mt-3 text-sm text-muted-foreground">
           Voice and citations land Andrzej Delgado&apos;s writing style — the skill aims
