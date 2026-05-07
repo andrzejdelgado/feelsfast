@@ -104,6 +104,22 @@ import { config as pulsingOrbConfig } from "@/demos/technique-pulsing-orb/config
 import { NaivePulsingOrb } from "@/demos/technique-pulsing-orb/naive";
 import { TunedPulsingOrb } from "@/demos/technique-pulsing-orb/tuned";
 
+import { config as rotatingTipsConfig } from "@/demos/technique-rotating-tips/config";
+import { NaiveRotatingTips } from "@/demos/technique-rotating-tips/naive";
+import { TunedRotatingTips } from "@/demos/technique-rotating-tips/tuned";
+
+import { config as brandedStoryConfig } from "@/demos/technique-branded-story/config";
+import { NaiveBrandedStory } from "@/demos/technique-branded-story/naive";
+import { TunedBrandedStory } from "@/demos/technique-branded-story/tuned";
+
+import { config as miniGameConfig } from "@/demos/technique-mini-game/config";
+import { NaiveMiniGame } from "@/demos/technique-mini-game/naive";
+import { TunedMiniGame } from "@/demos/technique-mini-game/tuned";
+
+import { config as notifyCompleteConfig } from "@/demos/technique-notify-complete/config";
+import { NaiveNotifyComplete } from "@/demos/technique-notify-complete/naive";
+import { TunedNotifyComplete } from "@/demos/technique-notify-complete/tuned";
+
 type BandId = "instant" | "responsive" | "engaged" | "long";
 type FilterValue = "all" | BandId;
 
@@ -176,6 +192,10 @@ const bands: Band[] = [
     demos: [
       { config: dataExportConfig, Naive: NaiveDataExport, Tuned: TunedDataExport },
       { config: agenticConfig, Naive: NaiveAiAgenticWorkflow, Tuned: TunedAiAgenticWorkflow },
+      { config: rotatingTipsConfig, Naive: NaiveRotatingTips, Tuned: TunedRotatingTips },
+      { config: brandedStoryConfig, Naive: NaiveBrandedStory, Tuned: TunedBrandedStory },
+      { config: miniGameConfig, Naive: NaiveMiniGame, Tuned: TunedMiniGame },
+      { config: notifyCompleteConfig, Naive: NaiveNotifyComplete, Tuned: TunedNotifyComplete },
     ],
   },
 ];
