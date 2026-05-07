@@ -1,0 +1,61 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveDataExport } from "@/demos/data-export/naive";
+import { TunedDataExport } from "@/demos/data-export/tuned";
+import { config as demoConfig } from "@/demos/data-export/config";
+import { references } from "@/lib/refs/scenario-data-export-download";
+
+export const metadata = {
+  title: "Data export / download generation",
+  description:
+    "10 S+ band. Server compiles a 5,000-row CSV. Naive: opaque spinner. Tuned: row-count milestones, engagement copy, and an email-when-ready hand-off when the wait runs long.",
+};
+
+<RegisterReferences refs={references} />
+
+# Data export / download generation
+
+Generating a download is one of the few perception scenarios where the work is genuinely long — sometimes minutes — and there is nothing the perception layer can do to compress it. What it can do is keep the user oriented while the work runs, and offer a hand-off when the wait crosses the threshold past which they will leave the tab. A spinner does neither. A determinate progress bar with row-count milestones, contextual engagement copy, and an email-when-ready escape hatch does both.
+
+This scenario lives in the 10 S+ band Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> placed past the unit-task limit. Nielsen 1993 <Cite id="nielsen-1993" label="Nielsen 1993" /> drew the 10-second wall — past it, the user's attention is no longer reliably on the task, and a hand-off (background work, notification, email) is the correct register. Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> covers the determinate progress bar that does the work *up to* the wall; Harrison et al. 2010 <Cite id="harrison-2010" label="Harrison et al. 2010" /> covers the backwards-decelerating animation that buys an extra ~12 % perceived speed-up at no real cost.
+
+<DemoRunner config={demoConfig} Naive={NaiveDataExport} Tuned={TunedDataExport} />
+
+## What is happening in the demo
+
+The demo simulates a 5,000-row CSV generation at p50 of 12 seconds (gamma-distributed). Click Generate CSV on either side.
+
+The naive side disables the button, shows a generic `Loader2` spinner with "Generating download…" text, waits the full duration, then renders the download link. Past the 10-second wall the spinner is doing nothing — the user has no signal of whether they should keep waiting or come back later. Most will switch tabs and forget they were downloading something.
+
+The tuned side does four things differently. First, a determinate progress bar fills based on row count, polled every 100 ms. The user sees concrete progress against a measurable boundary — "1,847 of 5,000 rows" reads as understood work, not opaque time. Second, the engagement copy below the bar rotates through stages — Compiling rows, Applying filters and sorts, Calculating aggregates, Compressing the export, Finalising — telling the user what the system is *doing* rather than just that it is busy. Third, past the 10-second engagement threshold, an "Email me when it's ready" hand-off appears, converting the foreground wait into background work. Fourth, completion is an explicit success affordance — checkmark, link to the file, total row count — not just "done."
+
+The engagement copy is doing the same job here that engaging-loading copy does on long-running AI inferences: it interleaves the wait with information that gives the user context for the time they are spending.
+
+## What to tune
+
+1. [Determinate progress](/patterns/determinate-progress) — the headline pattern. Row count is the natural unit; bytes is the next-best.
+2. [Engaging loading](/patterns/engaging-loading) — context-aware messaging that interleaves the wait. Better than "Loading…" forever.
+3. [Animated progress](/patterns/animated-progress) — backwards-decelerating ribs for the additional perceptual gain.
+4. [Background sync](/patterns/background-sync) — for the email-when-ready hand-off. The job continues server-side; the user gets notified when the file is up.
+5. [Time-aware feedback](/patterns/time-aware-feedback) — at 10 S+ a spinner is the wrong register. Determinate progress, then engagement, then hand-off.
+
+## When perceived performance hurts you here
+
+The progress bar lies if it does not reflect actual server-side progress. A bar that animates to 100 % over a fixed 12-second CSS keyframe will sit at 100 % while the server is still compressing the result, then the file will silently appear — the lie has shifted from front-loaded to back-loaded but it is still a lie. Either expose a server-side progress API (rows processed, bytes streamed) or use a mid-stream-honest indicator (an indeterminate animation that becomes determinate once you have a real number).
+
+The other failure mode is shipping the email hand-off as the *only* affordance. If every download requires an email, you have replaced one wait with two — the wait for the export and the wait to remember to check the email. The hand-off is an *escape hatch* for the long tail, not the default. Show the foreground progress; let the user opt into the email if they have somewhere else to be.
+
+For exports that genuinely take minutes — billing reports, GDPR data-subject access requests, large analytics extracts — invert the default: schedule the job at submission time, surface the existing-jobs list, and let the user click in to see status. The export becomes a list of artefacts with timestamps, not a single button with a wait.
+
+## Accessibility
+
+1. **`role="progressbar"` plus `aria-valuemin / valuemax / valuenow`** is mandatory while progress is determinate.
+2. **`aria-label`** that identifies *what* is progressing, not just that something is. "Generating CSV, 1,847 of 5,000 rows" beats "Loading."
+3. **Polite live region** for completion ("Export ready") so screen-reader users register the state change without monitoring the bar.
+4. **Visible cancellation** for the long tail. The email hand-off is not a cancellation — it is a continuation.
+5. **`prefers-reduced-motion`** — the bar's width transition is a property change and stays. Strip any rib animation.
+
+## References
+
+<ReferencesList refs={references} />

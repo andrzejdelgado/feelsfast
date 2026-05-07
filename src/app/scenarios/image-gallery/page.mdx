@@ -1,0 +1,59 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveImageGallery } from "@/demos/image-gallery/naive";
+import { TunedImageGallery } from "@/demos/image-gallery/tuned";
+import { config as demoConfig } from "@/demos/image-gallery/config";
+import { references } from "@/lib/refs/scenario-image-gallery";
+
+export const metadata = {
+  title: "Image gallery",
+  description:
+    "1 – 10 S band. A grid of images that load at varying rates. Naive: blank tiles backfill in arbitrary order. Tuned: blurred LQIP placeholders carry the dominant colour from the first paint, then resolve into the full image.",
+};
+
+<RegisterReferences refs={references} />
+
+# Image gallery
+
+Image-heavy layouts are the worst-case for naive loading. A grid of six photos at 250 KB each is a megabyte and a half on the wire — and the eye notices every tile that is missing. A user who sees six gray boxes backfilling in arbitrary order experiences six separate waits, one per tile, each registering as absence. The same six images backed by LQIP placeholders register as a single resolution event — the layout was already there, the detail is what is arriving.
+
+This scenario sits in the 1 – 10 S band Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> describes. The Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame is what the LQIP placeholder honours — the dominant colour is in place before the user can register the layout as empty. Nielsen 1993 <Cite id="nielsen-1993" label="Nielsen 1993" /> sets the 1-second floor the unaugmented gallery breaks; the placeholder collapses the wait by replacing it with content.
+
+<DemoRunner config={demoConfig} Naive={NaiveImageGallery} Tuned={TunedImageGallery} />
+
+## What is happening in the demo
+
+Six tiles, each "loaded" with an independent gamma-jittered timeout around a 2.2 s median. Click Replay on either side to start a fresh run.
+
+The naive side renders a 3×3 grid of empty muted-gray boxes. As each tile's timer fires, the gradient snaps in. The user watches the layout backfill in random order — there is no visual continuity between the empty state and the loaded state.
+
+The tuned side shows the same six gradients from frame zero, but heavily blurred (`filter: blur(20px) saturate(0.6)`). The dominant colour and rough composition are immediately legible — the user reads the gallery as already there, just out of focus. As each tile resolves, the blur transitions to zero over 350 ms. The eye reads the change as the photo coming into focus rather than as content arriving.
+
+The trick is that the LQIP itself does not need to be a real low-resolution version of the high-res image. A 16×16 thumbnail Base64-encoded in the HTML response, blurred up to fill the layout slot, achieves the same perceptual effect — the dominant colour is the perceptual signal, not the detail. Production implementations of this pattern (Medium, Pinterest, Unsplash, Next.js's built-in `next/image` with `placeholder="blur"`) all rely on this property.
+
+## What to tune
+
+1. [Image progressive loading (LQIP / blur-up)](/patterns/image-progressive-loading) — the headline pattern. Ship a tiny placeholder inline; resolve to the full file when it arrives.
+2. [Skeleton screens](/patterns/skeleton-screens) — the LQIP is a content-true skeleton, not a generic shape.
+3. [Time-aware feedback](/patterns/time-aware-feedback) — at 1 – 10 S, the LQIP is the right register. A spinner per tile would be worse than the placeholder.
+4. [Predictive preloading on hover](/patterns/predictive-preloading-hover) — for an interactive gallery, preload the full-resolution version on hover for the inevitable click-through to a detail view.
+5. [Adaptive loading](/patterns/adaptive-loading) — under `Save-Data` or slow-network signals, ship a smaller variant or skip the high-res step entirely.
+
+## When perceived performance hurts you here
+
+The placeholder must reflect the dominant colour of the actual image. A generic gray skeleton at this scale is fine; an LQIP that resolves to a wildly different image is jarring — the user sees green resolve to red, and the trust budget the pattern paid into gets withdrawn. The image processor that generates the LQIPs at upload time is what guarantees this, and it is the part most teams skip.
+
+The other failure mode is trying to LQIP everything. Icons, logos, UI chrome — non-photographic content that is already small — does not benefit from blur-up. The placeholder adds cost without clarity. Reserve LQIP for content where the dominant colour is the perceptual signal: photos, illustrations, hero images. For UI chrome, use [skeleton screens](/patterns/skeleton-screens) shaped to match.
+
+## Accessibility
+
+1. **`alt` text** is the layout invariant. Whether the image is in placeholder state or fully loaded, the alt text is unchanged — screen readers should not perceive a difference between "loading" and "loaded" for content they do not see.
+2. **`aria-busy`** on the tile while the high-res file is in flight, removed when it lands. The demo's tiles set this on the wrapper.
+3. **`prefers-reduced-motion`** — the blur-to-sharp transition is decorative. Strip the transition to an instant swap; the LQIP-to-final state-change is the signal.
+4. **Focus order** must not depend on load order. If the gallery is keyboard-navigable, tab order is set by the layout, not by which image happens to load first.
+5. **Lazy-load only off-screen images.** `loading="lazy"` (or its IntersectionObserver equivalent) prevents work for images the user has not scrolled to — but never apply it to above-the-fold tiles, where the LQIP needs to be in the first paint.
+
+## References
+
+<ReferencesList refs={references} />

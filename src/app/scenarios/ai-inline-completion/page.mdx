@@ -1,0 +1,63 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveInlineCompletion } from "@/demos/ai-inline-completion/naive";
+import { TunedInlineCompletion } from "@/demos/ai-inline-completion/tuned";
+import { config as demoConfig } from "@/demos/ai-inline-completion/config";
+import { references } from "@/lib/refs/scenario-ai-inline-completion";
+
+export const metadata = {
+  title: "Inline completion / suggestion",
+  description:
+    "100 MS – 1 S band. AI suggestion appears as ghost text while the user types — Cursor / Copilot / v0 territory. Naive: a request fires on every keystroke and stale suggestions race in. Tuned: 200 ms debounce, abort on next keystroke, fresh suggestion every time.",
+};
+
+<RegisterReferences refs={references} />
+
+# Inline completion / suggestion
+
+Inline completion is the perception case where the AI runs while the user is *still typing*. Cursor, Copilot, v0, and every other typing-time inference product lives in this scenario. The trick is not making the model fast — modelling latency is what it is. The trick is making the request system fire only when the user has actually stopped, cancel itself the moment the user starts again, and never display a suggestion that does not match the text the user can see.
+
+This scenario sits across the 0–100 MS and 100 MS – 1 S bands. The keystroke echo itself must clear the Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame — the input has to feel responsive even while a model is working. The suggestion display lives in the 100 MS – 1 S band Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> describes for "immediate response." Doherty 1982's <Cite id="doherty-1982" label="Doherty 1982" /> ~400 ms productivity break gives the rough budget for how long the suggestion can take before users feel it as friction. Arapakis et al. 2014 <Cite id="arapakis-2014" label="Arapakis et al. 2014" /> says below 500 ms most users do not consciously notice the latency at all.
+
+<DemoRunner config={demoConfig} Naive={NaiveInlineCompletion} Tuned={TunedInlineCompletion} />
+
+## What is happening in the demo
+
+Both sides are a notes editor backed by the same toy "completion model" — a dictionary that recognises a leading verb and suggests a plausible ending. Try typing **buy**, **fix**, **email**, **review**, **schedule**, **call**, **ship**, or **draft**. Each one triggers a 600 ms p50 simulated request (gamma-distributed). Press Tab on either side to accept the ghost-text suggestion.
+
+The naive side fires a fresh request on every keystroke and never cancels. Type "email Sa" and the demo dispatches eight requests — one per keystroke. Whichever finishes last wins the suggestion slot. With a fat-tailed latency distribution, the response from "ema" can land *after* the response from "email Sa" — and you see a suggestion that reflects what you typed several characters ago. The ghost text drifts from the cursor, sometimes in the wrong direction.
+
+The tuned side fires only after the user has been still for 200 ms. While the user is still typing, the suggestion clears — no chance of a stale suggestion lingering. When the request *does* fire, every subsequent keystroke aborts it via a cancellation token, so only the response that matches the *final* state of the input ever lands. A subtle "Thinking…" cue appears in the bottom-right while a request is in flight.
+
+The debounce window is the perception lever. At 0 ms (naive) every keystroke pays the round-trip cost; at 500 ms the suggestion always feels late. 200 ms is the sweet spot — the Card-Moran-Newell perceptual frame is past, the user has stopped typing, but the cognitive cost of noticing the wait is still below threshold. Cursor uses ~150 ms; Copilot uses adaptive debouncing keyed off the language and recent edit pattern.
+
+Tab acceptance is optimistic. The suggestion is committed to the text immediately on Tab, and a fresh request fires for the now-longer input. The user does not wait for the model to confirm — the model's job is to suggest, the user's job is to accept.
+
+## What to tune
+
+1. [Stale-while-revalidate](/patterns/stale-while-revalidate) — the cancellation token is the SWR pattern shaped for typing-time work.
+2. [Pre-action feedback](/patterns/pre-action-feedback) — the "Thinking…" cue is a 200 ms pre-action signal that a suggestion is coming.
+3. [Optimistic UI](/patterns/optimistic-ui) — Tab acceptance commits the suggestion immediately; the request for the next suggestion runs in the background.
+4. [AI cancellation affordance](/patterns/ai-cancellation-affordance) — the cancellation here is *implicit* (next keystroke aborts) rather than user-invoked, but the principle is the same.
+5. [Time-aware feedback](/patterns/time-aware-feedback) — the "Thinking…" cue shows up only past the perceptual frame; below it, the user has not noticed the wait yet.
+
+## When perceived performance hurts you here
+
+The biggest failure mode is the one the naive demo shows — race-condition stale suggestions. The user types four more characters; a response from before those characters arrives; the suggestion now reflects an older state than the cursor. Users notice this *fast* and learn to distrust the suggestions entirely. Always cancel in-flight requests on the next keystroke, and always check the request token against the current request before applying the result.
+
+The second failure mode is over-eager debouncing. At 500 ms the suggestion feels slow even on instant networks. At 1 s the user has already typed past the suggestion point. The debounce window has to be tuned per-context — short prefixes (single-line completions) want shorter windows; long prefixes (block completions) can absorb longer ones.
+
+The third failure mode is suggestion bias. If the model heavily prefers one completion family, users will accept it on autopilot and the suggestion becomes a stochastic auto-typer rather than a tool. Cursor calls this the "tab-spamming" problem and tunes their acceptance heuristics to avoid it. The perception layer cannot fix a bad suggestion-quality signal.
+
+## Accessibility
+
+1. **`aria-live="polite"`** announcement when a suggestion is available is helpful for screen readers, but throttle it heavily — every keystroke is too noisy.
+2. **`aria-keyshortcuts="Tab"`** on the editor (or a paired help text) tells assistive tech that Tab is the accept gesture.
+3. **Suggestion contrast** — ghost text at 30–40 % opacity is visually distinguishable from typed text but still readable. Below 25 % opacity, low-vision users lose the suggestion entirely.
+4. **Keyboard parity** — Tab to accept, Esc to dismiss, Right-arrow to accept word-by-word (Cursor / Copilot convention). All without mouse.
+5. **`prefers-reduced-motion`** — the "Thinking…" cue is decorative; suppress its fade. The suggestion text appearing is content, not motion.
+
+## References
+
+<ReferencesList refs={references} />

@@ -99,7 +99,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Grid of images loading at varying rates. LQIP / blur-up for each image; predictive preload of likely next-clicks.",
     linkedPatterns: ["LQIP / blur-up", "Predictive preloading on hover"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "09",
@@ -154,7 +154,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Server generates a download (CSV, PDF). Engagement during the wait; notification on completion; option to receive via email if very long.",
     linkedPatterns: ["Engaging loading", "Notification on complete", "Background work"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "14",
@@ -269,7 +269,7 @@ export const scenarios: readonly Scenario[] = [
       "Cancellation affordance",
       "Optimistic UI",
     ],
-    status: "planned",
+    status: "published",
   },
   {
     number: "23",
