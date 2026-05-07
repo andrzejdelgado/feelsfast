@@ -72,6 +72,38 @@ import { config as thinkingGradientConfig } from "@/demos/technique-thinking-gra
 import { NaiveThinkingGradient } from "@/demos/technique-thinking-gradient/naive";
 import { TunedThinkingGradient } from "@/demos/technique-thinking-gradient/tuned";
 
+import { config as mousedownConfig } from "@/demos/technique-mousedown/config";
+import { NaiveMousedown } from "@/demos/technique-mousedown/naive";
+import { TunedMousedown } from "@/demos/technique-mousedown/tuned";
+
+import { config as pressFeedbackConfig } from "@/demos/technique-press-feedback/config";
+import { NaivePressFeedback } from "@/demos/technique-press-feedback/naive";
+import { TunedPressFeedback } from "@/demos/technique-press-feedback/tuned";
+
+import { config as iconFlipConfig } from "@/demos/technique-icon-flip/config";
+import { NaiveIconFlip } from "@/demos/technique-icon-flip/naive";
+import { TunedIconFlip } from "@/demos/technique-icon-flip/tuned";
+
+import { config as cursorAffordanceConfig } from "@/demos/technique-cursor-affordance/config";
+import { NaiveCursorAffordance } from "@/demos/technique-cursor-affordance/naive";
+import { TunedCursorAffordance } from "@/demos/technique-cursor-affordance/tuned";
+
+import { config as trickleBarConfig } from "@/demos/technique-trickle-bar/config";
+import { NaiveTrickleBar } from "@/demos/technique-trickle-bar/naive";
+import { TunedTrickleBar } from "@/demos/technique-trickle-bar/tuned";
+
+import { config as marqueeBarConfig } from "@/demos/technique-marquee-bar/config";
+import { NaiveMarqueeBar } from "@/demos/technique-marquee-bar/naive";
+import { TunedMarqueeBar } from "@/demos/technique-marquee-bar/tuned";
+
+import { config as threeDotConfig } from "@/demos/technique-three-dot-bounce/config";
+import { NaiveThreeDotBounce } from "@/demos/technique-three-dot-bounce/naive";
+import { TunedThreeDotBounce } from "@/demos/technique-three-dot-bounce/tuned";
+
+import { config as pulsingOrbConfig } from "@/demos/technique-pulsing-orb/config";
+import { NaivePulsingOrb } from "@/demos/technique-pulsing-orb/naive";
+import { TunedPulsingOrb } from "@/demos/technique-pulsing-orb/tuned";
+
 type BandId = "instant" | "responsive" | "engaged" | "long";
 type FilterValue = "all" | BandId;
 
@@ -100,6 +132,10 @@ const bands: Band[] = [
       { config: dragAndDropConfig, Naive: NaiveDragAndDrop, Tuned: TunedDragAndDrop },
       { config: mapInteractionsConfig, Naive: NaiveMapInteractions, Tuned: TunedMapInteractions },
       { config: realTimeUpdatesConfig, Naive: NaiveRealTimeUpdates, Tuned: TunedRealTimeUpdates },
+      { config: mousedownConfig, Naive: NaiveMousedown, Tuned: TunedMousedown },
+      { config: pressFeedbackConfig, Naive: NaivePressFeedback, Tuned: TunedPressFeedback },
+      { config: iconFlipConfig, Naive: NaiveIconFlip, Tuned: TunedIconFlip },
+      { config: cursorAffordanceConfig, Naive: NaiveCursorAffordance, Tuned: TunedCursorAffordance },
     ],
   },
   {
@@ -109,6 +145,10 @@ const bands: Band[] = [
       "Perceptible, but no determinate progress yet. Cues say \"active, working\" without claiming an end-point — indeterminate spinners, top-edge trickle bars, a brief pulse on the affected element.",
     demos: [
       { config: inlineCompletionConfig, Naive: NaiveInlineCompletion, Tuned: TunedInlineCompletion },
+      { config: trickleBarConfig, Naive: NaiveTrickleBar, Tuned: TunedTrickleBar },
+      { config: marqueeBarConfig, Naive: NaiveMarqueeBar, Tuned: TunedMarqueeBar },
+      { config: threeDotConfig, Naive: NaiveThreeDotBounce, Tuned: TunedThreeDotBounce },
+      { config: pulsingOrbConfig, Naive: NaivePulsingOrb, Tuned: TunedPulsingOrb },
     ],
   },
   {
