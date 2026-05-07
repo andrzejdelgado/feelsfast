@@ -1,5 +1,8 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
+import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
 import { references } from "@/lib/refs/pattern-ai-token-streaming";
 
 export const metadata = {
@@ -11,6 +14,16 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Token-by-token streaming render
+
+<DemoRunner
+  config={{
+    title: "Drop-in vs. streamed reveal",
+    description: "Same total time to last token. Naive: full response drops in at the end. Tuned: paced 1–2-character chunks at ~30 ms intervals.",
+    timeBand: "1 – 10 S",
+  }}
+  Naive={NaiveAIStreaming}
+  Tuned={TunedAIStreaming}
+/>
 
 An LLM produces its response as a sequence of tokens, not a single block. Streaming surfaces those tokens to the user as they arrive instead of buffering the whole response. The total time to last token is the same; the time to first content is dramatically shorter; the user reads along with the model rather than waiting for it to finish thinking.
 

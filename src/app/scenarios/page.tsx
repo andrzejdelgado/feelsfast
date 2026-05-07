@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CatalogFilter } from "@/components/CatalogFilter";
 import { scenarios, aiScenarios, type Scenario } from "@/lib/scenarios";
 
@@ -23,12 +24,6 @@ export default function ScenariosPage() {
       <h1 className="mt-2 text-4xl font-medium leading-tight tracking-tight">
         Scenarios
       </h1>
-      <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-        Twenty-four interaction types, each with a side-by-side demo. Toggle the
-        perception layer off and on. The naive side is honestly awkward — no skeleton,
-        no prefetch, no smoothing. The tuned side applies the right pattern for the
-        dominant time band.
-      </p>
 
       <div className="mt-10">
         <CatalogFilter
@@ -55,8 +50,15 @@ function ScenarioList({ items }: { items: readonly Scenario[] }) {
 }
 
 function ScenarioCard({ scenario }: { scenario: Scenario }) {
-  return (
-    <div className="rounded-lg border border-border bg-card p-5 opacity-90">
+  const isPublished = scenario.status === "published";
+  const className = `block rounded-lg border border-border bg-card p-5 transition-colors ${
+    isPublished
+      ? "hover:border-primary"
+      : "opacity-70"
+  }`;
+
+  const inner = (
+    <>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <p className="flex items-center gap-2 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
           <span>Scenario · {scenario.number}</span>
@@ -82,6 +84,15 @@ function ScenarioCard({ scenario }: { scenario: Scenario }) {
       <p className="mt-3 font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
         Patterns · {scenario.linkedPatterns.join(" · ")}
       </p>
-    </div>
+    </>
   );
+
+  if (isPublished) {
+    return (
+      <Link href={`/scenarios/${scenario.slug}`} className={className}>
+        {inner}
+      </Link>
+    );
+  }
+  return <div className={className}>{inner}</div>;
 }

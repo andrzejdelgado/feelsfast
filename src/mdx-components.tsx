@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import { Cite } from "@/components/Cite";
+import { CodeBlock } from "@/components/CodeBlock";
 
 /**
  * Global MDX components for feelsfast.fyi.
@@ -110,14 +111,27 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </blockquote>
     ),
-    code: ({ children, ...props }) => (
-      <code
-        className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[0.875em]"
-        {...props}
-      >
-        {children}
-      </code>
-    ),
+    pre: ({ children, ...props }) => <CodeBlock {...props}>{children}</CodeBlock>,
+    code: ({ children, className, ...props }) => {
+      // Block code (inside <pre>) carries a `language-*` className from the MDX
+      // parser. Inline code has none. Style only the inline case here; CodeBlock
+      // handles the block presentation.
+      if (className?.startsWith("language-")) {
+        return (
+          <code className={className} {...props}>
+            {children}
+          </code>
+        );
+      }
+      return (
+        <code
+          className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[0.875em]"
+          {...props}
+        >
+          {children}
+        </code>
+      );
+    },
     Cite,
     wrapper: ({ children }) => (
       <article className="mx-auto max-w-3xl px-8 py-12 lg:px-12 xl:px-16">

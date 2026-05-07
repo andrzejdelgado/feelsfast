@@ -1,5 +1,8 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
+import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
 import { references } from "@/lib/refs/pattern-ai-thinking-state";
 
 export const metadata = {
@@ -11,6 +14,16 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Thinking state (pre-first-token)
+
+<DemoRunner
+  config={{
+    title: "Blank vs. thinking dots",
+    description: "Same total wait to last token. Naive: empty box. Tuned: ~600 ms thinking dots, then token streaming begins.",
+    timeBand: "1 – 10 S",
+  }}
+  Naive={NaiveAIStreaming}
+  Tuned={TunedAIStreaming}
+/>
 
 An AI surface that submits a prompt and goes blank for two seconds is broken. The user has no signal that anything is happening; they wonder if the request registered, suspect the system has hung, and start considering a re-submit. The thinking state is the affordance that lives in that gap — between submit and the first token of the response.
 

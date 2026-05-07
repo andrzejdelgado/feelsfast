@@ -1,5 +1,8 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveListFetch } from "@/demos/list-fetch/naive";
+import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { references } from "@/lib/refs/pattern-skeleton-screens";
 
 export const metadata = {
@@ -11,6 +14,16 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Skeleton screens
+
+<DemoRunner
+  config={{
+    title: "Skeleton vs. blank wait",
+    description: "Same fetch, same gamma-distributed latency. Naive: blank box. Tuned: layout-matching skeleton rows.",
+    timeBand: "1 – 10 S",
+  }}
+  Naive={NaiveListFetch}
+  Tuned={TunedListFetch}
+/>
 
 A skeleton screen is a placeholder layout that matches the shape of the content it will eventually display. The user sees roughly the right structure within ~80 ms; the real content swaps in once data arrives. The wait is the same in clock terms; the experience is meaningfully shorter.
 

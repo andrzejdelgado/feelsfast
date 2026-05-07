@@ -1,5 +1,8 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
+import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
 import { references } from "@/lib/refs/pattern-optimistic-ui";
 
 export const metadata = {
@@ -11,6 +14,16 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Optimistic UI
+
+<DemoRunner
+  config={{
+    title: "Wait vs. flip",
+    description: "Same simulated server round-trip. Naive: button waits for the response. Tuned: optimistic flip + honest visible rollback on the simulated 10 % failure.",
+    timeBand: "0–100 MS",
+  }}
+  Naive={NaiveOptimisticActions}
+  Tuned={TunedOptimisticActions}
+/>
 
 The user clicks "like." The system updates the UI immediately to show the like as applied — heart filled, count incremented, animation played. The actual server request is in flight. When the response comes back, the UI either does nothing (success — the optimistic state is already correct) or rolls back with a visible failure path.
 

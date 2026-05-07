@@ -1,5 +1,8 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveFileUpload } from "@/demos/file-upload/naive";
+import { TunedFileUpload } from "@/demos/file-upload/tuned";
 import { references } from "@/lib/refs/pattern-determinate-progress";
 
 export const metadata = {
@@ -11,6 +14,16 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Determinate progress bars
+
+<DemoRunner
+  config={{
+    title: "Spinner vs. determinate progress",
+    description: "Same simulated upload. Naive: spinner with no time signal. Tuned: optimistic filename + percent-done bar.",
+    timeBand: "1 – 10 S",
+  }}
+  Naive={NaiveFileUpload}
+  Tuned={TunedFileUpload}
+/>
 
 A determinate progress bar reports actual progress through a known total — bytes transferred, files processed, items rendered. It is the most-cited "should I show a loader?" pattern in the literature, and the source-of-record is older and more boring than the modern UX folklore suggests. Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> ran a small but careful CHI study and found ~86 % of participants preferred a percent-done bar over a blank wait — and the preference held even when the bar was inaccurate.
 

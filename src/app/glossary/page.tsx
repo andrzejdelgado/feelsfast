@@ -17,28 +17,29 @@ export default function GlossaryPage() {
       <h1 className="mt-2 text-4xl font-medium leading-tight tracking-tight">
         Glossary
       </h1>
-      <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-        Short definitions of the vocabulary used across feelsfast. Each term carries an
-        anchor so you can link to it directly; cross-references point to the Concepts
-        essay where the term is developed in full.
-      </p>
 
-      <dl className="mt-12 space-y-6">
-        {glossary.map((entry) => (
-          <div key={entry.id} id={entry.id} className="scroll-mt-24">
+      <dl className="mt-12">
+        {glossary.map((entry, i) => (
+          <div
+            key={entry.id}
+            id={entry.id}
+            className={`group scroll-mt-24 py-5 ${
+              i > 0 ? "border-t border-border" : ""
+            }`}
+          >
             <dt className="flex flex-wrap items-baseline gap-3">
-              <span className="text-base font-medium tracking-tight text-foreground">
+              <span className="text-lg font-medium tracking-tight text-foreground">
                 {entry.term}
               </span>
               <a
                 href={`#${entry.id}`}
                 aria-label={`Link to ${entry.term}`}
-                className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground hover:text-primary"
+                className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground opacity-0 transition-opacity hover:text-primary group-hover:opacity-100 focus-visible:opacity-100"
               >
                 #{entry.id}
               </a>
             </dt>
-            <dd className="mt-1.5 text-sm leading-relaxed text-foreground">
+            <dd className="mt-2 max-w-3xl pl-3 text-sm leading-relaxed text-foreground">
               {entry.definition}
               {entry.seeAlso ? (
                 <>
