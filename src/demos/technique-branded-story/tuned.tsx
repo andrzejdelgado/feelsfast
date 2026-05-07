@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { FRAMES, TOTAL_DURATION_P50_MS } from "./config";
 
 type Frame = (typeof FRAMES)[number]["render"];
@@ -17,7 +17,7 @@ type Frame = (typeof FRAMES)[number]["render"];
  * with brand presence + structure. The app is not actually doing
  * anything different; the user experiences the wait differently.
  */
-export function TunedBrandedStory() {
+export function TunedBrandedStory({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"loading" | "done">("loading");
   const [frame, setFrame] = useState<Frame>(FRAMES[0].render);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -26,7 +26,7 @@ export function TunedBrandedStory() {
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setPhase("done"),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     frameTimers.current = FRAMES.slice(1).map((f) =>
       setTimeout(() => setFrame(f.render), f.at),

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -9,14 +9,14 @@ import { TOTAL_DURATION_P50_MS } from "./config";
  * about whether work is happening; the user wonders if the page is
  * stuck.
  */
-export function NaiveMarqueeBar() {
+export function NaiveMarqueeBar({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"loading" | "done">("loading");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setPhase("done"),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);

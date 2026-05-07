@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -10,14 +10,14 @@ import { TOTAL_DURATION_P50_MS } from "./config";
  * the longer end of this band the user starts to wonder if anything
  * is happening.
  */
-export function NaiveTrickleBar() {
+export function NaiveTrickleBar({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"loading" | "done">("loading");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setPhase("done"),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);

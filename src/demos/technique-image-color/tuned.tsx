@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { HERO, TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -17,14 +17,14 @@ import { HERO, TOTAL_DURATION_P50_MS } from "./config";
  * image arriving, just out of resolution. By the time the gradient
  * crossfades in, they already know what the photo is.
  */
-export function TunedImageColor() {
+export function TunedImageColor({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setLoaded(true),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);

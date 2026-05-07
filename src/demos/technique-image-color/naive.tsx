@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { HERO, TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -9,14 +9,14 @@ import { HERO, TOTAL_DURATION_P50_MS } from "./config";
  * snaps in. No dominant-colour cue, no progressive reveal. The visitor
  * stares at absence for the full wait.
  */
-export function NaiveImageColor() {
+export function NaiveImageColor({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setLoaded(true),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);

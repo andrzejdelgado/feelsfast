@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -20,14 +20,14 @@ import { TOTAL_DURATION_P50_MS } from "./config";
  * reason we use a *low*-contrast gradient. Bright contrast would feel
  * urgent; the calm shimmer feels like a deliberate, polished wait.
  */
-export function TunedShimmerSkeleton() {
+export function TunedShimmerSkeleton({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setLoaded(true),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);

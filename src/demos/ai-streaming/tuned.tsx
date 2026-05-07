@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
-import { RESPONSE } from "./config";
+import { useEffect, useState } from "react";
+import { seededGamma } from "@/lib/jitter";
+import { RESPONSE, THINKING_FRACTION, TOTAL_DURATION_P50_MS } from "./config";
 
 type Phase = "thinking" | "streaming" | "done";
 
-export function TunedAIStreaming() {
+export function TunedAIStreaming({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<Phase>("thinking");
   const [shown, setShown] = useState("");
 
@@ -14,19 +14,18 @@ export function TunedAIStreaming() {
     let intervalHandle: ReturnType<typeof setInterval> | null = null;
     let cancelled = false;
 
-    // Phase 1: brief "thinking" state before the first token.
-    // Models call this the time-to-first-token; here it is the only honest
-    // signal that something is happening. Without it, the user wonders
-    // whether their input registered.
-    const thinkingMs = gammaJitter(600);
+    // Carve up the same total Naive uses (same seed → same total) into
+    // a brief "thinking" pre-token state and the streaming reveal, so
+    // both sides finish at the same wall-clock moment.
+    const totalMs = seededGamma(seed, TOTAL_DURATION_P50_MS);
+    const thinkingMs = totalMs * THINKING_FRACTION;
+    const streamMs = totalMs - thinkingMs;
+    const charIntervalMs = Math.max(8, streamMs / RESPONSE.length);
+
     const thinkingHandle = setTimeout(() => {
       if (cancelled) return;
       setPhase("streaming");
 
-      // Phase 2: stream characters in 1- or 2-char chunks at ~30 ms each.
-      // The variance keeps the cadence from feeling robotic. Tokenisers in
-      // production stream tokens, not characters — but the perceptual rule
-      // is the same: pace the reveal to a natural reading rhythm.
       let index = 0;
       intervalHandle = setInterval(() => {
         if (cancelled) return;
@@ -38,7 +37,7 @@ export function TunedAIStreaming() {
         const chunkSize = Math.random() < 0.7 ? 1 : 2;
         index = Math.min(index + chunkSize, RESPONSE.length);
         setShown(RESPONSE.slice(0, index));
-      }, 30);
+      }, charIntervalMs);
     }, thinkingMs);
 
     return () => {
@@ -46,7 +45,7 @@ export function TunedAIStreaming() {
       clearTimeout(thinkingHandle);
       if (intervalHandle !== null) clearInterval(intervalHandle);
     };
-  }, []);
+  }, [seed]);
 
   return (
     <div

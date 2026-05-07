@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { HERO, TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -17,13 +17,13 @@ import { HERO, TOTAL_DURATION_P50_MS } from "./config";
  * mechanism Medium, Pinterest, Unsplash, and `next/image` with
  * `placeholder="blur"` use.
  */
-export function TunedImageBlur() {
+export function TunedImageBlur({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState(false);
   const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     ref.current = setTimeout(
       () => setLoaded(true),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (ref.current !== null) clearTimeout(ref.current);

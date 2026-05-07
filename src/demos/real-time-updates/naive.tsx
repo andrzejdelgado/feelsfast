@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  EVENT_INTERVAL_P50_MS,
   formatRelative,
-  makeEvent,
+  rollEventStream,
   type Event,
 } from "./config";
 
@@ -13,33 +11,31 @@ import {
  * Naive real-time feed — events arrive and the list reorders instantly,
  * with no animation, no highlight, no register that anything has
  * changed. The user has to read the whole list to spot the new item.
+ *
+ * Both Off and On consume the same pre-rolled event stream (same seed
+ * → same arrival times, same actor / verb pairs), so the only
+ * difference is how each side reveals an incoming event.
  */
-export function NaiveRealTimeUpdates() {
+export function NaiveRealTimeUpdates({ seed = 1 }: { seed?: number }) {
+  const stream = useMemo(() => rollEventStream(seed), [seed]);
   const [events, setEvents] = useState<Event[]>([]);
   const [now, setNow] = useState(0);
   const startedAt = useRef(performance.now());
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const schedule = () => {
-      timeoutRef.current = setTimeout(
-        () => {
-          const elapsed = performance.now() - startedAt.current;
-          setEvents((prev) => [makeEvent(elapsed), ...prev].slice(0, 5));
-          schedule();
-        },
-        gammaJitter(EVENT_INTERVAL_P50_MS),
-      );
-    };
-    schedule();
+    const timers = stream.map(({ event, at }) =>
+      setTimeout(() => {
+        setEvents((prev) => [event, ...prev].slice(0, 5));
+      }, at),
+    );
     const tick = setInterval(() => {
       setNow(performance.now() - startedAt.current);
     }, 250);
     return () => {
-      if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
+      timers.forEach(clearTimeout);
       clearInterval(tick);
     };
-  }, []);
+  }, [stream]);
 
   return (
     <ul className="space-y-2 text-sm">

@@ -1,20 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 /**
  * Naive — linear fill, no rib pattern. Honest, fine, but leaves
  * Harrison's ~12 % perceptual gain on the table.
  */
-export function NaiveDecelBar() {
+export function NaiveDecelBar({ seed = 1 }: { seed?: number }) {
   const [progress, setProgress] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const totalRef = useRef(TOTAL_DURATION_P50_MS);
 
   useEffect(() => {
-    totalRef.current = gammaJitter(TOTAL_DURATION_P50_MS);
+    totalRef.current = seededGamma(seed, TOTAL_DURATION_P50_MS);
     const start = performance.now();
     intervalRef.current = setInterval(() => {
       const elapsed = performance.now() - start;

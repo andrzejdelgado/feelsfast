@@ -2,7 +2,7 @@
 
 import { Check, Download, Mail } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import {
   ENGAGEMENT_MESSAGES,
   ENGAGEMENT_THRESHOLD_MS,
@@ -16,7 +16,7 @@ const STAGE_BOUNDARIES = ENGAGEMENT_MESSAGES.map(
   (_, i) => (i + 1) / ENGAGEMENT_MESSAGES.length,
 );
 
-export function TunedDataExport() {
+export function TunedDataExport({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [progress, setProgress] = useState(0);
   const [elapsed, setElapsed] = useState(0);
@@ -30,7 +30,7 @@ export function TunedDataExport() {
   }, []);
 
   const generate = () => {
-    totalRef.current = gammaJitter(TOTAL_DURATION_P50_MS);
+    totalRef.current = seededGamma(seed, TOTAL_DURATION_P50_MS);
     setPhase("generating");
     setProgress(0);
     setElapsed(0);

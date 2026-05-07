@@ -1,10 +1,10 @@
 "use client";
 
 import { useSimulatedLatency } from "@/lib/use-simulated-latency";
-import { RESPONSE } from "./config";
+import { RESPONSE, TOTAL_DURATION_P50_MS } from "./config";
 
-export function NaiveAIStreaming() {
-  const { isLoading } = useSimulatedLatency({ p50: 5500 });
+export function NaiveAIStreaming({ seed = 1 }: { seed?: number }) {
+  const { isLoading } = useSimulatedLatency({ p50: TOTAL_DURATION_P50_MS }, seed);
 
   if (isLoading) {
     return <div className="h-32" aria-hidden />;

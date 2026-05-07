@@ -12,30 +12,54 @@ export type DemoConfig = {
   timeBand?: string;
 };
 
+/**
+ * Both Off and On sides of every demo receive the same `seed` on each
+ * Replay. Pair this with `seededGamma(seed, p50)` from `lib/jitter`
+ * inside the demo so both sides finish at the same wall-clock moment
+ * — the difference between Off and On should be in *how* the wait
+ * fills, not in *how long* the wait is.
+ *
+ * Demos that intentionally show a timing difference (mousedown vs
+ * click, optimistic flips, top-edge progress bar's 100 % overshoot)
+ * can ignore the seed and roll their own randomness as before.
+ */
+export type DemoSideProps = { seed?: number };
+
 type DemoRunnerProps = {
   config: DemoConfig;
   /** The naive ("Off") component — no skeleton, no prefetch, no smoothing. */
-  Naive: React.ComponentType;
+  Naive: React.ComponentType<DemoSideProps>;
   /** The tuned ("On") component — applies the relevant perception patterns. */
-  Tuned: React.ComponentType;
+  Tuned: React.ComponentType<DemoSideProps>;
 };
+
+const newSeed = () => Math.floor(Math.random() * 0xffffffff);
 
 /**
  * DemoRunner — the canonical wrapper for every Scenario demo (PRD §8).
  *
  * Layout: side-by-side desktop, stacked mobile. Both panels are always
- * visible; the Replay button re-runs both simultaneously by changing
- * the `runId`, which keys the children and forces a remount + re-fire
- * of their initial-load effects.
+ * visible; the Replay button re-runs both simultaneously by:
+ *   1. Rolling a fresh seed.
+ *   2. Bumping `runId` to force a remount of both children.
+ *   3. Passing the same seed to both Naive and Tuned via prop.
+ *
+ * Demos that opt in to seeded timing (`seededGamma(seed, p50)`) get
+ * identical wall-clock durations on both sides — same Replay, same
+ * total wait, different visual fill.
  *
  * Accessibility: ARIA live regions on each side, keyboard-operable
  * Replay, motion-reduce honoured by child demos.
  */
 export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
   const [runId, setRunId] = useState(0);
+  const [seed, setSeed] = useState(newSeed);
   const headingId = useId();
 
-  const replay = () => setRunId((id) => id + 1);
+  const replay = () => {
+    setSeed(newSeed());
+    setRunId((id) => id + 1);
+  };
 
   return (
     <section
@@ -75,10 +99,10 @@ export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
 
       <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
         <DemoSide label="Off">
-          <Naive key={`naive-${runId}`} />
+          <Naive key={`naive-${runId}`} seed={seed} />
         </DemoSide>
         <DemoSide label="On" highlighted>
-          <Tuned key={`tuned-${runId}`} />
+          <Tuned key={`tuned-${runId}`} seed={seed} />
         </DemoSide>
       </div>
     </section>

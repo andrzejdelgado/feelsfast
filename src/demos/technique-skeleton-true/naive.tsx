@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -10,13 +10,13 @@ import { TOTAL_DURATION_P50_MS } from "./config";
  * content arrives, the layout shifts visibly because the skeleton
  * misrepresented what was coming.
  */
-export function NaiveSkeletonTrue() {
+export function NaiveSkeletonTrue({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState(false);
   const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     ref.current = setTimeout(
       () => setLoaded(true),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (ref.current !== null) clearTimeout(ref.current);

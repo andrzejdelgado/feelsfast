@@ -9,3 +9,8 @@ export const config: DemoConfig = {
 
 export const RESPONSE =
   "Perceived performance is the gap between objective time and how fast a UI feels. The clock might say 1.6 seconds, but a tuned interface can feel as fast as 1.4 — and that delta is the entire field.";
+
+/** Shared p50 used by both Naive and Tuned via the seed so both finish together. */
+export const TOTAL_DURATION_P50_MS = 5500;
+/** Fraction of the total spent in the "thinking" pre-token state (Tuned). */
+export const THINKING_FRACTION = 0.15;

@@ -3,8 +3,8 @@
 import { useSimulatedLatency } from "@/lib/use-simulated-latency";
 import { items, LATENCY } from "./config";
 
-export function TunedListFetch() {
-  const { isLoading } = useSimulatedLatency(LATENCY);
+export function TunedListFetch({ seed = 1 }: { seed?: number }) {
+  const { isLoading } = useSimulatedLatency(LATENCY, seed);
 
   if (isLoading) {
     return <ListSkeleton count={items.length} />;

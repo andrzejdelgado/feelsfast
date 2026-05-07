@@ -1,4 +1,5 @@
 import type { DemoConfig } from "@/components/DemoRunner";
+import { mulberry32, seededGamma } from "@/lib/jitter";
 
 export const config: DemoConfig = {
   title: "Real-time updates",
@@ -39,15 +40,34 @@ export type Event = {
   at: number;
 };
 
-let nextId = 1;
+export type ScheduledEvent = { event: Event; at: number };
 
-export function makeEvent(at: number): Event {
-  return {
-    id: nextId++,
-    actor: ACTORS[Math.floor(Math.random() * ACTORS.length)],
-    verb: VERBS[Math.floor(Math.random() * VERBS.length)],
-    at,
-  };
+/**
+ * Pre-roll a deterministic event stream for the feed. Both Off and On
+ * sides consume the *same* stream from the *same* seed, so every event
+ * (its arrival time, actor, and verb) is identical between the panels
+ * — the only difference is how the panel reveals it.
+ */
+export function rollEventStream(
+  seed: number,
+  count: number = 30,
+): ScheduledEvent[] {
+  const events: ScheduledEvent[] = [];
+  const pickRng = mulberry32(seed);
+  let t = 0;
+  for (let i = 0; i < count; i++) {
+    t += seededGamma(seed + i * 1009 + 1, EVENT_INTERVAL_P50_MS);
+    events.push({
+      at: t,
+      event: {
+        id: i + 1,
+        actor: ACTORS[Math.floor(pickRng() * ACTORS.length)],
+        verb: VERBS[Math.floor(pickRng() * VERBS.length)],
+        at: t,
+      },
+    });
+  }
+  return events;
 }
 
 export function formatRelative(at: number, now: number): string {

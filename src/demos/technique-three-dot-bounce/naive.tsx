@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -9,14 +9,14 @@ import { TOTAL_DURATION_P50_MS } from "./config";
  * until the reply lands. The user does not know whether the recipient
  * is composing, away, or the network is dead.
  */
-export function NaiveThreeDotBounce() {
+export function NaiveThreeDotBounce({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setLoaded(true),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);

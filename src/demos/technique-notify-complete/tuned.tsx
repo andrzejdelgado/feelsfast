@@ -3,7 +3,7 @@
 import { Bell, Check, Loader2, Minimize2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 type Phase = "foreground" | "background" | "done";
@@ -20,14 +20,14 @@ type Phase = "foreground" | "background" | "done";
  * their attention; the result still arrives loudly enough that
  * coming back to it is not an act of remembering.
  */
-export function TunedNotifyComplete() {
+export function TunedNotifyComplete({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<Phase>("foreground");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setPhase("done"),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);

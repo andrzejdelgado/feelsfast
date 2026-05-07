@@ -2,7 +2,7 @@
 
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { ARTICLES, FETCH_DURATION_P50_MS } from "./config";
 
 /**
@@ -15,7 +15,7 @@ import { ARTICLES, FETCH_DURATION_P50_MS } from "./config";
  * production sites this is what the View Transitions API + Suspense
  * boundaries give you for free.
  */
-export function TunedSkeletonReveal() {
+export function TunedSkeletonReveal({ seed = 1 }: { seed?: number }) {
   const [idx, setIdx] = useState(0);
   const [loading, setLoading] = useState(false);
   const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -33,7 +33,7 @@ export function TunedSkeletonReveal() {
     ref.current = setTimeout(() => {
       setIdx((i) => (i + 1) % ARTICLES.length);
       setLoading(false);
-    }, gammaJitter(FETCH_DURATION_P50_MS));
+    }, seededGamma(seed, FETCH_DURATION_P50_MS));
   };
 
   const article = ARTICLES[idx];

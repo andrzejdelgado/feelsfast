@@ -2,12 +2,12 @@
 
 import { Download, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 type Phase = "idle" | "generating" | "ready";
 
-export function NaiveDataExport() {
+export function NaiveDataExport({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -21,7 +21,7 @@ export function NaiveDataExport() {
     setPhase("generating");
     timeoutRef.current = setTimeout(() => {
       setPhase("ready");
-    }, gammaJitter(TOTAL_DURATION_P50_MS));
+    }, seededGamma(seed, TOTAL_DURATION_P50_MS));
   };
 
   return (

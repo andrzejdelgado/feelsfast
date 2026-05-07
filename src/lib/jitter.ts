@@ -28,3 +28,39 @@ export function gammaJitter(
   const e2 = -Math.log(1 - random());
   return (e1 + e2) * scale;
 }
+
+/**
+ * Mulberry32 — small, fast, deterministic 32-bit PRNG. Same seed
+ * always produces the same sequence. Used by `seededGamma` so the
+ * Off and On sides of every DemoRunner share identical timings on
+ * every Replay (without the Off side rolling differently from the
+ * On side and finishing seconds apart).
+ *
+ * Exported so demos that need *more than just timings* (event
+ * streams, randomly-selected actor/verb pairs, etc.) can pull
+ * deterministically from the same seed.
+ *
+ * Not cryptographically secure. Sequence quality is plenty for demo
+ * timing, not enough for anything sensitive.
+ */
+export function mulberry32(seed: number): () => number {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Deterministic gamma-jittered duration. Same `(seed, p50)` always
+ * returns the same number. Pass per-call offsets (`seed + i * 1000`)
+ * when a single demo needs multiple independent durations from one
+ * shared seed (image-gallery's six tiles, ai-tool-execution's four
+ * steps, etc.).
+ */
+export function seededGamma(seed: number, p50: number): number {
+  return gammaJitter(p50, mulberry32(seed));
+}

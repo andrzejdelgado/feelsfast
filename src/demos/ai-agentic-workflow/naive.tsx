@@ -2,10 +2,8 @@
 
 import { Loader2, Play, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { PHASES } from "./config";
-
-const TOTAL = PHASES.reduce((sum, p) => sum + p.durationMs, 0);
 
 /**
  * Naive agentic workflow — a single "Running agent…" spinner runs for
@@ -13,7 +11,7 @@ const TOTAL = PHASES.reduce((sum, p) => sum + p.durationMs, 0);
  * progress, no cancellation. The user has to either trust the whole
  * thing or kill the tab.
  */
-export function NaiveAiAgenticWorkflow() {
+export function NaiveAiAgenticWorkflow({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"idle" | "running" | "done">("idle");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -25,9 +23,13 @@ export function NaiveAiAgenticWorkflow() {
 
   const run = () => {
     setPhase("running");
+    const totalMs = PHASES.reduce(
+      (sum, p, i) => sum + seededGamma(seed + i * 1009, p.durationMs),
+      0,
+    );
     timeoutRef.current = setTimeout(() => {
       setPhase("done");
-    }, gammaJitter(TOTAL));
+    }, totalMs);
   };
 
   return (

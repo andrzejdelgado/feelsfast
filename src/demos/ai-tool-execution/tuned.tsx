@@ -3,7 +3,7 @@
 import { Check, Loader2, Play, Sparkles, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { STEPS, type ToolStep } from "./config";
 
 type StepState = {
@@ -24,7 +24,7 @@ type StepState = {
  * tool-call list is what makes the cancellation actionable, because the
  * user can see *what is currently happening* and decide whether to stop.
  */
-export function TunedAiToolExecution() {
+export function TunedAiToolExecution({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"idle" | "running" | "done" | "cancelled">(
     "idle",
   );
@@ -54,7 +54,7 @@ export function TunedAiToolExecution() {
         ),
       );
       await new Promise<void>((resolve) =>
-        setTimeout(resolve, gammaJitter(STEPS[i].durationMs)),
+        setTimeout(resolve, seededGamma(seed + i * 1009, STEPS[i].durationMs)),
       );
       if (token.cancelled) return;
       setStates((prev) =>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { COUNT_DURATION_MS, TARGET_VALUE, TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -13,7 +13,7 @@ import { COUNT_DURATION_MS, TARGET_VALUE, TOTAL_DURATION_P50_MS } from "./config
  * Reduced-motion users see the final value immediately — the
  * discovery framing degrades to the same end state, no animation.
  */
-export function TunedCounter() {
+export function TunedCounter({ seed = 1 }: { seed?: number }) {
   const [display, setDisplay] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const loadRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -39,7 +39,7 @@ export function TunedCounter() {
         if (t < 1) rafRef.current = requestAnimationFrame(tick);
       };
       rafRef.current = requestAnimationFrame(tick);
-    }, gammaJitter(TOTAL_DURATION_P50_MS));
+    }, seededGamma(seed, TOTAL_DURATION_P50_MS));
 
     return () => {
       if (loadRef.current !== null) clearTimeout(loadRef.current);

@@ -2,16 +2,16 @@
 
 import { Loader2, Upload } from "lucide-react";
 import { useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { FILE, TOTAL_DURATION_P50_MS } from "./config";
 
-export function NaiveFileUpload() {
+export function NaiveFileUpload({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"idle" | "uploading" | "done">("idle");
 
   const upload = async () => {
     setPhase("uploading");
     await new Promise((resolve) =>
-      setTimeout(resolve, gammaJitter(TOTAL_DURATION_P50_MS)),
+      setTimeout(resolve, seededGamma(seed, TOTAL_DURATION_P50_MS)),
     );
     setPhase("done");
   };

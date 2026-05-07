@@ -2,7 +2,7 @@
 
 import { Lightbulb } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TIPS, TIP_INTERVAL_MS, TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -16,7 +16,7 @@ import { TIPS, TIP_INTERVAL_MS, TOTAL_DURATION_P50_MS } from "./config";
  * learned something, which makes the wait worth their time rather
  * than a tax on it.
  */
-export function TunedRotatingTips() {
+export function TunedRotatingTips({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"loading" | "done">("loading");
   const [tipIdx, setTipIdx] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -25,7 +25,7 @@ export function TunedRotatingTips() {
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setPhase("done"),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);

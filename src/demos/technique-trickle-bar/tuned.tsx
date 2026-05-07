@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import {
   TOTAL_DURATION_P50_MS,
   TRICKLE_AT_MS,
@@ -23,7 +23,7 @@ type Phase = "trickle" | "hold" | "complete";
  * is happening" without claiming a duration the implementation does
  * not actually know.
  */
-export function TunedTrickleBar() {
+export function TunedTrickleBar({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<Phase>("trickle");
   const [progress, setProgress] = useState(0);
   const startedAt = useRef(performance.now());
@@ -31,7 +31,7 @@ export function TunedTrickleBar() {
 
   useEffect(() => {
     startedAt.current = performance.now();
-    totalRef.current = gammaJitter(TOTAL_DURATION_P50_MS);
+    totalRef.current = seededGamma(seed, TOTAL_DURATION_P50_MS);
 
     const tick = setInterval(() => {
       const elapsed = performance.now() - startedAt.current;

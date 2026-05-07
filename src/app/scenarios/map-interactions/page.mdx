@@ -1,9 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
-import { DemoRunner } from "@/components/DemoRunner";
-import { NaiveMapInteractions } from "@/demos/map-interactions/naive";
-import { TunedMapInteractions } from "@/demos/map-interactions/tuned";
-import { config as demoConfig } from "@/demos/map-interactions/config";
+import { MapInteractionsCard } from "@/components/MapInteractionsCard";
 import { references } from "@/lib/refs/scenario-map-interactions";
 
 export const metadata = {
@@ -20,7 +17,7 @@ Maps are the canonical case for direct-manipulation perception failure. The user
 
 This scenario sits in the 0–100 MS band Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> describe. Card et al. 1991 <Cite id="card-1991" label="Card et al. 1991" /> covers the ~10 Hz refresh rate at which progressive tile loads need to fire to register as continuous motion rather than as a series of discrete frames. The trick is to decouple input handling from data fetching, and to give the user a *visual* signal that tiles are still loading without making them wait for it.
 
-<DemoRunner config={demoConfig} Naive={NaiveMapInteractions} Tuned={TunedMapInteractions} />
+<MapInteractionsCard />
 
 ## What is happening in the demo
 

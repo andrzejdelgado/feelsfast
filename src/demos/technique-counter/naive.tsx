@@ -1,20 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TARGET_VALUE, TOTAL_DURATION_P50_MS } from "./config";
 
 /**
  * Naive — number snaps to the final value the moment data lands. The
  * result reads as a label. Honest, but flat.
  */
-export function NaiveCounter() {
+export function NaiveCounter({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState(false);
   const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     ref.current = setTimeout(
       () => setLoaded(true),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (ref.current !== null) clearTimeout(ref.current);

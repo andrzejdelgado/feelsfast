@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -17,13 +17,13 @@ import { TOTAL_DURATION_P50_MS } from "./config";
  * linear at the same real duration. Two CSS tricks, one extra
  * easing call — production cost is roughly zero.
  */
-export function TunedDecelBar() {
+export function TunedDecelBar({ seed = 1 }: { seed?: number }) {
   const [progress, setProgress] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const totalRef = useRef(TOTAL_DURATION_P50_MS);
 
   useEffect(() => {
-    totalRef.current = gammaJitter(TOTAL_DURATION_P50_MS);
+    totalRef.current = seededGamma(seed, TOTAL_DURATION_P50_MS);
     const start = performance.now();
     intervalRef.current = setInterval(() => {
       const elapsed = performance.now() - start;

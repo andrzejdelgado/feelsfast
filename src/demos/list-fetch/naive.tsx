@@ -3,8 +3,8 @@
 import { useSimulatedLatency } from "@/lib/use-simulated-latency";
 import { items, LATENCY } from "./config";
 
-export function NaiveListFetch() {
-  const { isLoading } = useSimulatedLatency(LATENCY);
+export function NaiveListFetch({ seed = 1 }: { seed?: number }) {
+  const { isLoading } = useSimulatedLatency(LATENCY, seed);
 
   if (isLoading) {
     return <div className="h-32" aria-hidden />;

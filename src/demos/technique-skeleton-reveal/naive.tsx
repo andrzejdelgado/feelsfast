@@ -2,7 +2,7 @@
 
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { ARTICLES, FETCH_DURATION_P50_MS } from "./config";
 
 /**
@@ -10,7 +10,7 @@ import { ARTICLES, FETCH_DURATION_P50_MS } from "./config";
  * until the data lands. The blank reads as a render glitch, not
  * progress.
  */
-export function NaiveSkeletonReveal() {
+export function NaiveSkeletonReveal({ seed = 1 }: { seed?: number }) {
   const [idx, setIdx] = useState(0);
   const [loading, setLoading] = useState(false);
   const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -28,7 +28,7 @@ export function NaiveSkeletonReveal() {
     ref.current = setTimeout(() => {
       setIdx((i) => (i + 1) % ARTICLES.length);
       setLoading(false);
-    }, gammaJitter(FETCH_DURATION_P50_MS));
+    }, seededGamma(seed, FETCH_DURATION_P50_MS));
   };
 
   const article = ARTICLES[idx];

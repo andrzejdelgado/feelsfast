@@ -3,7 +3,7 @@
 import { Check, Loader2, Play, Sparkles, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { PHASES } from "./config";
 
 type PhaseState = {
@@ -21,7 +21,7 @@ type PhaseState = {
  * available, and the cancel boundary is the *next* phase, not the
  * current one — so partial work is never lost mid-step.
  */
-export function TunedAiAgenticWorkflow() {
+export function TunedAiAgenticWorkflow({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"idle" | "running" | "done" | "cancelled">(
     "idle",
   );
@@ -50,7 +50,7 @@ export function TunedAiAgenticWorkflow() {
           idx === i ? { status: "running", ratio: 0 } : s,
         ),
       );
-      const total = gammaJitter(PHASES[i].durationMs);
+      const total = seededGamma(seed + i * 1009, PHASES[i].durationMs);
       const start = performance.now();
       await new Promise<void>((resolve) => {
         const id = setInterval(() => {

@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 /**
@@ -10,14 +10,14 @@ import { TOTAL_DURATION_P50_MS } from "./config";
  * label. Honest but heavy: the spinner pulls the eye like a strobe
  * during what should be a calm wait, and the word itself sits dead.
  */
-export function NaiveThinkingGradient() {
+export function NaiveThinkingGradient({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setLoaded(true),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);

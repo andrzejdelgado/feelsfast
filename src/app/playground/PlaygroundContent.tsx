@@ -8,10 +8,6 @@ import { config as listFetchConfig } from "@/demos/list-fetch/config";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 
-import { config as searchConfig } from "@/demos/search-as-you-type/config";
-import { NaiveSearchAsYouType } from "@/demos/search-as-you-type/naive";
-import { TunedSearchAsYouType } from "@/demos/search-as-you-type/tuned";
-
 import { config as aiStreamingConfig } from "@/demos/ai-streaming/config";
 import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
 import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
@@ -32,21 +28,11 @@ import { config as dataExportConfig } from "@/demos/data-export/config";
 import { NaiveDataExport } from "@/demos/data-export/naive";
 import { TunedDataExport } from "@/demos/data-export/tuned";
 
-import { config as inlineCompletionConfig } from "@/demos/ai-inline-completion/config";
-import { NaiveInlineCompletion } from "@/demos/ai-inline-completion/naive";
-import { TunedInlineCompletion } from "@/demos/ai-inline-completion/tuned";
-
 import { config as realTimeUpdatesConfig } from "@/demos/real-time-updates/config";
 import { NaiveRealTimeUpdates } from "@/demos/real-time-updates/naive";
 import { TunedRealTimeUpdates } from "@/demos/real-time-updates/tuned";
 
-import { config as dragAndDropConfig } from "@/demos/drag-and-drop/config";
-import { NaiveDragAndDrop } from "@/demos/drag-and-drop/naive";
-import { TunedDragAndDrop } from "@/demos/drag-and-drop/tuned";
-
-import { config as mapInteractionsConfig } from "@/demos/map-interactions/config";
-import { NaiveMapInteractions } from "@/demos/map-interactions/naive";
-import { TunedMapInteractions } from "@/demos/map-interactions/tuned";
+import { MapInteractionsCard } from "@/components/MapInteractionsCard";
 
 import { config as toolExecutionConfig } from "@/demos/ai-tool-execution/config";
 import { NaiveAiToolExecution } from "@/demos/ai-tool-execution/naive";
@@ -76,17 +62,9 @@ import { config as mousedownConfig } from "@/demos/technique-mousedown/config";
 import { NaiveMousedown } from "@/demos/technique-mousedown/naive";
 import { TunedMousedown } from "@/demos/technique-mousedown/tuned";
 
-import { config as pressFeedbackConfig } from "@/demos/technique-press-feedback/config";
-import { NaivePressFeedback } from "@/demos/technique-press-feedback/naive";
-import { TunedPressFeedback } from "@/demos/technique-press-feedback/tuned";
-
 import { config as iconFlipConfig } from "@/demos/technique-icon-flip/config";
 import { NaiveIconFlip } from "@/demos/technique-icon-flip/naive";
 import { TunedIconFlip } from "@/demos/technique-icon-flip/tuned";
-
-import { config as cursorAffordanceConfig } from "@/demos/technique-cursor-affordance/config";
-import { NaiveCursorAffordance } from "@/demos/technique-cursor-affordance/naive";
-import { TunedCursorAffordance } from "@/demos/technique-cursor-affordance/tuned";
 
 import { config as trickleBarConfig } from "@/demos/technique-trickle-bar/config";
 import { NaiveTrickleBar } from "@/demos/technique-trickle-bar/naive";
@@ -159,11 +137,17 @@ import { TunedSkeletonReveal } from "@/demos/technique-skeleton-reveal/tuned";
 type BandId = "instant" | "responsive" | "engaged" | "long";
 type FilterValue = "all" | BandId;
 
-type DemoEntry = {
-  config: DemoConfig;
-  Naive: React.ComponentType;
-  Tuned: React.ComponentType;
-};
+type DemoEntry =
+  | {
+      config: DemoConfig;
+      Naive: React.ComponentType<{ seed?: number }>;
+      Tuned: React.ComponentType<{ seed?: number }>;
+    }
+  | {
+      /** Used as the React `key` only — no DemoRunner header is rendered. */
+      key: string;
+      Custom: React.ComponentType;
+    };
 
 type Band = {
   id: BandId;
@@ -179,15 +163,11 @@ const bands: Band[] = [
     description:
       "Instant input. The user has not started waiting yet. Patterns here give a head-start, not a status — pre-action feedback, optimistic flips, direct-manipulation latency budgets. Anything that announces a wait at this scale damages the experience.",
     demos: [
-      { config: searchConfig, Naive: NaiveSearchAsYouType, Tuned: TunedSearchAsYouType },
       { config: optimisticActionsConfig, Naive: NaiveOptimisticActions, Tuned: TunedOptimisticActions },
-      { config: dragAndDropConfig, Naive: NaiveDragAndDrop, Tuned: TunedDragAndDrop },
-      { config: mapInteractionsConfig, Naive: NaiveMapInteractions, Tuned: TunedMapInteractions },
+      { key: "map-interactions", Custom: MapInteractionsCard },
       { config: realTimeUpdatesConfig, Naive: NaiveRealTimeUpdates, Tuned: TunedRealTimeUpdates },
       { config: mousedownConfig, Naive: NaiveMousedown, Tuned: TunedMousedown },
-      { config: pressFeedbackConfig, Naive: NaivePressFeedback, Tuned: TunedPressFeedback },
       { config: iconFlipConfig, Naive: NaiveIconFlip, Tuned: TunedIconFlip },
-      { config: cursorAffordanceConfig, Naive: NaiveCursorAffordance, Tuned: TunedCursorAffordance },
     ],
   },
   {
@@ -196,7 +176,6 @@ const bands: Band[] = [
     description:
       "Perceptible, but no determinate progress yet. Cues say \"active, working\" without claiming an end-point — indeterminate spinners, top-edge trickle bars, a brief pulse on the affected element.",
     demos: [
-      { config: inlineCompletionConfig, Naive: NaiveInlineCompletion, Tuned: TunedInlineCompletion },
       { config: spinnerConfig, Naive: NaiveSpinner, Tuned: TunedSpinner },
       { config: trickleBarConfig, Naive: NaiveTrickleBar, Tuned: TunedTrickleBar },
       { config: marqueeBarConfig, Naive: NaiveMarqueeBar, Tuned: TunedMarqueeBar },
@@ -305,14 +284,18 @@ export function PlaygroundContent() {
             </p>
 
             <div className="mt-6 space-y-6">
-              {band.demos.map(({ config, Naive, Tuned }) => (
-                <DemoRunner
-                  key={config.title}
-                  config={config}
-                  Naive={Naive}
-                  Tuned={Tuned}
-                />
-              ))}
+              {band.demos.map((demo) =>
+                "Custom" in demo ? (
+                  <demo.Custom key={demo.key} />
+                ) : (
+                  <DemoRunner
+                    key={demo.config.title}
+                    config={demo.config}
+                    Naive={demo.Naive}
+                    Tuned={demo.Tuned}
+                  />
+                ),
+              )}
             </div>
           </section>
         ))}

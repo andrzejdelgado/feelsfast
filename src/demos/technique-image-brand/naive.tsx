@@ -1,20 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { HERO, TOTAL_DURATION_P50_MS } from "./config";
 
 /**
  * Naive — empty muted box until the image arrives, then snap. The
  * slot communicates nothing about what is loading or who it is from.
  */
-export function NaiveImageBrand() {
+export function NaiveImageBrand({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState(false);
   const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     ref.current = setTimeout(
       () => setLoaded(true),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (ref.current !== null) clearTimeout(ref.current);

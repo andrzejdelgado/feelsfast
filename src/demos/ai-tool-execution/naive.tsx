@@ -2,18 +2,20 @@
 
 import { Loader2, Play, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import { STEPS } from "./config";
-
-const TOTAL_DURATION = STEPS.reduce((sum, s) => sum + s.durationMs, 0);
 
 /**
  * Naive tool execution — a single "Working…" spinner runs for the full
  * end-to-end duration, then the final summary appears. The user has no
  * signal that the agent is doing distinct things, no signal of how far
  * along it is, and no recourse if a single step is hanging.
+ *
+ * Total duration = sum of seeded per-step durations, so Naive finishes
+ * at the same wall-clock moment as Tuned even though Tuned reveals
+ * each step as it lands.
  */
-export function NaiveAiToolExecution() {
+export function NaiveAiToolExecution({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"idle" | "running" | "done">("idle");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -25,9 +27,13 @@ export function NaiveAiToolExecution() {
 
   const run = () => {
     setPhase("running");
+    const totalMs = STEPS.reduce(
+      (sum, s, i) => sum + seededGamma(seed + i * 1009, s.durationMs),
+      0,
+    );
     timeoutRef.current = setTimeout(() => {
       setPhase("done");
-    }, gammaJitter(TOTAL_DURATION));
+    }, totalMs);
   };
 
   return (

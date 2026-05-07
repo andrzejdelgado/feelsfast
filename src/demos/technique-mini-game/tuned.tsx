@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { gammaJitter } from "@/lib/jitter";
+import { seededGamma } from "@/lib/jitter";
 import {
   DOT_INTERVAL_MS,
   DOT_LIFETIME_MS,
@@ -29,7 +29,7 @@ let nextDotId = 1;
  * Reduced-motion users still get the game — only the dot's spawn
  * scale-in animation is suppressed.
  */
-export function TunedMiniGame() {
+export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"loading" | "done">("loading");
   const [dots, setDots] = useState<Dot[]>([]);
   const [score, setScore] = useState(0);
@@ -38,7 +38,7 @@ export function TunedMiniGame() {
   useEffect(() => {
     timeoutRef.current = setTimeout(
       () => setPhase("done"),
-      gammaJitter(TOTAL_DURATION_P50_MS),
+      seededGamma(seed, TOTAL_DURATION_P50_MS),
     );
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);

@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { gammaJitter } from "@/lib/jitter";
 import {
-  EVENT_INTERVAL_P50_MS,
   formatRelative,
-  makeEvent,
+  rollEventStream,
   type Event,
 } from "./config";
 
@@ -20,33 +18,31 @@ const HIGHLIGHT_MS = 1200;
  * gradually so the highlight is finished by the time the eye finishes
  * reading the line. Reduced-motion users get a single colour pulse with
  * no slide.
+ *
+ * Both Off and On consume the same pre-rolled event stream, so the
+ * arrival time, actor, and verb of every event are identical between
+ * the panels — only the reveal differs.
  */
-export function TunedRealTimeUpdates() {
+export function TunedRealTimeUpdates({ seed = 1 }: { seed?: number }) {
+  const stream = useMemo(() => rollEventStream(seed), [seed]);
   const [events, setEvents] = useState<Event[]>([]);
   const [now, setNow] = useState(0);
   const startedAt = useRef(performance.now());
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const schedule = () => {
-      timeoutRef.current = setTimeout(
-        () => {
-          const elapsed = performance.now() - startedAt.current;
-          setEvents((prev) => [makeEvent(elapsed), ...prev].slice(0, 5));
-          schedule();
-        },
-        gammaJitter(EVENT_INTERVAL_P50_MS),
-      );
-    };
-    schedule();
+    const timers = stream.map(({ event, at }) =>
+      setTimeout(() => {
+        setEvents((prev) => [event, ...prev].slice(0, 5));
+      }, at),
+    );
     const tick = setInterval(() => {
       setNow(performance.now() - startedAt.current);
     }, 250);
     return () => {
-      if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
+      timers.forEach(clearTimeout);
       clearInterval(tick);
     };
-  }, []);
+  }, [stream]);
 
   return (
     <ul className="space-y-2 text-sm">

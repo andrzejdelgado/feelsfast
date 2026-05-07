@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gammaJitter } from "./jitter";
+import { gammaJitter, seededGamma } from "./jitter";
 
 export type LatencyProfile = {
   /** Target median latency in ms. */
@@ -22,10 +22,15 @@ export type SimulatedLatencyState = {
  * the consuming component — typically by passing a `key` from the demo runner
  * that increments on Replay.
  *
+ * Pass `seed` (from `DemoSideProps`) to make Off and On finish at the same
+ * wall-clock moment. Without a seed, each call rolls independently.
+ *
  * @param profile Latency profile (currently just `p50`).
+ * @param seed    Optional deterministic seed shared between Off and On.
  */
 export function useSimulatedLatency(
   profile: LatencyProfile,
+  seed?: number,
 ): SimulatedLatencyState {
   const [isLoading, setIsLoading] = useState(true);
   const [durationMs, setDurationMs] = useState<number | null>(null);
@@ -34,7 +39,8 @@ export function useSimulatedLatency(
   );
 
   useEffect(() => {
-    const ms = gammaJitter(profile.p50);
+    const ms =
+      seed != null ? seededGamma(seed, profile.p50) : gammaJitter(profile.p50);
     const handle = setTimeout(() => {
       setIsLoading(false);
       const now =
@@ -42,7 +48,7 @@ export function useSimulatedLatency(
       setDurationMs(now - startedAt.current);
     }, ms);
     return () => clearTimeout(handle);
-  }, [profile.p50]);
+  }, [profile.p50, seed]);
 
   return { isLoading, durationMs };
 }
