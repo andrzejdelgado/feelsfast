@@ -23,7 +23,7 @@ export default function GlossaryPage() {
           <div
             key={entry.id}
             id={entry.id}
-            className={`group scroll-mt-24 py-8 ${
+            className={`scroll-mt-24 py-8 ${
               i > 0 ? "border-t border-border" : ""
             }`}
           >
@@ -31,13 +31,6 @@ export default function GlossaryPage() {
               <span className="text-lg font-medium tracking-tight text-foreground">
                 {entry.term}
               </span>
-              <a
-                href={`#${entry.id}`}
-                aria-label={`Link to ${entry.term}`}
-                className="ml-2 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground opacity-0 transition-opacity hover:text-primary group-hover:opacity-100 focus-visible:opacity-100"
-              >
-                #{entry.id}
-              </a>
             </dt>
             <dd className="mt-3 max-w-3xl text-sm leading-relaxed text-foreground">
               {entry.definition}
