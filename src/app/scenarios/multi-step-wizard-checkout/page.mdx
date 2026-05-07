@@ -1,0 +1,57 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveListFetch } from "@/demos/list-fetch/naive";
+import { TunedListFetch } from "@/demos/list-fetch/tuned";
+import { config as demoConfig } from "@/demos/list-fetch/config";
+import { references } from "@/lib/refs/scenario-multi-step-wizard-checkout";
+
+export const metadata = {
+  title: "Multi-step wizard / checkout",
+  description:
+    "1 – 10 S band. Linear multi-step flow. Predictive preload of the next step while the user fills the current one; optimistic redirect on submit; preserved state across rollbacks.",
+};
+
+<RegisterReferences refs={references} />
+
+# Multi-step wizard / checkout
+
+Multi-step flows — checkouts, onboarding, signup wizards — are the cleanest place to apply predictive preloading. The user's path through the steps is mostly linear; the next step is highly predictable from the current one. Fetching the next step's bundle and data while the user is filling the current one collapses the perceived transition time to near-zero.
+
+This scenario sits in the 1 – 10 S band on each step, but the perception layer pushes most transitions into the 0 – 100 MS Card-Moran-Newell perceptual frame. Fitch's <Cite id="fitch" label="Fitch" /> form-step preloading framing is the canonical reference; Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> sets the budget the perception layer is collapsing.
+
+<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+
+## What is happening
+
+The list-fetch demo stands in for the step-to-step transition. For a real wizard, the tuned flow stacks several patterns:
+
+1. **Predictive preload** of the next step's bundle and data once the user is ~70 % through the current step (matches the [predictive-preloading](/patterns/predictive-preloading-hover) pattern).
+2. **Optimistic step transition** on submit — render the next step's layout immediately, validate in the background.
+3. **Skeleton fallback** if the prefetch missed.
+4. **Preserved state on rollback** — if validation fails on the previous step, return to it with the user's input intact.
+
+## What to tune
+
+1. [Predictive preloading](/patterns/predictive-preloading-hover) — anticipate the next step.
+2. [Optimistic UI](/patterns/optimistic-ui) — render the optimistic state on the destination step.
+3. [Skeleton screens](/patterns/skeleton-screens) — fallback for the cache-miss case.
+4. [Pre-action feedback](/patterns/pre-action-feedback) — press feedback on the next-step button always lands inside 50 ms.
+5. [Form submission](/scenarios/form-submission) — the step submission itself.
+
+## When perceived performance hurts you here
+
+Predictive preloading on a wizard with a high abandonment rate is wasted work. If 40 % of users abandon between step 2 and step 3, half your prefetched bundles for step 3 are bytes the user never sees. Tune the trigger threshold against your funnel data — a steeply-dropping funnel argues for less aggressive preloading.
+
+The other failure: optimistic step transitions on validation-heavy steps. If a step has a 30 % chance of server-side rejection (address validation, payment screening), the optimistic redirect rolls back visibly often. Skip optimism on those steps; show determinate progress instead.
+
+## Accessibility
+
+1. **Focus management on step transitions** — focus the next step's first input or main heading.
+2. **Step indicator** with `aria-current="step"` on the active step.
+3. **Preserve form state on rollback** — never clobber user input.
+4. **`prefers-reduced-motion`** for the step transition animation.
+
+## References
+
+<ReferencesList refs={references} />

@@ -110,7 +110,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Single file upload. Determinate progress with backwards-decelerating animation; optimistic UI for the metadata while bytes transfer.",
     linkedPatterns: ["Determinate progress", "Optimistic UI", "Engaging loading"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "10",
@@ -121,7 +121,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Multi-file upload with parallel transfers. Per-file determinate progress; aggregate progress at the top; engagement cue past 10 s.",
     linkedPatterns: ["Determinate progress", "Engaging loading", "Background sync"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "11",
@@ -203,7 +203,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Linear multi-step flow. Predictive preload of the next step while the user fills the current one; optimistic redirect on submit.",
     linkedPatterns: ["Predictive preloading (next step)", "Optimistic UI", "Determinate progress"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "18",
