@@ -27,7 +27,7 @@ The non-obvious detail: the cadence matters more than the latency. Instant per-t
 ## When *not* to use
 
 1. **Outputs that are not meaningful in partial form** — a JSON blob the user will copy as a unit; a single number; a yes/no answer.
-2. **Very fast responses** (<500 ms total) where the streaming overhead and the variable-chunk pacing add visible jitter.
+2. **Very fast responses** (under 500 ms total) where the streaming overhead and the variable-chunk pacing add visible jitter.
 3. **For users with `prefers-reduced-motion`** — fall back to revealing complete sentences or paragraphs, not character-by-character.
 
 ## Code

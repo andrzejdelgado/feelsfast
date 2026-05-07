@@ -16,7 +16,7 @@ The user submits a prompt, watches the assistant generate, and realises the resp
 
 Doherty 1982's <Cite id="doherty-1982" label="Doherty 1982" /> productivity-cliff finding has a less-cited corollary: productivity rises when the user feels in control of response time. The cancel button is the strongest single signal of control on an AI surface. Card-Moran-Newell 1983's <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame sets the latency ceiling — if pressing stop takes longer than ~100 ms to register, the cancellation itself feels broken.
 
-Two contracts the affordance needs to honour. First, the stop must register within the perceptual frame — visible state change in <100 ms, even if the actual abort takes longer to propagate. Second, mid-stream cancellation must not lose what the user has so far. A user who cancels mid-token-stream still wants to keep the partial response, edit their prompt, or save what came back. Silent loss-of-state is worse than a slow cancel.
+Two contracts the affordance needs to honour. First, the stop must register within the perceptual frame — visible state change in under 100 ms, even if the actual abort takes longer to propagate. Second, mid-stream cancellation must not lose what the user has so far. A user who cancels mid-token-stream still wants to keep the partial response, edit their prompt, or save what came back. Silent loss-of-state is worse than a slow cancel.
 
 ## When to use
 
