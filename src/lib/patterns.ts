@@ -93,7 +93,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Begin loading the target route before the user navigates — on viewport entry, hover, or mouse deceleration. Idempotent operations only.",
     primaryCitation: "Eli Fitch (predictive preloading); Miller 1968 thresholds",
-    status: "planned",
+    status: "published",
   },
   {
     number: "09",
@@ -113,7 +113,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Server-rendered chunks streamed as data arrives. React Suspense + the App Router make this composable per component.",
     primaryCitation: "Card et al. 1991 unit-task levels",
-    status: "planned",
+    status: "published",
   },
   {
     number: "11",
@@ -123,7 +123,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Serve the cached response immediately, validate in the background, update on completion. Pairs with TanStack Query / SWR.",
     primaryCitation: "Doherty & Thadani 1982",
-    status: "planned",
+    status: "published",
   },
   {
     number: "12",
@@ -143,7 +143,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "The 100 / 200 / 400 ms families — when to use which. Defaults that match the cognitive transitions, not arbitrary preference.",
     primaryCitation: "Card et al. 1991; Harrison et al. 2010",
-    status: "planned",
+    status: "published",
   },
   {
     number: "14",
