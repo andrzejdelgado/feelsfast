@@ -8,7 +8,12 @@ export const config: DemoConfig = {
 };
 
 export const TOTAL_DURATION_P50_MS = 4500;
-/** Bar reaches this fraction long before completion, then idle-loops. */
-export const OVERSHOOT_TARGET = 0.95;
-/** Time at which the bar reaches OVERSHOOT_TARGET (about half the wait). */
+/**
+ * Bar visually reaches the end (100 %) long before the actual work
+ * completes — the Instagram-stories trick. The remaining wait time is
+ * filled by a gradient that animates left-to-right inside the now-
+ * full bar, not by additional fill.
+ */
+export const OVERSHOOT_TARGET = 1;
+/** Time at which the bar reaches OVERSHOOT_TARGET (about 40 % of the wait). */
 export const OVERSHOOT_AT_MS = 1800;

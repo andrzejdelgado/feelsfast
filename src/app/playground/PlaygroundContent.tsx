@@ -120,6 +120,42 @@ import { config as notifyCompleteConfig } from "@/demos/technique-notify-complet
 import { NaiveNotifyComplete } from "@/demos/technique-notify-complete/naive";
 import { TunedNotifyComplete } from "@/demos/technique-notify-complete/tuned";
 
+import { config as skeletonSimpleConfig } from "@/demos/technique-skeleton-simple/config";
+import { NaiveSkeletonSimple } from "@/demos/technique-skeleton-simple/naive";
+import { TunedSkeletonSimple } from "@/demos/technique-skeleton-simple/tuned";
+
+import { config as skeletonTrueConfig } from "@/demos/technique-skeleton-true/config";
+import { NaiveSkeletonTrue } from "@/demos/technique-skeleton-true/naive";
+import { TunedSkeletonTrue } from "@/demos/technique-skeleton-true/tuned";
+
+import { config as skeletonPulseConfig } from "@/demos/technique-skeleton-pulse/config";
+import { NaiveSkeletonPulse } from "@/demos/technique-skeleton-pulse/naive";
+import { TunedSkeletonPulse } from "@/demos/technique-skeleton-pulse/tuned";
+
+import { config as imageBrandConfig } from "@/demos/technique-image-brand/config";
+import { NaiveImageBrand } from "@/demos/technique-image-brand/naive";
+import { TunedImageBrand } from "@/demos/technique-image-brand/tuned";
+
+import { config as imageBlurConfig } from "@/demos/technique-image-blur/config";
+import { NaiveImageBlur } from "@/demos/technique-image-blur/naive";
+import { TunedImageBlur } from "@/demos/technique-image-blur/tuned";
+
+import { config as spinnerConfig } from "@/demos/technique-spinner/config";
+import { NaiveSpinner } from "@/demos/technique-spinner/naive";
+import { TunedSpinner } from "@/demos/technique-spinner/tuned";
+
+import { config as decelBarConfig } from "@/demos/technique-decel-bar/config";
+import { NaiveDecelBar } from "@/demos/technique-decel-bar/naive";
+import { TunedDecelBar } from "@/demos/technique-decel-bar/tuned";
+
+import { config as counterConfig } from "@/demos/technique-counter/config";
+import { NaiveCounter } from "@/demos/technique-counter/naive";
+import { TunedCounter } from "@/demos/technique-counter/tuned";
+
+import { config as skeletonRevealConfig } from "@/demos/technique-skeleton-reveal/config";
+import { NaiveSkeletonReveal } from "@/demos/technique-skeleton-reveal/naive";
+import { TunedSkeletonReveal } from "@/demos/technique-skeleton-reveal/tuned";
+
 type BandId = "instant" | "responsive" | "engaged" | "long";
 type FilterValue = "all" | BandId;
 
@@ -161,10 +197,12 @@ const bands: Band[] = [
       "Perceptible, but no determinate progress yet. Cues say \"active, working\" without claiming an end-point — indeterminate spinners, top-edge trickle bars, a brief pulse on the affected element.",
     demos: [
       { config: inlineCompletionConfig, Naive: NaiveInlineCompletion, Tuned: TunedInlineCompletion },
+      { config: spinnerConfig, Naive: NaiveSpinner, Tuned: TunedSpinner },
       { config: trickleBarConfig, Naive: NaiveTrickleBar, Tuned: TunedTrickleBar },
       { config: marqueeBarConfig, Naive: NaiveMarqueeBar, Tuned: TunedMarqueeBar },
       { config: threeDotConfig, Naive: NaiveThreeDotBounce, Tuned: TunedThreeDotBounce },
       { config: pulsingOrbConfig, Naive: NaivePulsingOrb, Tuned: TunedPulsingOrb },
+      { config: counterConfig, Naive: NaiveCounter, Tuned: TunedCounter },
     ],
   },
   {
@@ -179,8 +217,15 @@ const bands: Band[] = [
       { config: imageGalleryConfig, Naive: NaiveImageGallery, Tuned: TunedImageGallery },
       { config: toolExecutionConfig, Naive: NaiveAiToolExecution, Tuned: TunedAiToolExecution },
       { config: topBarConfig, Naive: NaiveTopBar, Tuned: TunedTopBar },
+      { config: skeletonSimpleConfig, Naive: NaiveSkeletonSimple, Tuned: TunedSkeletonSimple },
+      { config: skeletonTrueConfig, Naive: NaiveSkeletonTrue, Tuned: TunedSkeletonTrue },
       { config: shimmerSkeletonConfig, Naive: NaiveShimmerSkeleton, Tuned: TunedShimmerSkeleton },
+      { config: skeletonPulseConfig, Naive: NaiveSkeletonPulse, Tuned: TunedSkeletonPulse },
+      { config: skeletonRevealConfig, Naive: NaiveSkeletonReveal, Tuned: TunedSkeletonReveal },
+      { config: decelBarConfig, Naive: NaiveDecelBar, Tuned: TunedDecelBar },
       { config: imageColorConfig, Naive: NaiveImageColor, Tuned: TunedImageColor },
+      { config: imageBlurConfig, Naive: NaiveImageBlur, Tuned: TunedImageBlur },
+      { config: imageBrandConfig, Naive: NaiveImageBrand, Tuned: TunedImageBrand },
       { config: thinkingGradientConfig, Naive: NaiveThinkingGradient, Tuned: TunedThinkingGradient },
     ],
   },
