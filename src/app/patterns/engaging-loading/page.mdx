@@ -1,0 +1,100 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/pattern-engaging-loading";
+
+export const metadata = {
+  title: "Engaging loading states",
+  description:
+    "Multi-step loading sequences for waits past 10 s. Slack-style boot, FIFA-style mini-games, agent narration. Trades retrospective duration for prospective engagement.",
+};
+
+<RegisterReferences refs={references} />
+
+# Engaging loading states
+
+Past ten seconds, the user is leaving. They have crossed the unit-task boundary, their attention is wandering, and a static skeleton is no longer enough — there is too much empty time for the prospective fill to compress. Engaging loading states are the last move before the user simply abandons the wait.
+
+The pattern has a complicated relationship with the perception literature. Prospectively, engagement is a clear win — Block & Zakay's <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> meta-analysis confirms that filled intervals feel shorter while passing. Retrospectively, the relationship inverts. Ornstein's <Cite id="ornstein-1969" label="Ornstein 1969" /> storage-size theory predicts that elaborate engagement actually *expands* remembered duration — the user comes away thinking the wait was longer because they remember more of it.
+
+This is the trade Slack made and FIFA made. Eli Fitch <Cite id="fitch" label="Fitch" /> uses both as canonical examples. Slack's multi-step boot sequence (animated branded spinner → motivational quote → skeleton-driven channel list → message reveal) makes the cold-boot wait *feel* faster than the equivalent blank. It also trains users to remember that "Slack takes a while to boot" — the wait registers in retrospective memory as longer than the comparable blank would. FIFA goes further, letting the user kick a virtual ball during the loading screen; the wait is genuinely entertaining, the retrospective duration explicitly traded.
+
+Both teams shipped these consciously. Slack accepts the retrospective cost because their cold-boot is rare and the prospective experience is what matters during the active session. FIFA accepts it because their loads are unavoidably long and entertainment is preferable to anxiety. The decision is product-specific. The pattern is honest only if you have made the trade deliberately.
+
+## When to use
+
+1. **Waits past 10 s where you cannot deliver a determinate progress signal.** Long inferences, complex computations, multi-stage pipelines.
+2. **First-time setup or rare onboarding flows** where the user expects a wait and a thoughtful narrative is welcome.
+3. **AI multi-step agentic workflows** where the agent's own activity becomes the engagement (covered as the *AI variant* below).
+
+## When *not* to use
+
+1. **Routine, repeatable interactions.** A 10-second engaging loader on every form submit becomes friction, not delight.
+2. **When you can deliver determinate progress instead.** A real progress bar carries more weight than a motivational quote.
+3. **Without acknowledging the retrospective trade-off.** If your team cannot articulate why the prospective gain is worth the retrospective cost, the answer is probably to not ship engagement.
+
+## Code
+
+A multi-stage engaging loader, gated by elapsed time. Each stage replaces the previous; transitions stay inside the ~400 ms family.
+
+```tsx
+"use client";
+
+import { useEffect, useState } from "react";
+
+const QUOTES = [
+  "Most teams optimise for the clock. The user is doing something else.",
+  "Speed is felt, not measured.",
+  "The wait you cannot remove can still be filled.",
+];
+
+type Stage = "thinking" | "quote" | "skeleton" | "ready";
+
+export function EngagingBoot({ durationMs }: { durationMs: number }) {
+  const [stage, setStage] = useState<Stage>("thinking");
+
+  useEffect(() => {
+    const stages: Array<{ at: number; stage: Stage }> = [
+      { at: 1500, stage: "quote" },
+      { at: 5500, stage: "skeleton" },
+      { at: durationMs, stage: "ready" },
+    ];
+    const timers = stages.map(({ at, stage }) =>
+      window.setTimeout(() => setStage(stage), at),
+    );
+    return () => timers.forEach(window.clearTimeout);
+  }, [durationMs]);
+
+  return (
+    <div className="grid place-items-center" aria-live="polite">
+      {stage === "thinking" && <ThinkingDots label="Starting up" />}
+      {stage === "quote" && <Quote text={QUOTES[Math.floor(Math.random() * QUOTES.length)]} />}
+      {stage === "skeleton" && <ListSkeleton count={5} />}
+    </div>
+  );
+}
+```
+
+The transitions between stages need to land in the ~200 ms (small) or ~400 ms (larger) family from [animation timing](/patterns/animation-timing). A jarring cut between stages telegraphs the orchestration; a soft fade hides it.
+
+## AI variant — agent narration
+
+For agentic AI workflows, the engagement is built-in. Instead of generic content, narrate the agent's actual work: "Reading file X…", "Searching for Y…", "Running tests…". This is covered in detail as [tool-call transparency](/patterns/ai-tool-call-transparency). The retrospective trade is mitigated because the user is *learning what the agent is doing*, which is genuinely useful information.
+
+The principle: engaging loading is honest when the engagement is information about the system, not decoration around it.
+
+## Accessibility
+
+1. **`aria-live="polite"`** on the container so screen-reader users get the stage transitions.
+2. **`prefers-reduced-motion: reduce`** — replace cross-fades with instant snaps; keep the content changes themselves.
+3. **Always provide a way out.** Past ten seconds, even an engaged user wants to know they can leave. Pair with a [cancellation affordance](/patterns/ai-cancellation-affordance) or a "do this in the background and notify me" option.
+4. **Don't lock interaction.** The engaging content is for the user to passively consume, not to require their attention. Background tabs and screen readers should still work.
+
+## Linked scenarios
+
+- [File upload (batch)](/scenarios/file-upload-batch) — long parallel uploads.
+- [Data export / download](/scenarios/data-export-download) — server-side generation past 10 s.
+- [AI agentic workflow](/scenarios/ai-agentic-workflow) — multi-step agent runs benefit from agent-narration engagement.
+
+## References
+
+<ReferencesList refs={references} />

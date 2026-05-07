@@ -154,7 +154,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Slack-style boot sequences, FIFA-style mini-games during long waits. Trades retrospective duration for prospective engagement. AI variant: agent narration during multi-step workflows (Claude Code, Cursor agent mode).",
     primaryCitation: "Block & Zakay 1997; Eli Fitch (Slack/FIFA examples)",
-    status: "planned",
+    status: "published",
   },
   {
     number: "15",
@@ -164,7 +164,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "When a content area is genuinely empty post-load, distinguish that from still-loading. Anti-pattern: blank page during a 2-second load.",
     primaryCitation: "Myers 1985 (indeterminate-feedback principle)",
-    status: "planned",
+    status: "published",
   },
   {
     number: "16",
@@ -184,7 +184,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Watch the cursor's velocity vector and start loading before the click. The 600 ms 'fancy hover' sweet spot; mouse-deceleration trick.",
     primaryCitation: "Eli Fitch (Future Link library, hover study)",
-    status: "planned",
+    status: "published",
   },
   {
     number: "18",
@@ -204,7 +204,7 @@ export const patterns: readonly Pattern[] = [
     blurb:
       "Measure each user's actual round-trip times. Scale skeleton durations, animation timings, and loader thresholds accordingly. Honesty engineering, not a perception trick.",
     primaryCitation: "Eli Fitch (concept)",
-    status: "planned",
+    status: "published",
   },
   {
     number: "20",

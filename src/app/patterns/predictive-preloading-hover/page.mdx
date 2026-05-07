@@ -1,0 +1,131 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/pattern-predictive-preloading-hover";
+
+export const metadata = {
+  title: "Predictive preloading (hover, mouse deceleration)",
+  description:
+    "Watch the cursor's velocity vector and start loading before the click. The 600 ms 'fancy hover' sweet spot; the mouse-deceleration trick.",
+};
+
+<RegisterReferences refs={references} />
+
+# Predictive preloading (hover, mouse deceleration)
+
+A user who is about to click a button slows their cursor as they approach it. The deceleration is automatic, unconscious, and surprisingly predictable. If you watch the cursor's velocity vector and predict the landing spot before the click happens, you can begin loading the target before the user has committed.
+
+Eli Fitch <Cite id="fitch" label="Fitch" /> formalised this with his Future Link library — track cursor position and velocity, plot a deceleration curve, predict the landing element, fire a callback when confidence is high enough. The pattern stacks two behavioural quirks. First, users tend to *watch hovers* on interesting elements — a fancy animated hover keeps them looking for ~600 ms before they click, where a plain hover gives you maybe 200 ms. Second, the deceleration itself starts well before the click — typically 300–500 ms before contact, sometimes more.
+
+Combined, the pattern can buy you ~1.5 s of preload time on isolated, hovered targets in the right conditions. That is a *route's* worth of latency converted into invisible work.
+
+The cost is a false-positive rate. Predictions are wrong some of the time — the user changes direction, hovers without clicking, or the deceleration was incidental. Each false positive costs you the bytes you preloaded for nothing. Fitch's rule of thumb: ~10 % false-positive rate is comfortable for most teams; tune the prediction radius up or down to land there.
+
+## When to use
+
+1. **Primary CTAs and isolated buttons** where intent is unambiguous and the prediction radius is large.
+2. **Form-step navigation** where the next step is predictable from the current state.
+3. **Image gallery thumbnails** where hovering signals the intent to view full-size.
+
+## When *not* to use
+
+1. **Dense link lists** (navigation menus, item rows). Too many candidates within the prediction radius; false-positive rate spikes.
+2. **Side-effects with cost.** Same rule as the [mousedown vs. click](/patterns/mousedown-vs-click) pattern — preload bundles and data, don't fire payments or sends.
+3. **Very small click targets** where the deceleration window is too short to predict reliably.
+
+## Code
+
+A simplified mouse-deceleration tracker. For production, use Fitch's Future Link library or an equivalent — the math gets fiddly with multiple targets and edge cases.
+
+```tsx
+"use client";
+
+import { useEffect, useRef } from "react";
+
+type Position = { x: number; y: number; t: number };
+
+export function PredictivePreloadButton({
+  href,
+  preloadFn,
+  children,
+}: {
+  href: string;
+  preloadFn: (href: string) => void;
+  children: React.ReactNode;
+}) {
+  const buttonRef = useRef<HTMLAnchorElement>(null);
+  const trail = useRef<Position[]>([]);
+  const preloaded = useRef(false);
+
+  useEffect(() => {
+    function onMove(event: PointerEvent) {
+      const now = performance.now();
+      trail.current.push({ x: event.clientX, y: event.clientY, t: now });
+      // Keep only the last 100 ms of motion.
+      trail.current = trail.current.filter((p) => now - p.t < 100);
+
+      if (preloaded.current || !buttonRef.current) return;
+
+      const recent = trail.current;
+      if (recent.length < 3) return;
+
+      const last = recent[recent.length - 1];
+      const first = recent[0];
+      const dt = (last.t - first.t) / 1000;
+      if (dt <= 0) return;
+
+      // Velocity in px/s.
+      const vx = (last.x - first.x) / dt;
+      const vy = (last.y - first.y) / dt;
+      const speed = Math.hypot(vx, vy);
+
+      // Decelerating + heading toward this button + within ~80 px = predict.
+      const rect = buttonRef.current.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const distance = Math.hypot(last.x - cx, last.y - cy);
+
+      if (speed < 400 && distance < 80) {
+        preloaded.current = true;
+        preloadFn(href);
+      }
+    }
+
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [href, preloadFn]);
+
+  return (
+    <a
+      ref={buttonRef}
+      href={href}
+      onMouseEnter={() => {
+        // Fallback: hover triggers preload too.
+        if (!preloaded.current) {
+          preloaded.current = true;
+          preloadFn(href);
+        }
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+```
+
+The thresholds (400 px/s velocity, 80 px distance) are starting points. Tune them per surface — a fancy hover button can use larger thresholds because the user is willing to look longer; a small icon button needs tighter thresholds because the prediction window is shorter.
+
+## Accessibility
+
+1. **Don't fire screen-reader announcements on the prediction.** The user has not committed; an announcement before they click is premature.
+2. **Don't gate keyboard users on this.** The tracker only fires on `pointermove`. Keyboard users will tab to focus, which should trigger its own preload — see [route prefetching](/patterns/route-prefetching) for the `onFocus` pattern.
+3. **`prefers-reduced-data`** users have asked for less network traffic; the prediction's false-positive rate is exactly the kind of cost they are trying to avoid. Gate the predictive preload on `not (prefers-reduced-data)`.
+
+## Linked scenarios
+
+- [Route navigation](/scenarios/route-navigation) — the canonical use.
+- [Image gallery](/scenarios/image-gallery) — predictive preload of likely next-clicks.
+- [Multi-step wizard / checkout](/scenarios/multi-step-wizard-checkout) — predict the next step on form-progress signals.
+
+## References
+
+<ReferencesList refs={references} />
