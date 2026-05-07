@@ -42,3 +42,11 @@ next-env.d.ts
 
 # claude code user-local settings
 .claude/settings.local.json
+
+# AI-only working files — kept local, never published.
+AGENTS.md
+CLAUDE.md
+PRD.md
+.materials/
+.agents/skills/
+.claude/skills/
