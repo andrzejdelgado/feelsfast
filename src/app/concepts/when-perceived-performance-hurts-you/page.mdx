@@ -1,0 +1,79 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/when-perceived-performance-hurts-you";
+
+export const metadata = {
+  title: "When perceived performance hurts you",
+  description:
+    "Three surfaces where perception engineering is the wrong tool: direct manipulation (Jota et al. 2013, Deber et al. 2015 — JNDs ~33 ms), optimistic UI without failure handling, and the looks-fast / is-fast gap (Eizenberg). Where to trust perception, where to grind on objective speed.",
+};
+
+<RegisterReferences refs={references} />
+
+# When perceived performance hurts you
+
+The previous five essays argued that perceived performance is undervalued and that the perception layer can buy meaningful gains for the cost of a designer's afternoon. This essay argues the opposite. Perceived performance is the right tool *most* of the time — but not always, and the cases where it fails are the cases where teams hurt themselves the most.
+
+I'd argue the cleanest framing is the one Eyal Eizenberg <Cite id="eizenberg" label="Eizenberg" /> set up: a placeholder is not a substitute for interactivity. The pattern catalog later in this site lists which patterns are appropriate for which surface — and the surfaces where they are *inappropriate* are the surfaces where teams ship "polished slow" without realising it.
+
+Three categories. Direct manipulation, optimistic UI without failure handling, and "looks fast" without "is fast."
+
+## Direct manipulation lives below 100 ms
+
+The folkloric "100 ms feels instant" rule is right for content updates and form submissions. It is wrong by an order of magnitude for direct manipulation.
+
+Direct manipulation is what the Apple Human Interface Guidelines used to call "the user is moving the object themselves" — a slider being dragged, a list being swiped, a map being panned, a colour wheel being rotated, an inline diff being scrubbed. The user is not waiting for a response; they *are* the response. Their hand and the screen are moving together.
+
+Jota et al. <Cite id="jota-2013" label="Jota et al. 2013" /> measured touch-input JNDs (just-noticeable differences) in 2013 and found that for direct-touch dragging, users could discriminate latencies as low as ~33 ms — roughly a third of the canonical 100 ms threshold for content updates. Tapping was higher (~82 ms) but still well below 100 ms. Deber et al. <Cite id="deber-2015" label="Deber et al. 2015" /> followed up at CHI 2015 with a more extensive study and confirmed the same picture: direct-touch interactions have latency JNDs substantially tighter than indirect interactions. Ng et al. <Cite id="ng-2012" label="Ng et al. 2012" /> at UIST 2012 had earlier shown that experienced users could detect latency improvements down to single-millisecond ranges in some direct-touch contexts.
+
+The practical consequence: if your slider, drag, or scroll has a 100 ms latency, it does not "feel instant." It feels noticeably laggy, and there is no skeleton screen or progress bar that fixes it. The user is waiting for the *cursor* to catch up to their finger. No amount of perception engineering helps. The fix is real engineering: hardware-accelerated transforms, reduced JS work on the main thread, dedicated input handling.
+
+This is where Eizenberg's argument lands hardest. A surface where the user's intent is "act on this, immediately" cannot be saved by a perception layer. Perception engineering wins consumption races, not direct-manipulation ones.
+
+## Optimistic UI fails in the long tail
+
+Optimistic UI — render the user's action as if it succeeded, then reconcile with the server when the response arrives — is one of the strongest perception-layer tricks. When 99 % of attempts succeed, the user's experience is sub-perceptible feedback, near-zero latency, no spinner. It is the difference between social-feed apps feeling instant and feeling like a 1990s message board.
+
+The trap is the failing 1 %. If a like, a save, or a delete fails after the optimistic render, the rollback path needs to exist *and* be visible to the user. Three failure modes worth flagging:
+
+1. **Silent rollback.** The action visibly succeeded, then quietly reverted three seconds later when the server rejected it. The user does not realise the action did not stick. They notice an hour later. Their trust evaporates.
+2. **Generic error toast.** "Something went wrong" with a spinner is nearly as bad. The user knows the action failed, but cannot tell which one — especially if they have made several optimistic actions in succession.
+3. **Loss of in-progress state.** An optimistic action that includes mid-flight user input — a comment that was being typed when the like failed, say — gets clobbered when the rollback fires. The user pays for the failure with their work.
+
+The mitigation is not "use optimistic UI carefully." The mitigation is to design the failure path explicitly: visible error states tied to specific actions, retries that preserve user context, undo windows for irreversible operations. Optimistic UI without an honest failure path is a polished lie. The user will eventually catch it.
+
+There is also a simpler trap: pessimistic actions misrepresented as optimistic. If the server-side operation has a 30 % chance of rejection — because it crosses a permission boundary, competes with another user's edit, or hits a rate limit — rendering it as optimistic means three out of every ten interactions roll back visibly. The pattern works at 1 % rejection. It does not work at 30 %. Know your distribution.
+
+## "Looks fast" without "is fast"
+
+Eizenberg's <Cite id="eizenberg" label="Eizenberg" /> headline argument is the deepest of the three. A skeleton screen at 80 ms with content arriving at 4 s is not faster than a blank screen at 80 ms with content at 4 s — it is just *prettier*. The user's actual time-to-interactive is the same. The difference, after the user has used the app a few times, is whether they trust the interface or feel like they have been managed.
+
+Time to Interactive (TTI) is the metric that captures this. Lighthouse defines TTI as "the point at which layout has stabilised, key webfonts are visible, and the main thread is available enough to handle user input." Below 5 s is generally good; above 10 s is generally bad. A skeleton screen makes the *first paint* faster but does not change TTI at all.
+
+For the kinds of products where TTI matters — text editors, code editors, productive tools, anything where the user's first interaction comes within 1–2 s of arrival — the perception layer is a thin shim over a real performance problem. Eizenberg's example was an editor where the visible layout arrived quickly but keystroke responsiveness lagged for ~8 s. Users notice. They tell their colleagues. The perception layer becomes a tax on trust.
+
+The line is roughly: if your product is *read* primarily, perceived performance pays for itself many times over. If your product is *acted on* primarily, real performance is the only thing that matters, and any perception engineering you ship will get caught at the first usability test.
+
+## Where the line is
+
+The simplest decision rule I have found:
+
+1. **Consumption surfaces** (read-mostly): pricing pages, marketing sites, dashboards, documentation, news feeds. Perception engineering wins. Skeleton screens, predictive preloading, optimistic UI, animated progress all carry their weight.
+2. **Production surfaces** (act-mostly): IDEs, CRMs, search-as-you-type, chat composers, drag-and-drop interfaces, anything with a slider or a scrubber. Real performance wins. The perception layer is at best a polishing pass; at worst, a misrepresentation.
+3. **Mixed surfaces** (some read, some act): most products. The right answer is to apply each pattern only where it fits — perception for the consumption areas, real engineering for the interactive areas — and not paint perception over the act-mostly parts because the read-mostly parts looked good.
+
+Most production apps live in category three. A dashboard is consumption, but the search box at the top is production. The article is consumption, but the comment composer is production. A perception-layer trick that ships across both treats them as one thing, and the production parts pay for the consumption parts' polish.
+
+## What to do with this
+
+Three takeaways before the final essay:
+
+1. **Identify your direct-manipulation surfaces and protect them with real performance work.** A 60 ms drag latency is the wrong place to deploy a skeleton. The fix is hardware acceleration, not visual reassurance.
+2. **Audit your optimistic UI for failure paths.** If a rollback exists but the user cannot see it, you have built a polished lie. Make every failure visible, specific, and undoable.
+3. **Resist the urge to apply perception patterns universally.** Skeleton screens are great for /dashboard, terrible for the search input on /dashboard. Pattern catalogs are not menus to apply everywhere — they are toolboxes to apply per surface.
+
+The next and final essay covers performance budgets that include perception: how to set quantitative targets that account for both objective speed and the cognitive transitions humans actually go through, and how to integrate the Doherty threshold with INP and the rest of Web Vitals.
+
+## References
+
+<ReferencesList refs={references} />

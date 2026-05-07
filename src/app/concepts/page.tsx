@@ -73,8 +73,8 @@ const essays = [
     title: "When perceived performance hurts you",
     blurb:
       "Eizenberg's argument, latency JNDs in direct manipulation, and where polished placeholders become polished lies.",
-    citations: ["Eizenberg", "Deber et al. 2015", "Jota et al. 2013"],
-    status: "planned" as const,
+    citations: ["Eizenberg", "Ng et al. 2012", "Jota et al. 2013", "Deber et al. 2015"],
+    status: "published" as const,
   },
   {
     slug: "performance-budgets-with-perception",
