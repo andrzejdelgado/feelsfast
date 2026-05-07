@@ -178,7 +178,7 @@ function DemoSide({
   return (
     <div
       className={cn(
-        "rounded-md border bg-background p-4 transition-colors",
+        "flex flex-col rounded-md border bg-background p-4 transition-colors",
         highlighted ? "border-primary" : "border-border",
       )}
     >
@@ -190,7 +190,11 @@ function DemoSide({
       >
         {label}
       </p>
-      <div className="mt-3 min-h-[8rem]" aria-live="polite" aria-busy="false">
+      <div
+        className="mt-3 flex min-h-[8rem] flex-1 flex-col"
+        aria-live="polite"
+        aria-busy="false"
+      >
         {children}
       </div>
     </div>

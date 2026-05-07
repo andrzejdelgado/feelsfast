@@ -48,7 +48,7 @@ export function TunedCounter({ seed = 1 }: { seed?: number }) {
   }, []);
 
   return (
-    <div className="grid min-h-[5rem] place-items-center rounded-md border border-border bg-background">
+    <div className="grid h-full min-h-[5rem] flex-1 place-items-center rounded-md border border-border bg-background">
       <div className="text-center">
         <p className="font-mono text-3xl font-medium tabular-nums text-foreground">
           {loaded ? display.toLocaleString() : "—"}
