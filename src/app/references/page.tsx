@@ -34,9 +34,13 @@ export default function ReferencesPage() {
         when arguing about a claim.
       </p>
 
-      <div className="mt-12 space-y-12">
-        {ALL_CATEGORIES.map((category) => (
-          <section key={category.id} aria-labelledby={`section-${category.id}`}>
+      <div className="mt-12">
+        {ALL_CATEGORIES.map((category, i) => (
+          <section
+            key={category.id}
+            aria-labelledby={`section-${category.id}`}
+          >
+            {i > 0 ? <SectionDivider /> : null}
             <h2
               id={`section-${category.id}`}
               className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground"
@@ -51,6 +55,23 @@ export default function ReferencesPage() {
         ))}
       </div>
     </article>
+  );
+}
+
+/**
+ * Quiet centered separator between bibliography sections. Uppercase mono
+ * asterisk in muted colour — the same register as the eyebrows. The 16
+ * units of vertical margin on each side give the eye an unmistakable
+ * "the section ends here" rest before the next category title.
+ */
+function SectionDivider() {
+  return (
+    <div
+      aria-hidden
+      className="my-16 text-center font-mono text-base text-muted-foreground"
+    >
+      *
+    </div>
   );
 }
 
