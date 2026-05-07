@@ -66,10 +66,15 @@ export default function ReferencesPage() {
  * "the section ends here" rest before the next category title.
  */
 function SectionDivider() {
+  // Asymmetric margins on purpose: the previous section ends with a `<li>`
+  // that carries `py-8` (32 px of padding-bottom), so a symmetric `my-16`
+  // would visually leave 96 px above the asterisk and 64 px below. Using
+  // `mt-8 mb-16` cancels the inherited padding-bottom and yields an
+  // equal 64 px of visible whitespace on both sides.
   return (
     <div
       aria-hidden
-      className="my-16 flex justify-center text-muted-foreground"
+      className="mb-16 mt-8 flex justify-center text-muted-foreground"
     >
       <Asterisk className="size-4" />
     </div>
