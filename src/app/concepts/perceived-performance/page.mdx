@@ -1,0 +1,79 @@
+export const metadata = {
+  title: "What perceived performance actually is",
+  description:
+    "The dichotomy between objective and perceived performance, the 20 % just-noticeable difference, and where looking-fast stops being a substitute for being-fast. Cites Miller 1968, Nielsen 1993, Doherty 1982, Weber–Fechner, Eizenberg.",
+};
+
+# What perceived performance actually is
+
+Most people who use the phrase "perceived performance" mean one of three things, and the three are quietly incompatible. Some mean "make the spinner prettier." Others mean "lie to the user with placeholder content." A third group — usually people who have argued about this in production for a while — mean something specific: the gap between how fast a UI actually is and how fast it feels, treated as a thing to engineer rather than a soft quality to gesture at.
+
+I'd argue the third reading is the only one worth keeping. The first two are folklore — sometimes useful folklore, but folklore.
+
+## The gap is the product
+
+Imagine two versions of the same web app. Version A loads its dashboard in 1.4 s. Version B loads its dashboard in 1.6 s but renders a skeleton screen at 80 ms, animates it gently, and snaps to the real layout the instant data arrives. The stopwatch tells you A is faster. Most users will tell you B is faster. The gap between those two answers is the entire field.
+
+This is not a controversial claim. The classical literature on response time — Miller 1968 <Cite id="miller-1968" label="Miller 1968" />, popularised three decades later by Nielsen <Cite id="nielsen-1993" label="Nielsen 1993" /> — treats user-perceived time as the dependent variable, not the clock. Doherty's IBM study <Cite id="doherty-1982" label="Doherty 1982" /> measured actual productivity gains as response time dropped under 400 ms. The productivity curve does not match the clock curve linearly, because users do not respond to clocks.
+
+What this means in practice: every wait in your product has two durations. The objective one (your APM dashboard knows about). The subjective one (your churn rate knows about). Engineering optimises the first. Design — when it is doing the work — optimises the second.
+
+## The 20 % rule, and why it is more annoying than it sounds
+
+There is one piece of psychophysics every designer working on performance should have memorised: Weber–Fechner <Cite id="weber-fechner" label="Weber–Fechner" />. The threshold of difference humans can perceive in a stimulus is roughly proportional to the magnitude of the stimulus. For latency in the sub-30-second range, the just-noticeable difference sits around 20 %.
+
+Translation: if you shave 100 ms off a 1-second wait, almost nobody will notice. If you shave 300 ms off, almost everyone will. If you ship a 15 % improvement and put it on a billboard, you have wasted the billboard.
+
+The annoying corollary is what this rule does to engineering effort. The first 20 % of a wait is cheap to remove; the second 20 % requires real architectural work; the third 20 % requires rewriting the data layer; the fourth 20 % requires a backend team. Each tier costs more, each tier is increasingly visible — and the user only gives you credit for the visible ones.
+
+This is exactly why perceived performance deserves first-class treatment. A tuned skeleton screen, a route prefetch, a `mousedown` listener instead of a `click` listener — these can produce *perceptible* improvements at *one team's* cost. The math is brutal:
+
+1. **Twenty percent objective** — the cost of one engineer-month, the gain of one billboard-worthy headline.
+2. **Five hundred milliseconds shaved off the perception layer** — the cost of one designer-week, the gain of users who sigh when the dashboard appears in three seconds instead of six and never realise the actual numbers were 1.5 s and 1.6 s.
+
+The first column is real. The second is also real. Most teams pay for the first and forget the second.
+
+## The counter-argument, and why it is partly right
+
+If the perception layer is so cheap and so effective, why does anyone still grind on objective performance? Because perception runs out.
+
+Eyal Eizenberg makes the cleanest version of this argument <Cite id="eizenberg" label="Eizenberg" />: a placeholder is not a substitute for an interactive surface. If your search box draws a skeleton at 80 ms but the actual debounced query takes 4 s to come back, the user is staring at a useless skeleton for most of their session. Same for an editor that shows its layout instantly but cannot accept keystrokes for ten seconds — a polished perception layer becomes a polished lie. Eizenberg's preferred metric, Time to Interactive, is the right metric for the kind of UI he is talking about.
+
+The reconciliation, if you want one, is this: perception engineering wins for *consumption* surfaces; objective speed wins for *production* surfaces. A pricing page, a marketing site, a documentation reader, a dashboard that shows numbers — these are consumption. Skeleton screens, predictive preloading, optimistic UI, and the rest carry their weight. An IDE, a CRM, a search-as-you-type interface, a chat composer — these are production. The user is reaching to act, and any wait that delays the *action* will cost real engagement no matter how artfully the skeleton pulses.
+
+It is not "perceived versus actual." It is "which one is the bottleneck for what the user is trying to do."
+
+## Where this site sits
+
+Most articles in this space pick a side, sometimes without realising it. This site is structured to take both seriously: the Concepts cover the science, the Scenarios show the gap in side-by-side demos, the Patterns give you the techniques, and the Skill installs the whole thing into your AI tools so you stop having to remember it manually.
+
+You'll notice every claim on the platform comes with a citation. That is on purpose. Perceived performance has accumulated more folklore per year than almost any other UX subfield, and most of it traces back to a small set of papers that almost nobody reads in the original. We read the originals so you can argue with us on the same evidence.
+
+## What to do with this
+
+Three takeaways before the next essay:
+
+1. **Treat objective and subjective time as two different budgets.** Track them separately. The win condition for one is not the win condition for the other.
+2. **Spend your design effort where the JND is.** A 5 % improvement is wasted; a 25 % improvement is felt. Pick the loud wins.
+3. **Notice when you cross from consumption into production.** The perception layer is honest in one mode and a lie in the other. The pattern catalog later in the site flags which mode each pattern fits.
+
+The next essay covers how humans perceive time itself — active versus passive states, filled versus empty duration, why two seconds in line at a coffee shop feels different from two seconds waiting for a route transition. That is the part of the science most designers skip, and it is the part that determines which patterns work where.
+
+## References
+
+<dl>
+  <dt id="ref-miller-1968">[Miller 1968]</dt>
+  <dd>Miller, R. B. (1968). Response time in man-computer conversational transactions. *Proceedings of the AFIPS Fall Joint Computer Conference*, 33(I), 267–277. The progenitor of the response-time tiers later popularised as 0.1 / 1 / 10 s. Miller's actual 17-transaction taxonomy is more granular than the clean trichotomy.</dd>
+
+  <dt id="ref-nielsen-1993">[Nielsen 1993]</dt>
+  <dd>Nielsen, J. (1993). Response Times: The 3 Important Limits. From *Usability Engineering*, Ch. 5. Morgan Kaufmann. The popularising distillation; cite Miller for the underlying research.</dd>
+
+  <dt id="ref-doherty-1982">[Doherty 1982]</dt>
+  <dd>Doherty, W. J., & Thadani, A. J. (1982). The Economic Value of Rapid Response Time. IBM Technical Report GE20-0752-0. Establishes a sub-second productivity cliff (the "Doherty threshold"); programmer transactions per hour rose ≈ 106 % moving from 3 s response to 0.3 s response.</dd>
+
+  <dt id="ref-weber-fechner">[Weber–Fechner]</dt>
+  <dd>Weber, E. H., and Fechner, G. T. (c. 1834+). The Weber–Fechner Law of perceived stimulus intensity. Foundational psychophysics; for a UX-readable application to web performance see Mishunov, *Why Performance Matters: The Perception of Time* (Smashing Magazine, 2015).</dd>
+
+  <dt id="ref-eizenberg">[Eizenberg]</dt>
+  <dd>Eizenberg, E. *When Actual Performance Is More Important Than Perceived Performance* (Medium). The counter-case: looks-fast is not a substitute for being-fast on interactive surfaces; cite for the consumption-vs-production distinction.</dd>
+</dl>
