@@ -1,0 +1,52 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveListFetch } from "@/demos/list-fetch/naive";
+import { TunedListFetch } from "@/demos/list-fetch/tuned";
+import { config as demoConfig } from "@/demos/list-fetch/config";
+import { references } from "@/lib/refs/scenario-auth-oauth";
+
+export const metadata = {
+  title: "Auth / OAuth flow",
+  description:
+    "1 – 10 S band. Sign-in or third-party OAuth handshake. Pre-action feedback on the button, optimistic post-auth redirect, determinate progress for the round-trip.",
+};
+
+<RegisterReferences refs={references} />
+
+# Auth / OAuth flow
+
+Sign in. Or click "Continue with Google" and round-trip through a third-party. The wait is one to several seconds — most of it the network handshake the user can do nothing about. The perception layer cannot shorten the handshake; it can ensure the wait is filled with affordances rather than blank.
+
+<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+
+## What is happening
+
+The list-fetch demo stands in for the OAuth round-trip. The naive side leaves the page blank; the tuned side renders a skeleton of the destination layout immediately, ready for the auth response. For real OAuth, the tuned flow looks like:
+
+1. **Press feedback within 50 ms** on the sign-in button — Fitch's <Cite id="fitch" label="Fitch" /> 200 ms active-state animation.
+2. **Optimistic redirect to the destination** with a skeleton of the post-auth view — anticipating success.
+3. **Determinate progress** during the multi-step handshake (where supported) — Myers 1985 <Cite id="myers-1985" label="Myers 1985" />.
+4. **Honest failure path** if the OAuth flow rejects, with re-attempt control on the same surface.
+
+## What to tune
+
+1. [Pre-action feedback](/patterns/pre-action-feedback) — press animation on the auth button.
+2. [Skeleton screens](/patterns/skeleton-screens) — pre-rendered destination layout while the handshake completes.
+3. [Optimistic UI](/patterns/optimistic-ui) — for the post-auth redirect; reconcile with the actual response.
+4. [Determinate progress](/patterns/determinate-progress) — for multi-step flows where stages are reportable.
+
+## When perceived performance hurts you here
+
+OAuth handshakes can fail for reasons the user did not cause — third-party outages, expired tokens, browser quirks. An optimistic redirect that lands on a destination skeleton and then fails silently is the worst-case version of this pattern. The failure path *must* return the user to the sign-in surface with a clear, recoverable error message — not strand them on a half-loaded destination.
+
+## Accessibility
+
+1. **`role="alert"`** on auth failure messages — the user thought they were signed in.
+2. **Focus management on the redirect** — land on the destination's main heading.
+3. **Don't trap on the spinner.** A 10-second OAuth round-trip with no escape locks the user.
+4. **`prefers-reduced-motion`** for the redirect transition.
+
+## References
+
+<ReferencesList refs={references} />

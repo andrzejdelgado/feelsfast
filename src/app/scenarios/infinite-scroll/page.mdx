@@ -1,0 +1,50 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveListFetch } from "@/demos/list-fetch/naive";
+import { TunedListFetch } from "@/demos/list-fetch/tuned";
+import { config as demoConfig } from "@/demos/list-fetch/config";
+import { references } from "@/lib/refs/scenario-infinite-scroll";
+
+export const metadata = {
+  title: "Infinite scroll",
+  description:
+    "100 MS – 1 S band. Continuous content stream as the user scrolls. Predictive preload before the bottom; layout stability during reflows; intersection observer for the trigger.",
+};
+
+<RegisterReferences refs={references} />
+
+# Infinite scroll
+
+The user keeps scrolling. The list keeps growing. The naive answer is to wait for the bottom of the visible content, then fetch the next batch. The tuned answer is to anticipate — fetch before the user reaches the boundary, render skeleton rows for the next batch immediately, and keep the layout stable as the new content lands.
+
+This scenario sits in the 100 MS – 1 S band most of the time. The trigger is what changes from [long-list-pagination](/scenarios/long-list-pagination) — instead of an explicit "Next" click, scroll position is the signal.
+
+<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+
+## What is happening
+
+Same list-fetch demo, framed for the scroll case. Naive: fetch fires when the user hits the bottom; the user sees an empty gap until the data arrives. Tuned: an intersection observer ~70 % down the visible viewport triggers the prefetch; skeleton rows render immediately; the data swap is invisible most of the time.
+
+Fitch's <Cite id="fitch" label="Fitch" /> predictive-preloading framing applies: the scroll signal is high-confidence intent. The user is going to keep going; you can begin the next batch's fetch with a low false-positive rate.
+
+## What to tune
+
+1. [Predictive preloading](/patterns/predictive-preloading-hover) — intersection observer at ~70 % of viewport.
+2. [Skeleton screens](/patterns/skeleton-screens) — layout-matching rows for the incoming batch.
+3. [Stale-while-revalidate](/patterns/stale-while-revalidate) — cache previously-loaded batches so backwards scroll is instant.
+
+## When perceived performance hurts you here
+
+Infinite scroll itself is contested as a UX pattern — it disrupts back-button behaviour, makes the footer unreachable, and inflates session weight. The perception layer cannot fix those problems; it can only sharpen the loading affordance within the pattern.
+
+## Accessibility
+
+1. **`aria-busy`** on the list during the next-batch fetch.
+2. **Live region announcement** every N batches, not every batch — too many announcements is noise.
+3. **Keyboard navigation** must reach new content as it lands.
+4. **Don't hijack scroll position** when the new content appears.
+
+## References
+
+<ReferencesList refs={references} />

@@ -1,0 +1,60 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
+import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
+import { config as demoConfig } from "@/demos/ai-streaming/config";
+import { references } from "@/lib/refs/scenario-ai-long-compute-inference";
+
+export const metadata = {
+  title: "AI · Long compute / Inference",
+  description:
+    "10 S+ band. Long-running AI inference — image generation, complex analysis, deep agentic reasoning. Engagement, progress where measurable, tool-call transparency where applicable.",
+};
+
+<RegisterReferences refs={references} />
+
+# AI · Long compute / Inference
+
+The user submits a request that is going to take 30 seconds or more. Image generation. A complex analytical query. A long-context reasoning task. The user has crossed the unit-task boundary; static skeletons no longer carry their weight; engagement is the last move before they leave.
+
+This scenario sits in the 10 S+ band. Block & Zakay 1997's <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> meta-analysis frames the trade-off — engagement compresses prospective duration while expanding retrospective duration; the design decision is whether you have made that trade deliberately. Fitch's <Cite id="fitch" label="Fitch" /> Slack and FIFA examples are the canonical references; Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> is the determinate-progress fallback where the inference reports phases.
+
+<DemoRunner config={demoConfig} Naive={NaiveAIStreaming} Tuned={TunedAIStreaming} />
+
+## What is happening
+
+The ai-streaming demo stands in. For a real long inference, the tuned flow stacks more layers:
+
+1. **Thinking state** during the time-to-first-token gap — the same dots-and-cursor pattern from [ai-chat-streaming-response](/scenarios/ai-chat-streaming-response).
+2. **Streaming render** as soon as the first token arrives, paced to a natural reading rhythm.
+3. **Tool-call transparency** if the inference involves visible tool calls — narrate them ("Searching…", "Reading…", "Reasoning…").
+4. **Determinate progress** if the inference can report phases ("Step 3 of 7"); fall back to engagement otherwise.
+5. **Cancellation always available** — the stop button must respond inside the perceptual frame even if the abort takes longer.
+6. **Background fallback** — past 30–60 seconds, offer "do this in the background and notify me" so the user can leave the surface.
+
+## What to tune
+
+1. [Engaging loading states](/patterns/engaging-loading) — Slack-style sequencing or AI-narration variant.
+2. [Tool-call transparency](/patterns/ai-tool-call-transparency) — narrate the agent's work where applicable.
+3. [Token-by-token streaming](/patterns/ai-token-streaming) — paced reveal of any text output.
+4. [Cancellation affordance](/patterns/ai-cancellation-affordance) — instant stop.
+5. [Determinate progress](/patterns/determinate-progress) — for inference with reportable phases.
+6. [Background sync](/patterns/background-sync) — for inference past ~60 s; defer off the user's perceived path.
+
+## When perceived performance hurts you here
+
+The engagement-vs-retrospective-duration trade is the central trap. A 30-second inference with rich engagement feels short while it runs and long in retrospect — the user remembers it as taking forever even when their session went smoothly. Slack and FIFA accept this; for inference where the user repeats the action many times in a session, the retrospective cost compounds.
+
+The cleaner answer for repeat-use AI inference: ship determinate progress where measurable, [tool-call transparency](/patterns/ai-tool-call-transparency) where applicable (the user is *learning* during the wait), and background sync past 60 s. Generic engaging content (motivational quotes, mini-games) belongs only on rare or one-off inferences.
+
+## Accessibility
+
+1. **`aria-live="polite"`** on the streaming output and on tool-call narration.
+2. **`aria-busy="true"`** during the inference; flip on completion.
+3. **`prefers-reduced-motion: reduce`** — replace cross-fades and pulse animations with static states.
+4. **Always provide a way out** — visible cancellation, visible "do in background", visible re-attempt on failure.
+
+## References
+
+<ReferencesList refs={references} />

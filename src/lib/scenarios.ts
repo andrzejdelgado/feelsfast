@@ -88,7 +88,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Continuous content stream as the user scrolls. Predictive load before the bottom; layout stability during reflows.",
     linkedPatterns: ["Predictive preloading", "Stale-while-revalidate", "Layout stability"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "08",
@@ -132,7 +132,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Sign-in or third-party OAuth handshake. Pre-action feedback on the button, optimistic post-auth redirect, determinate progress for the round-trip.",
     linkedPatterns: ["Determinate progress", "Pre-action feedback", "Optimistic redirects"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "12",
@@ -176,7 +176,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "User types into a chat composer. Input always responsive; cursor handling; optimistic message render.",
     linkedPatterns: ["Pre-action feedback", "Optimistic message render", "Cursor handling"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "16",
@@ -253,7 +253,7 @@ export const scenarios: readonly Scenario[] = [
       "Cancellation affordance",
       "Background work",
     ],
-    status: "planned",
+    status: "published",
   },
   {
     number: "22",
