@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function PatternsPage() {
   return (
-    <article className="mx-auto max-w-2xl px-6 py-12">
+    <article className="px-8 py-12 lg:px-12 xl:px-16">
       <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
         24 patterns · 4 ai-tagged · 2 with ai variants
       </p>

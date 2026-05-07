@@ -9,7 +9,7 @@ import { ReferencesPanel } from "./ReferencesPanel";
  */
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto grid min-h-screen w-full max-w-[1440px] grid-cols-1 md:grid-cols-[280px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)_280px]">
+    <div className="grid min-h-screen w-full grid-cols-1 md:grid-cols-[280px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)_280px]">
       <aside
         className="hidden border-r border-border bg-sidebar md:block"
         aria-label="Site navigation"
