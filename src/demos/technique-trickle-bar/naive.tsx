@@ -25,11 +25,10 @@ export function NaiveTrickleBar({ seed = 1 }: { seed?: number }) {
   }, []);
 
   return (
-    <div className="overflow-hidden rounded-md border border-border bg-background">
-      <div className="h-1 w-full bg-transparent" />
-      <div className="px-4 pt-3 text-xs text-muted-foreground">
+    <div className="grid h-full min-h-[8rem] place-items-center rounded-md border border-border bg-background p-4">
+      <p className="text-xs text-muted-foreground">
         {phase === "loading" ? "Loading…" : "Done."}
-      </div>
+      </p>
     </div>
   );
 }

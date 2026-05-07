@@ -5,6 +5,7 @@ export const config: DemoConfig = {
   description:
     "Six images load at varying rates. Naive: blank tiles until each finishes. Tuned: blurred LQIP placeholders resolve into the full image as it streams in.",
   timeBand: "1 – 10 S",
+  runMode: "manual",
 };
 
 export const TILE_COUNT = 6;

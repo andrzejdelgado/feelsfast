@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Loader2, Play, Sparkles, X } from "lucide-react";
+import { Check, Loader2, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { seededGamma } from "@/lib/jitter";
@@ -17,152 +17,108 @@ type PhaseState = {
  * currently-running phase shows a progress bar based on its declared
  * unit count (Research sources: 7 / 12, Verify citations: 4 / 8) where
  * applicable, and a soft pulse where it does not. Phases already done
- * collapse to a check + final unit count. Cancellation is always
- * available, and the cancel boundary is the *next* phase, not the
- * current one — so partial work is never lost mid-step.
+ * collapse to a check + final unit count. Auto-starts on mount.
  */
 export function TunedAiAgenticWorkflow({ seed = 1 }: { seed?: number }) {
-  const [phase, setPhase] = useState<"idle" | "running" | "done" | "cancelled">(
-    "idle",
-  );
+  const [phase, setPhase] = useState<"running" | "done">("running");
   const [states, setStates] = useState<PhaseState[]>(() =>
     PHASES.map(() => ({ status: "pending", ratio: 0 })),
   );
-  const cancelRef = useRef<{ cancelled: boolean } | null>(null);
 
   useEffect(() => {
-    return () => {
-      if (cancelRef.current) cancelRef.current.cancelled = true;
-    };
-  }, []);
-
-  const run = async () => {
-    if (phase === "running") return;
-    setPhase("running");
-    setStates(PHASES.map(() => ({ status: "pending", ratio: 0 })));
     const token = { cancelled: false };
-    cancelRef.current = token;
 
-    for (let i = 0; i < PHASES.length; i++) {
-      if (token.cancelled) return;
-      setStates((prev) =>
-        prev.map((s, idx) =>
-          idx === i ? { status: "running", ratio: 0 } : s,
-        ),
-      );
-      const total = seededGamma(seed + i * 1009, PHASES[i].durationMs);
-      const start = performance.now();
-      await new Promise<void>((resolve) => {
-        const id = setInterval(() => {
-          const elapsed = performance.now() - start;
-          const ratio = Math.min(1, elapsed / total);
-          setStates((prev) =>
-            prev.map((s, idx) =>
-              idx === i ? { status: "running", ratio } : s,
-            ),
-          );
-          if (token.cancelled || ratio >= 1) {
-            clearInterval(id);
-            resolve();
-          }
-        }, 100);
-      });
-      if (token.cancelled) return;
-      setStates((prev) =>
-        prev.map((s, idx) => (idx === i ? { status: "done", ratio: 1 } : s)),
-      );
-    }
-    if (!token.cancelled) setPhase("done");
-  };
+    const run = async () => {
+      for (let i = 0; i < PHASES.length; i++) {
+        if (token.cancelled) return;
+        setStates((prev) =>
+          prev.map((s, idx) =>
+            idx === i ? { status: "running", ratio: 0 } : s,
+          ),
+        );
+        const total = seededGamma(seed + i * 1009, PHASES[i].durationMs);
+        const start = performance.now();
+        await new Promise<void>((resolve) => {
+          const id = setInterval(() => {
+            const elapsed = performance.now() - start;
+            const ratio = Math.min(1, elapsed / total);
+            setStates((prev) =>
+              prev.map((s, idx) =>
+                idx === i ? { status: "running", ratio } : s,
+              ),
+            );
+            if (token.cancelled || ratio >= 1) {
+              clearInterval(id);
+              resolve();
+            }
+          }, 100);
+        });
+        if (token.cancelled) return;
+        setStates((prev) =>
+          prev.map((s, idx) => (idx === i ? { status: "done", ratio: 1 } : s)),
+        );
+      }
+      if (!token.cancelled) setPhase("done");
+    };
+    run();
 
-  const cancel = () => {
-    if (cancelRef.current) cancelRef.current.cancelled = true;
-    setPhase("cancelled");
-  };
-
-  const showPhases = phase !== "idle";
+    return () => {
+      token.cancelled = true;
+    };
+  }, [seed]);
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={run}
-          disabled={phase === "running"}
-          className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:bg-secondary active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <Play className="size-4" aria-hidden />
-          Run agent
-        </button>
-        {phase === "running" ? (
-          <button
-            type="button"
-            onClick={cancel}
-            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary"
-          >
-            <X aria-hidden className="size-3" />
-            Cancel
-          </button>
-        ) : null}
-      </div>
-
-      {showPhases ? (
-        <ol className="space-y-1.5">
-          {PHASES.map((p, i) => {
-            const s = states[i];
-            const showBar = s.status === "running" && p.units;
-            const unitsDone = p.units
-              ? Math.round(s.ratio * p.units.total)
-              : 0;
-            return (
-              <li
-                key={p.id}
-                className={cn(
-                  "rounded-md border bg-background px-3 py-2 text-sm transition-colors",
-                  s.status === "running"
-                    ? "border-primary"
-                    : s.status === "done"
-                      ? "border-border"
-                      : "border-border opacity-60",
-                )}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <StatusIcon status={s.status} />
-                    <span className="font-medium">{p.label}</span>
-                  </div>
-                  {p.units && s.status !== "pending" ? (
-                    <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
-                      {s.status === "done"
-                        ? `${p.units.total} / ${p.units.total} ${p.units.label}`
-                        : `${unitsDone} / ${p.units.total} ${p.units.label}`}
-                    </span>
-                  ) : null}
+      <ol className="space-y-1.5">
+        {PHASES.map((p, i) => {
+          const s = states[i];
+          const showBar = s.status === "running" && p.units;
+          const unitsDone = p.units
+            ? Math.round(s.ratio * p.units.total)
+            : 0;
+          return (
+            <li
+              key={p.id}
+              className={cn(
+                "rounded-md border bg-background px-3 py-2 text-sm transition-colors",
+                s.status === "running"
+                  ? "border-primary"
+                  : s.status === "done"
+                    ? "border-border"
+                    : "border-border opacity-60",
+              )}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <StatusIcon status={s.status} />
+                  <span className="font-medium">{p.label}</span>
                 </div>
-                {showBar ? (
-                  <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full bg-primary transition-[width] duration-100 ease-out"
-                      style={{ width: `${Math.round(s.ratio * 100)}%` }}
-                    />
-                  </div>
+                {p.units && s.status !== "pending" ? (
+                  <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
+                    {s.status === "done"
+                      ? `${p.units.total} / ${p.units.total} ${p.units.label}`
+                      : `${unitsDone} / ${p.units.total} ${p.units.label}`}
+                  </span>
                 ) : null}
-              </li>
-            );
-          })}
-        </ol>
-      ) : null}
+              </div>
+              {showBar ? (
+                <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full bg-primary transition-[width] duration-100 ease-out"
+                    style={{ width: `${Math.round(s.ratio * 100)}%` }}
+                  />
+                </div>
+              ) : null}
+            </li>
+          );
+        })}
+      </ol>
 
       {phase === "done" ? (
         <div className="flex items-center gap-2 text-sm text-primary">
           <Sparkles className="size-4" aria-hidden />
           <span className="font-medium">Report ready.</span>
         </div>
-      ) : null}
-      {phase === "cancelled" ? (
-        <p className="text-sm text-muted-foreground">
-          Cancelled. Partial work was discarded.
-        </p>
       ) : null}
     </div>
   );

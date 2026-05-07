@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { gammaJitter } from "@/lib/jitter";
 import { SIMULATED_WORK_MS } from "./config";
 import { Layout } from "./naive";
 
@@ -34,7 +33,7 @@ export function TunedMousedown() {
       setLatency(performance.now() - startedAt.current);
       setPhase("done");
       fired.current = false;
-    }, gammaJitter(SIMULATED_WORK_MS));
+    }, SIMULATED_WORK_MS);
   };
 
   return <Layout phase={phase} latency={latency} onMouseDown={onMouseDown} />;

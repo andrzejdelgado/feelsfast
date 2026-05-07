@@ -5,6 +5,7 @@ export const config: DemoConfig = {
   description:
     "A chat-style assistant returns a ~200-character answer. Naive: total wait, then the full response drops in. Tuned: ~600 ms thinking state, then tokens stream at a natural reading pace.",
   timeBand: "1 – 10 S",
+  runMode: "manual",
 };
 
 export const RESPONSE =

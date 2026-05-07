@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Download, Mail } from "lucide-react";
+import { Check, Mail } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { seededGamma } from "@/lib/jitter";
 import {
@@ -10,34 +10,30 @@ import {
   TOTAL_ROWS,
 } from "./config";
 
-type Phase = "idle" | "generating" | "ready";
+type Phase = "generating" | "ready";
 
 const STAGE_BOUNDARIES = ENGAGEMENT_MESSAGES.map(
   (_, i) => (i + 1) / ENGAGEMENT_MESSAGES.length,
 );
 
+/**
+ * Tuned — determinate row-count progress + rotating engagement copy +
+ * email-when-ready handoff once the wait crosses the 10-second
+ * threshold. Auto-starts on mount; total duration is seeded so this
+ * panel finishes at the same wall-clock moment as Naive.
+ */
 export function TunedDataExport({ seed = 1 }: { seed?: number }) {
-  const [phase, setPhase] = useState<Phase>("idle");
+  const [phase, setPhase] = useState<Phase>("generating");
   const [progress, setProgress] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const totalRef = useRef(TOTAL_DURATION_P50_MS);
 
   useEffect(() => {
-    return () => {
-      if (intervalRef.current !== null) clearInterval(intervalRef.current);
-    };
-  }, []);
-
-  const generate = () => {
-    totalRef.current = seededGamma(seed, TOTAL_DURATION_P50_MS);
-    setPhase("generating");
-    setProgress(0);
-    setElapsed(0);
+    const total = seededGamma(seed, TOTAL_DURATION_P50_MS);
     const start = performance.now();
     intervalRef.current = setInterval(() => {
       const now = performance.now() - start;
-      const ratio = Math.min(1, now / totalRef.current);
+      const ratio = Math.min(1, now / total);
       setElapsed(now);
       setProgress(ratio);
       if (ratio >= 1 && intervalRef.current !== null) {
@@ -46,7 +42,10 @@ export function TunedDataExport({ seed = 1 }: { seed?: number }) {
         setPhase("ready");
       }
     }, 100);
-  };
+    return () => {
+      if (intervalRef.current !== null) clearInterval(intervalRef.current);
+    };
+  }, [seed]);
 
   const stageIdx = Math.min(
     ENGAGEMENT_MESSAGES.length - 1,
@@ -62,16 +61,6 @@ export function TunedDataExport({ seed = 1 }: { seed?: number }) {
 
   return (
     <div className="space-y-3">
-      <button
-        type="button"
-        onClick={generate}
-        disabled={phase === "generating"}
-        className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:bg-secondary active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        <Download className="size-4" aria-hidden />
-        {phase === "ready" ? "Download ready" : "Generate CSV"}
-      </button>
-
       {phase === "generating" ? (
         <div className="space-y-2">
           <div
@@ -103,9 +92,7 @@ export function TunedDataExport({ seed = 1 }: { seed?: number }) {
             </button>
           ) : null}
         </div>
-      ) : null}
-
-      {phase === "ready" ? (
+      ) : (
         <div className="flex items-center gap-2 text-sm text-primary">
           <Check className="size-4" aria-hidden />
           <a
@@ -119,7 +106,7 @@ export function TunedDataExport({ seed = 1 }: { seed?: number }) {
             · {TOTAL_ROWS.toLocaleString()} rows
           </span>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

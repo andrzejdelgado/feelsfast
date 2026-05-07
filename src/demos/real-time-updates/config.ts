@@ -6,6 +6,7 @@ export const config: DemoConfig = {
   description:
     "A live activity feed with new events arriving at random intervals. Naive: items pop in instantly with no register. Tuned: items slide in with a brief highlight that fades, so the eye knows what is new.",
   timeBand: "0–100 MS",
+  runMode: "manual",
 };
 
 export const EVENT_INTERVAL_P50_MS = 1500;

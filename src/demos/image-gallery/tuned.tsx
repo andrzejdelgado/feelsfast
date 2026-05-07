@@ -45,14 +45,18 @@ export function TunedImageGallery({ seed = 1 }: { seed?: number }) {
             key={tile.id}
             aria-label={tile.label}
             aria-busy={!isLoaded}
-            className={cn(
-              "aspect-square w-full rounded transition-[filter] duration-[350ms] ease-out motion-reduce:transition-none",
-              isLoaded
-                ? "[filter:blur(0)_saturate(1)]"
-                : "[filter:blur(20px)_saturate(0.6)]",
-            )}
-            style={{ backgroundImage: tile.gradient }}
-          />
+            className="aspect-square w-full overflow-hidden rounded"
+          >
+            <div
+              className={cn(
+                "size-full transition-[filter] duration-[350ms] ease-out motion-reduce:transition-none",
+                isLoaded
+                  ? "[filter:blur(0)_saturate(1)]"
+                  : "[filter:blur(10px)_saturate(0.6)]",
+              )}
+              style={{ backgroundImage: tile.gradient }}
+            />
+          </div>
         );
       })}
     </div>

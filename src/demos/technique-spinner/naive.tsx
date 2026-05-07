@@ -23,7 +23,7 @@ export function NaiveSpinner({ seed = 1 }: { seed?: number }) {
   }, []);
 
   return (
-    <div className="grid min-h-[5rem] place-items-center rounded-md border border-border bg-background">
+    <div className="grid h-full min-h-[8rem] place-items-center rounded-md border border-border bg-background">
       <p className="text-sm text-foreground">
         {loaded ? "Settings saved." : ""}
       </p>

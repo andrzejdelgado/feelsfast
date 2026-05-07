@@ -43,17 +43,17 @@ export function TunedIconFlip() {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
       <button
         type="button"
         onClick={onClick}
         aria-pressed={liked}
         aria-label={liked ? "Unlike" : "Like"}
-        className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:bg-secondary active:scale-[0.97]"
+        className="inline-flex items-center gap-3 rounded-md border border-border bg-card px-6 py-4 text-base font-medium transition-colors hover:bg-secondary active:scale-[0.97]"
       >
         <Heart
           className={cn(
-            "size-4 transition-[fill,color]",
+            "size-7 transition-[fill,color]",
             liked ? "fill-primary text-primary" : "text-muted-foreground",
           )}
           aria-hidden

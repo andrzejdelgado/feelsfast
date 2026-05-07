@@ -1,5 +1,6 @@
 "use client";
 
+import { Play, RefreshCw } from "lucide-react";
 import { useId, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -10,14 +11,21 @@ export type DemoConfig = {
   description?: string;
   /** Time-band tag rendered top-right (mono uppercase). e.g. `"1 – 10 S"`. */
   timeBand?: string;
+  /**
+   * "auto"   — demos render and run as soon as the card mounts (default).
+   * "manual" — demos sit idle until the visitor presses Run; both Off and
+   *             On then mount in lock-step, share one seed, and finish
+   *             together. Reset returns the card to idle.
+   */
+  runMode?: "auto" | "manual";
 };
 
 /**
  * Both Off and On sides of every demo receive the same `seed` on each
- * Replay. Pair this with `seededGamma(seed, p50)` from `lib/jitter`
- * inside the demo so both sides finish at the same wall-clock moment
- * — the difference between Off and On should be in *how* the wait
- * fills, not in *how long* the wait is.
+ * run. Pair this with `seededGamma(seed, p50)` from `lib/jitter` inside
+ * the demo so both sides finish at the same wall-clock moment — the
+ * difference between Off and On should be in *how* the wait fills, not
+ * in *how long* the wait is.
  *
  * Demos that intentionally show a timing difference (mousedown vs
  * click, optimistic flips, top-edge progress bar's 100 % overshoot)
@@ -38,27 +46,49 @@ const newSeed = () => Math.floor(Math.random() * 0xffffffff);
 /**
  * DemoRunner — the canonical wrapper for every Scenario demo (PRD §8).
  *
- * Layout: side-by-side desktop, stacked mobile. Both panels are always
- * visible; the Replay button re-runs both simultaneously by:
- *   1. Rolling a fresh seed.
- *   2. Bumping `runId` to force a remount of both children.
- *   3. Passing the same seed to both Naive and Tuned via prop.
+ * Two run modes:
  *
- * Demos that opt in to seeded timing (`seededGamma(seed, p50)`) get
- * identical wall-clock durations on both sides — same Replay, same
- * total wait, different visual fill.
+ *   "auto" (default)
+ *     Both panels mount as soon as the card lands and run their
+ *     animations through. Reset re-rolls the seed and remounts both
+ *     sides; the demo plays again.
+ *
+ *   "manual"
+ *     Both panels start in an idle state. A primary "Run" button on
+ *     the far left mounts both sides simultaneously with a fresh
+ *     seed — the same seed for both, so they finish together. Reset
+ *     unmounts and returns to idle. Use this for demos where the
+ *     animation is short or where the visitor benefits from
+ *     deciding when to watch.
+ *
+ * Buttons:
+ *   - Run   (left, primary)  — manual mode only, before/after a run
+ *   - Reset (right)          — always shown; restarts (auto) or
+ *                               un-runs (manual)
  *
  * Accessibility: ARIA live regions on each side, keyboard-operable
- * Replay, motion-reduce honoured by child demos.
+ * controls, motion-reduce honoured by child demos.
  */
 export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
-  const [runId, setRunId] = useState(0);
+  const isManual = config.runMode === "manual";
+  const [runId, setRunId] = useState(isManual ? 0 : 1);
   const [seed, setSeed] = useState(newSeed);
   const headingId = useId();
 
-  const replay = () => {
+  const isRunning = runId > 0;
+
+  const start = () => {
     setSeed(newSeed());
     setRunId((id) => id + 1);
+  };
+
+  const reset = () => {
+    if (isManual) {
+      setRunId(0);
+    } else {
+      setSeed(newSeed());
+      setRunId((id) => id + 1);
+    }
   };
 
   return (
@@ -87,25 +117,52 @@ export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
         ) : null}
       </header>
 
-      <div className="mt-6 flex flex-wrap items-center gap-4">
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        {isManual ? (
+          <button
+            type="button"
+            onClick={start}
+            className="inline-flex items-center gap-1.5 rounded-md border border-primary bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97]"
+          >
+            <Play aria-hidden className="size-3.5" />
+            Run
+          </button>
+        ) : null}
         <button
           type="button"
-          onClick={replay}
-          className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary"
+          onClick={reset}
+          className="ml-auto inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary"
         >
-          Replay
+          <RefreshCw aria-hidden className="size-3.5" />
+          Reset
         </button>
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
         <DemoSide label="Off">
-          <Naive key={`naive-${runId}`} seed={seed} />
+          {isRunning ? (
+            <Naive key={`naive-${runId}`} seed={seed} />
+          ) : (
+            <IdlePlaceholder />
+          )}
         </DemoSide>
         <DemoSide label="On" highlighted>
-          <Tuned key={`tuned-${runId}`} seed={seed} />
+          {isRunning ? (
+            <Tuned key={`tuned-${runId}`} seed={seed} />
+          ) : (
+            <IdlePlaceholder />
+          )}
         </DemoSide>
       </div>
     </section>
+  );
+}
+
+function IdlePlaceholder() {
+  return (
+    <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground/70">
+      Press Run to start
+    </p>
   );
 }
 

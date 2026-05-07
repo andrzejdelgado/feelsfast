@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Loader2, Play, Sparkles, X } from "lucide-react";
+import { Check, Loader2, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { seededGamma } from "@/lib/jitter";
@@ -18,119 +18,82 @@ type StepState = {
  *   - the tool's human-readable label;
  *   - the result detail once the tool returns.
  *
- * The user can read the agent's trajectory in real time: "the model is
- * reading my package.json now, then it searched for useState, now it is
- * editing the file." Cancellation is always available — the visible
- * tool-call list is what makes the cancellation actionable, because the
- * user can see *what is currently happening* and decide whether to stop.
+ * Auto-starts on mount. The DemoRunner's external Run button mounts
+ * the demo, which kicks off the steps in sequence and walks them to
+ * completion.
  */
 export function TunedAiToolExecution({ seed = 1 }: { seed?: number }) {
-  const [phase, setPhase] = useState<"idle" | "running" | "done" | "cancelled">(
-    "idle",
-  );
+  const [phase, setPhase] = useState<"running" | "done">("running");
   const [states, setStates] = useState<StepState[]>(
     STEPS.map((s) => ({ step: s, status: "pending" })),
   );
   const cancelRef = useRef<{ cancelled: boolean } | null>(null);
 
   useEffect(() => {
-    return () => {
-      if (cancelRef.current) cancelRef.current.cancelled = true;
-    };
-  }, []);
-
-  const run = async () => {
-    if (phase === "running") return;
-    setPhase("running");
-    setStates(STEPS.map((s) => ({ step: s, status: "pending" })));
     const token = { cancelled: false };
     cancelRef.current = token;
 
-    for (let i = 0; i < STEPS.length; i++) {
-      if (token.cancelled) return;
-      setStates((prev) =>
-        prev.map((s, idx) =>
-          idx === i ? { ...s, status: "running" } : s,
-        ),
-      );
-      await new Promise<void>((resolve) =>
-        setTimeout(resolve, seededGamma(seed + i * 1009, STEPS[i].durationMs)),
-      );
-      if (token.cancelled) return;
-      setStates((prev) =>
-        prev.map((s, idx) => (idx === i ? { ...s, status: "done" } : s)),
-      );
-    }
-    if (!token.cancelled) setPhase("done");
-  };
+    const run = async () => {
+      for (let i = 0; i < STEPS.length; i++) {
+        if (token.cancelled) return;
+        setStates((prev) =>
+          prev.map((s, idx) =>
+            idx === i ? { ...s, status: "running" } : s,
+          ),
+        );
+        await new Promise<void>((resolve) =>
+          setTimeout(
+            resolve,
+            seededGamma(seed + i * 1009, STEPS[i].durationMs),
+          ),
+        );
+        if (token.cancelled) return;
+        setStates((prev) =>
+          prev.map((s, idx) => (idx === i ? { ...s, status: "done" } : s)),
+        );
+      }
+      if (!token.cancelled) setPhase("done");
+    };
+    run();
 
-  const cancel = () => {
-    if (cancelRef.current) cancelRef.current.cancelled = true;
-    setPhase("cancelled");
-  };
-
-  const showSteps = phase !== "idle";
+    return () => {
+      token.cancelled = true;
+    };
+  }, [seed]);
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={run}
-          disabled={phase === "running"}
-          className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:bg-secondary active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <Play className="size-4" aria-hidden />
-          Run agent
-        </button>
-        {phase === "running" ? (
-          <button
-            type="button"
-            onClick={cancel}
-            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary"
+      <ol className="space-y-1.5">
+        {states.map((s) => (
+          <li
+            key={s.step.id}
+            className={cn(
+              "rounded-md border bg-background px-3 py-2 text-sm transition-colors",
+              s.status === "running"
+                ? "border-primary"
+                : s.status === "done"
+                  ? "border-border"
+                  : "border-border opacity-60",
+            )}
           >
-            <X aria-hidden className="size-3" />
-            Cancel
-          </button>
-        ) : null}
-      </div>
-
-      {showSteps ? (
-        <ol className="space-y-1.5">
-          {states.map((s) => (
-            <li
-              key={s.step.id}
-              className={cn(
-                "rounded-md border bg-background px-3 py-2 text-sm transition-colors",
-                s.status === "running"
-                  ? "border-primary"
-                  : s.status === "done"
-                    ? "border-border"
-                    : "border-border opacity-60",
-              )}
-            >
-              <div className="flex items-center gap-2">
-                <StatusIcon status={s.status} />
-                <span className="font-medium">{s.step.label}</span>
-              </div>
-              {s.status === "done" ? (
-                <p className="mt-1 pl-6 text-xs text-muted-foreground">
-                  {s.step.detail}
-                </p>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-      ) : null}
+            <div className="flex items-center gap-2">
+              <StatusIcon status={s.status} />
+              <span className="font-medium">{s.step.label}</span>
+            </div>
+            {s.status === "done" ? (
+              <p className="mt-1 pl-6 text-xs text-muted-foreground">
+                {s.step.detail}
+              </p>
+            ) : null}
+          </li>
+        ))}
+      </ol>
 
       {phase === "done" ? (
         <div className="flex items-center gap-2 text-sm text-primary">
           <Sparkles className="size-4" aria-hidden />
           <span className="font-medium">Done.</span>
         </div>
-      ) : null}
-      {phase === "cancelled" ? (
-        <p className="text-sm text-muted-foreground">Cancelled.</p>
       ) : null}
     </div>
   );

@@ -6,10 +6,10 @@ import { seededGamma } from "@/lib/jitter";
 import { HERO, TOTAL_DURATION_P50_MS } from "./config";
 
 /**
- * Tuned — the image slot ships with a centred brand mark from frame
- * zero (here, a simple "F" wordmark in the primary colour, sitting
- * on a neutral surface). When the actual image lands it crossfades
- * over 350 ms, replacing the brand mark.
+ * Tuned — the image slot ships with the full feelsfast wordmark
+ * centred from frame zero, sitting on a neutral surface. When the
+ * actual image lands it crossfades over 350 ms on top, replacing
+ * the wordmark.
  *
  * Use when you have no per-image dominant-colour data — cold cache,
  * fresh content, third-party images. The brand mark says "this
@@ -39,11 +39,16 @@ export function TunedImageBrand({ seed = 1 }: { seed?: number }) {
         <span
           aria-hidden
           className={cn(
-            "font-mono text-3xl font-medium uppercase tracking-wider text-primary/60 transition-opacity duration-[350ms] ease-out",
+            "flex items-baseline gap-1 transition-opacity duration-[350ms] ease-out",
             loaded ? "opacity-0" : "opacity-100",
           )}
         >
-          F
+          <span className="text-2xl font-medium tracking-tight text-foreground">
+            feelsfast
+          </span>
+          <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
+            .fyi
+          </span>
         </span>
         <div
           aria-hidden

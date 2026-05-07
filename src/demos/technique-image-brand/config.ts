@@ -5,6 +5,7 @@ export const config: DemoConfig = {
   description:
     "Image slot with the brand mark centred. Naive: empty muted box until the file lands. Tuned: a small primary-coloured logo / monogram sits in the centre of a neutral surface from frame zero. The slot reads as \"image is on its way from this brand\" rather than \"image is missing\". Useful when no dominant-colour data is available (cold cache, new content).",
   timeBand: "1 – 10 S",
+  runMode: "manual",
 };
 
 export const TOTAL_DURATION_P50_MS = 2400;

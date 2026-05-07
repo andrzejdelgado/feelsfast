@@ -32,18 +32,18 @@ export function TunedOptimisticActions() {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col items-center justify-center gap-3 py-6">
       <button
         type="button"
         onClick={handleClick}
         aria-pressed={liked}
-        className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:bg-secondary active:scale-[0.97]"
+        className="inline-flex items-center gap-3 rounded-md border border-border bg-card px-6 py-4 text-base font-medium transition-colors hover:bg-secondary active:scale-[0.97]"
       >
         <Heart
           aria-hidden
-          className={`size-4 transition-colors ${liked ? "fill-primary text-primary" : "text-muted-foreground"}`}
+          className={`size-7 transition-colors ${liked ? "fill-primary text-primary" : "text-muted-foreground"}`}
         />
-        <span className="tabular-nums">{count}</span>
+        <span className="text-lg tabular-nums">{count}</span>
       </button>
       {error ? (
         <p

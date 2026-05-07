@@ -3,54 +3,60 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { seededGamma } from "@/lib/jitter";
-import { HERO, TOTAL_DURATION_P50_MS } from "./config";
+import { TILES, TILE_P50_MS } from "./config";
 
 /**
- * Tuned — the image's dominant colour fills the slot from frame zero
- * (in production this would be inlined as a data-uri at upload time;
- * here we use the precomputed hex). When the actual image "lands," it
- * crossfades over 350 ms, replacing the colour block with the real
- * gradient.
+ * Tuned — every tile starts as a solid block of the image's dominant
+ * colour from frame zero (in production: a 1×1 base64 LQIP inlined
+ * in the HTML). When the real image arrives, it crossfades over
+ * 350 ms on top of the colour block.
  *
- * The perception of "almost there" starts well before the file does:
- * the user sees the warm sunset hue immediately and reads it as the
- * image arriving, just out of resolution. By the time the gradient
- * crossfades in, they already know what the photo is.
+ * Per-tile durations are seeded so each Off tile pairs with its On
+ * counterpart — same load time, different visual treatment of the
+ * intervening wait.
  */
 export function TunedImageColor({ seed = 1 }: { seed?: number }) {
-  const [loaded, setLoaded] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [loaded, setLoaded] = useState<Set<string>>(new Set());
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
-    timeoutRef.current = setTimeout(
-      () => setLoaded(true),
-      seededGamma(seed, TOTAL_DURATION_P50_MS),
+    timeoutsRef.current = TILES.map((tile, i) =>
+      setTimeout(() => {
+        setLoaded((prev) => {
+          const next = new Set(prev);
+          next.add(tile.id);
+          return next;
+        });
+      }, seededGamma(seed + i * 1009, TILE_P50_MS)),
     );
     return () => {
-      if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
+      timeoutsRef.current.forEach((id) => clearTimeout(id));
     };
-  }, []);
+  }, [seed]);
 
   return (
-    <div className="overflow-hidden rounded-md border border-border bg-background">
-      {/* Two stacked layers: the dominant-colour block sits underneath,
-          the real image fades in on top. */}
-      <div
-        aria-label={HERO.alt}
-        aria-busy={!loaded}
-        className="relative aspect-video w-full"
-        style={{ backgroundColor: HERO.predominantColor }}
-      >
-        <div
-          aria-hidden
-          className={cn(
-            "absolute inset-0 transition-opacity duration-[350ms] ease-out motion-reduce:duration-[150ms]",
-            loaded ? "opacity-100" : "opacity-0",
-          )}
-          style={{ backgroundImage: HERO.gradient }}
-        />
-      </div>
-      <div className="px-3 py-2 text-xs text-muted-foreground">{HERO.alt}</div>
+    <div className="grid grid-cols-3 gap-2">
+      {TILES.map((tile) => {
+        const isLoaded = loaded.has(tile.id);
+        return (
+          <div
+            key={tile.id}
+            aria-label={tile.label}
+            aria-busy={!isLoaded}
+            className="relative aspect-square w-full overflow-hidden rounded"
+            style={{ backgroundColor: tile.predominantColor }}
+          >
+            <div
+              aria-hidden
+              className={cn(
+                "absolute inset-0 transition-opacity duration-[350ms] ease-out motion-reduce:duration-[150ms]",
+                isLoaded ? "opacity-100" : "opacity-0",
+              )}
+              style={{ backgroundImage: tile.gradient }}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

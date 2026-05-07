@@ -5,6 +5,7 @@ export const config: DemoConfig = {
   description:
     "Server generates a 5,000-row CSV. Naive: opaque spinner past the 10-second wall. Tuned: row-count milestones, engagement copy, and an email-when-ready hand-off if the wait runs long.",
   timeBand: "10 S+",
+  runMode: "manual",
 };
 
 export const TOTAL_ROWS = 5000;

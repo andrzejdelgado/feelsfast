@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  RefreshCw,
 } from "lucide-react";
 import { useId, useState } from "react";
 import { config, PAN_STEP } from "@/demos/map-interactions/config";
@@ -28,7 +29,7 @@ export function MapInteractionsCard() {
   const [seed, setSeed] = useState(newSeed);
   const headingId = useId();
 
-  const replay = () => {
+  const reset = () => {
     setSeed(newSeed());
     setCenterX(0);
     setCenterY(0);
@@ -65,17 +66,18 @@ export function MapInteractionsCard() {
         ) : null}
       </header>
 
-      <div className="mt-6 flex flex-wrap items-center gap-4">
+      <div className="mt-6 flex flex-wrap items-center gap-3">
         <button
           type="button"
-          onClick={replay}
-          className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary"
+          onClick={reset}
+          className="ml-auto inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary"
         >
-          Replay
+          <RefreshCw aria-hidden className="size-3.5" />
+          Reset
         </button>
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr] md:items-start">
+      <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
         <Panel label="Off">
           <NaiveMapInteractions
             centerX={centerX}
@@ -83,9 +85,6 @@ export function MapInteractionsCard() {
             seed={seed}
           />
         </Panel>
-
-        <SharedPanControls pan={pan} />
-
         <Panel label="On" highlighted>
           <TunedMapInteractions
             centerX={centerX}
@@ -94,6 +93,8 @@ export function MapInteractionsCard() {
           />
         </Panel>
       </div>
+
+      <SharedPanControls pan={pan} />
     </section>
   );
 }
@@ -135,27 +136,17 @@ function SharedPanControls({
   pan: (dx: number, dy: number) => void;
 }) {
   const btn =
-    "inline-flex size-8 items-center justify-center rounded-md border border-border bg-card text-foreground transition-colors hover:border-primary hover:text-primary active:scale-[0.95]";
+    "inline-flex size-8 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:border-primary hover:text-primary active:scale-[0.95]";
   return (
     <div
-      className="self-center rounded-md border border-border bg-card p-3"
+      className="mt-4 flex w-full items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3"
       role="group"
       aria-label="Pan controls (drives both panels)"
     >
-      <p className="mb-2 text-center font-mono text-[0.6rem] font-medium uppercase tracking-wider text-muted-foreground">
-        Pan both
+      <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
+        Pan both panels
       </p>
-      <div className="grid grid-cols-3 gap-1">
-        <span />
-        <button
-          type="button"
-          aria-label="Pan up"
-          onClick={() => pan(0, -PAN_STEP)}
-          className={btn}
-        >
-          <ChevronUp aria-hidden className="size-4" />
-        </button>
-        <span />
+      <div className="flex items-center gap-1">
         <button
           type="button"
           aria-label="Pan left"
@@ -164,16 +155,14 @@ function SharedPanControls({
         >
           <ChevronLeft aria-hidden className="size-4" />
         </button>
-        <span />
         <button
           type="button"
-          aria-label="Pan right"
-          onClick={() => pan(PAN_STEP, 0)}
+          aria-label="Pan up"
+          onClick={() => pan(0, -PAN_STEP)}
           className={btn}
         >
-          <ChevronRight aria-hidden className="size-4" />
+          <ChevronUp aria-hidden className="size-4" />
         </button>
-        <span />
         <button
           type="button"
           aria-label="Pan down"
@@ -182,7 +171,14 @@ function SharedPanControls({
         >
           <ChevronDown aria-hidden className="size-4" />
         </button>
-        <span />
+        <button
+          type="button"
+          aria-label="Pan right"
+          onClick={() => pan(PAN_STEP, 0)}
+          className={btn}
+        >
+          <ChevronRight aria-hidden className="size-4" />
+        </button>
       </div>
     </div>
   );

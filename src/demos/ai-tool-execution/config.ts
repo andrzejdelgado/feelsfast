@@ -5,6 +5,7 @@ export const config: DemoConfig = {
   description:
     "An agent reads a file, searches the codebase, edits a file, and runs a typecheck. Naive: opaque \"Working…\" spinner for the full duration. Tuned: each tool call streams in as the agent runs it, with its own running / done state.",
   timeBand: "1 – 10 S",
+  runMode: "manual",
 };
 
 export type ToolStep = {

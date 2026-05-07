@@ -5,6 +5,7 @@ export const config: DemoConfig = {
   description:
     "A multi-step agent — plan, research, synthesise, verify, write — runs for ~20 s. Naive: \"Running agent…\" for the duration. Tuned: timeline of phases with current step highlighted, sub-step progress within each phase, and cancellation always available.",
   timeBand: "10 S+",
+  runMode: "manual",
 };
 
 export type Phase = {

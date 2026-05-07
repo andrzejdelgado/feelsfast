@@ -12,16 +12,13 @@ type Phase = "trickle" | "hold" | "complete";
 
 /**
  * Tuned — NProgress-style trickle bar. Three phases:
- *   1. Trickle: 0 → 80 % over the first ~320 ms with a brisk ease-out.
- *   2. Hold: stays at 80 % calmly. No animation in this state — the
- *      bar is *honest* that it does not yet know how long the
- *      remainder will take.
- *   3. Complete: snaps to 100 % when the work finishes; fades after
- *      a moment.
+ *   1. Trickle: 0 → ~80 % over the first ~320 ms with a brisk ease-out.
+ *   2. Hold: stays at 80 % calmly. The bar is honest that it does not
+ *      yet know how long the remainder will take.
+ *   3. Complete: visibly snaps to 100 % when the work finishes and the
+ *      success label appears.
  *
- * This is the right cue for the 100 MS – 1 S band: a clear "something
- * is happening" without claiming a duration the implementation does
- * not actually know.
+ * The card fills the panel; bar + status sit centred inside it.
  */
 export function TunedTrickleBar({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<Phase>("trickle");
@@ -55,29 +52,28 @@ export function TunedTrickleBar({ seed = 1 }: { seed?: number }) {
     }, 30);
 
     return () => clearInterval(tick);
-  }, []);
+  }, [seed]);
 
   const widthPct = Math.round(progress * 100);
-  const showBar = phase !== "complete";
 
   return (
-    <div className="overflow-hidden rounded-md border border-border bg-background">
-      <div className="relative h-1 w-full overflow-hidden bg-muted/40">
-        {showBar ? (
-          <div
-            role="progressbar"
-            aria-label="Loading"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={widthPct}
-            className="h-full bg-primary transition-[width] duration-100 ease-out"
-            style={{ width: `${widthPct}%` }}
-          />
-        ) : null}
+    <div className="flex h-full min-h-[8rem] flex-col items-center justify-center gap-3 rounded-md border border-border bg-background p-4">
+      <div
+        role="progressbar"
+        aria-label="Loading"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={widthPct}
+        className="h-1.5 w-full overflow-hidden rounded-full bg-muted/40"
+      >
+        <div
+          className="h-full bg-primary transition-[width] duration-200 ease-out"
+          style={{ width: `${widthPct}%` }}
+        />
       </div>
-      <div className="px-4 pt-3 text-xs text-muted-foreground">
+      <p className="text-xs text-muted-foreground">
         {phase === "complete" ? "Done." : "Loading…"}
-      </div>
+      </p>
     </div>
   );
 }

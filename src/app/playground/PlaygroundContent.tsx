@@ -114,10 +114,6 @@ import { config as imageBrandConfig } from "@/demos/technique-image-brand/config
 import { NaiveImageBrand } from "@/demos/technique-image-brand/naive";
 import { TunedImageBrand } from "@/demos/technique-image-brand/tuned";
 
-import { config as imageBlurConfig } from "@/demos/technique-image-blur/config";
-import { NaiveImageBlur } from "@/demos/technique-image-blur/naive";
-import { TunedImageBlur } from "@/demos/technique-image-blur/tuned";
-
 import { config as spinnerConfig } from "@/demos/technique-spinner/config";
 import { NaiveSpinner } from "@/demos/technique-spinner/naive";
 import { TunedSpinner } from "@/demos/technique-spinner/tuned";
@@ -203,7 +199,6 @@ const bands: Band[] = [
       { config: skeletonRevealConfig, Naive: NaiveSkeletonReveal, Tuned: TunedSkeletonReveal },
       { config: decelBarConfig, Naive: NaiveDecelBar, Tuned: TunedDecelBar },
       { config: imageColorConfig, Naive: NaiveImageColor, Tuned: TunedImageColor },
-      { config: imageBlurConfig, Naive: NaiveImageBlur, Tuned: TunedImageBlur },
       { config: imageBrandConfig, Naive: NaiveImageBrand, Tuned: TunedImageBrand },
       { config: thinkingGradientConfig, Naive: NaiveThinkingGradient, Tuned: TunedThinkingGradient },
     ],

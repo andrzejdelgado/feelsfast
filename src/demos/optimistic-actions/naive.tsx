@@ -26,19 +26,19 @@ export function NaiveOptimisticActions() {
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-col items-center justify-center gap-3 py-6">
       <button
         type="button"
         onClick={handleClick}
         disabled={pending}
         aria-pressed={liked}
-        className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex items-center gap-3 rounded-md border border-border bg-card px-6 py-4 text-base font-medium transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
       >
         <Heart
           aria-hidden
-          className={`size-4 ${liked ? "fill-primary text-primary" : "text-muted-foreground"}`}
+          className={`size-7 ${liked ? "fill-primary text-primary" : "text-muted-foreground"}`}
         />
-        <span className="tabular-nums">{count}</span>
+        <span className="text-lg tabular-nums">{count}</span>
       </button>
       {pending ? (
         <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">

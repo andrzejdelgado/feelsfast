@@ -5,6 +5,7 @@ export const config: DemoConfig = {
   description:
     "A small list of items loads from a synthetic API. The naive side waits silently; the tuned side shows skeletons that match the final layout.",
   timeBand: "1 – 10 S",
+  runMode: "manual",
 };
 
 export const items = [
