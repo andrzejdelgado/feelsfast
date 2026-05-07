@@ -40,25 +40,21 @@ const bands = [
     label: "0–100 MS",
     title: "Instant input",
     body: "The user has not started waiting yet. Patterns here give a head-start, not a status — pre-action feedback, optimistic flips, direct-manipulation latency budgets. Anything that announces a wait at this scale damages the experience.",
-    example: "Optimistic icon flip · :active press feedback · cursor affordance",
   },
   {
     label: "100 MS – 1 S",
     title: "Perceptible wait",
     body: 'Cues say "active, working" without claiming an end-point. Indeterminate spinners, marquee bars, top-edge trickle bars, three-dot bounces. The system is honest about not knowing how long this will take.',
-    example: "Indeterminate spinner · NProgress trickle bar · three-dot bounce",
   },
   {
     label: "1 – 10 S",
     title: "Engaged wait",
     body: "Where most perception techniques live. The user is consciously waiting on the result and the cue is doing real work — masking absence with content-true skeletons, smoothing the wait with shimmer or LQIP, trading linear progress for backwards-decelerating ribs.",
-    example: "Shimmer skeleton · LQIP / blur-up · backwards-decelerating progress",
   },
   {
     label: "10 S+",
     title: "Past the wall",
     body: "The user's attention is no longer reliably on the task. Patterns here are about giving them something to do or freeing them from the wait entirely — engagement copy, branded sequences, foreground-to-background hand-offs.",
-    example: "Rotating tips · branded story · notification on complete",
   },
 ] as const;
 
@@ -179,14 +175,9 @@ export default function HomePage() {
               key={band.label}
               className="rounded-lg border border-border bg-card p-5"
             >
-              <div className="flex flex-wrap items-baseline justify-between gap-3">
-                <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
-                  {band.label}
-                </p>
-                <p className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
-                  Examples · {band.example}
-                </p>
-              </div>
+              <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
+                {band.label}
+              </p>
               <p className="mt-2 text-lg font-medium tracking-tight text-foreground">
                 {band.title}
               </p>
