@@ -1,4 +1,5 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/perceived-performance";
 
 export const metadata = {
@@ -66,19 +67,4 @@ The next essay covers how humans perceive time itself — active versus passive 
 
 ## References
 
-<dl>
-  <dt id="ref-miller-1968">[Miller 1968]</dt>
-  <dd>Miller, R. B. (1968). Response time in man-computer conversational transactions. *Proceedings of the AFIPS Fall Joint Computer Conference*, 33(I), 267–277. The progenitor of the response-time tiers later popularised as 0.1 / 1 / 10 s. Miller's actual 17-transaction taxonomy is more granular than the clean trichotomy.</dd>
-
-  <dt id="ref-nielsen-1993">[Nielsen 1993]</dt>
-  <dd>Nielsen, J. (1993). Response Times: The 3 Important Limits. From *Usability Engineering*, Ch. 5. Morgan Kaufmann. The popularising distillation; cite Miller for the underlying research.</dd>
-
-  <dt id="ref-doherty-1982">[Doherty 1982]</dt>
-  <dd>Doherty, W. J., & Thadani, A. J. (1982). The Economic Value of Rapid Response Time. IBM Technical Report GE20-0752-0. Establishes a sub-second productivity cliff (the "Doherty threshold"); programmer transactions per hour rose ≈ 106 % moving from 3 s response to 0.3 s response.</dd>
-
-  <dt id="ref-weber-fechner">[Weber–Fechner]</dt>
-  <dd>Weber, E. H., and Fechner, G. T. (c. 1834+). The Weber–Fechner Law of perceived stimulus intensity. Foundational psychophysics; for a UX-readable application to web performance see Mishunov, *Why Performance Matters: The Perception of Time* (Smashing Magazine, 2015).</dd>
-
-  <dt id="ref-eizenberg">[Eizenberg]</dt>
-  <dd>Eizenberg, E. *When Actual Performance Is More Important Than Perceived Performance* (Medium). The counter-case: looks-fast is not a substitute for being-fast on interactive surfaces; cite for the consumption-vs-production distinction.</dd>
-</dl>
+<ReferencesList refs={references} />

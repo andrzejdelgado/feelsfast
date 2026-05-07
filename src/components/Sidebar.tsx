@@ -24,6 +24,7 @@ export function Sidebar() {
 
       <ul className="flex flex-col gap-0.5">
         {sidebarSections.map((item) => {
+          const Icon = item.icon;
           const isActive =
             item.href === "/"
               ? pathname === "/"
@@ -33,13 +34,25 @@ export function Sidebar() {
               <Link
                 href={item.href}
                 className={cn(
-                  "block rounded-md px-3 py-1.5 text-sm transition-colors",
+                  "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors",
                   isActive
                     ? "bg-accent font-medium text-accent-foreground"
                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                 )}
               >
-                {item.label}
+                <Icon
+                  className={cn(
+                    "size-4 shrink-0",
+                    isActive ? "text-primary" : "text-muted-foreground",
+                  )}
+                  aria-hidden
+                />
+                <span className="flex-1">{item.label}</span>
+                {item.badge ? (
+                  <span className="rounded-sm bg-primary/10 px-1.5 py-0 font-mono text-[0.6rem] font-medium uppercase tracking-wider text-primary">
+                    {item.badge}
+                  </span>
+                ) : null}
               </Link>
             </li>
           );

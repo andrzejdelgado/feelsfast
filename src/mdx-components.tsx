@@ -120,7 +120,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     Cite,
     wrapper: ({ children }) => (
-      <article className="max-w-3xl px-8 py-12 lg:px-12 xl:px-16">
+      <article className="mx-auto max-w-3xl px-8 py-12 lg:px-12 xl:px-16">
         {children}
       </article>
     ),
