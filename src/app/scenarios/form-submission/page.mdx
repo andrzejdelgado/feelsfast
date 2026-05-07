@@ -1,0 +1,62 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
+import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
+import { config as demoConfig } from "@/demos/optimistic-actions/config";
+import { references } from "@/lib/refs/scenario-form-submission";
+
+export const metadata = {
+  title: "Form submission",
+  description:
+    "1 – 10 S band. The user submits a form. Pre-action feedback within 50 ms; optimistic UI when rejection rate is ≤ ~1 %; determinate progress when submission lasts past 1 s.",
+};
+
+<RegisterReferences refs={references} />
+
+# Form submission
+
+The user fills out a form and clicks Submit. What happens between the click and the success page determines whether the form feels responsive or laggy. There are three layers to tune — pre-action feedback, optimistic submission for low-rejection cases, and determinate progress for the long tail — and they stack to push the perceived submission time below Doherty 1982's <Cite id="doherty-1982" label="Doherty 1982" /> productivity-cliff.
+
+This scenario spans bands. Most submissions land in the 1 – 10 S band on the wall clock; the perception layer is what compresses them into the 0 – 100 MS or 100 MS – 1 S band the user actually feels. Fitch's <Cite id="fitch" label="Fitch" /> 200 ms active-state animation covers the press feedback; Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> covers the determinate-progress fallback.
+
+<DemoRunner config={demoConfig} Naive={NaiveOptimisticActions} Tuned={TunedOptimisticActions} />
+
+## What is happening in the demo
+
+The optimistic-actions demo stands in for the form submission: the naive side waits the full server round-trip before flipping state; the tuned side flips immediately and reconciles in the background. For a real form submission, the tuned side stacks three things:
+
+1. **Pre-action feedback within ~50 ms.** The submit button shows a `:active` state plus a 200 ms press animation as soon as the user clicks. Even if the actual submission takes 3 s, the press is acknowledged inside the perceptual frame.
+2. **Optimistic UI when rejection rates are low.** Render the success state immediately; reconcile with the server in the background. For a checkout submission with a 1 % rejection rate, this is a free win 99 % of the time and a recoverable error 1 % of the time.
+3. **Determinate progress when submission lasts past 1 s.** Past the active-to-passive transition, a determinate progress bar with backwards-decelerating ribs (per [animated progress](/patterns/animated-progress)) keeps the user oriented.
+
+The decision tree: rejection rate above ~5 % → skip optimistic, use determinate progress; rejection rate below ~1 % → optimistic with honest visible failure path; in between, lean toward optimistic if the user can recover from the failure cheaply.
+
+## What to tune
+
+The patterns at work, in priority order:
+
+1. [Pre-action feedback](/patterns/pre-action-feedback) — the press feedback always lands within ~50 ms, regardless of how long the submission takes.
+2. [Optimistic UI](/patterns/optimistic-ui) — for low-rejection-rate submissions; render-and-reconcile pattern.
+3. [Determinate progress](/patterns/determinate-progress) — for submissions longer than 1 s where progress can be measured.
+4. [Time-aware feedback](/patterns/time-aware-feedback) — the rule sheet that picks the right indicator per elapsed time.
+
+## When perceived performance hurts you here
+
+The optimistic pattern fails when the rejection rate is too high (covered in detail at [optimistic-actions](/scenarios/optimistic-actions)). The other failure mode specific to forms: an optimistic submission that loses the user's input on rollback. If the user typed for two minutes and the rollback discards the form data, the perception layer became a tax — the optimistic flip felt great, the rollback was catastrophic.
+
+The fix: preserve the form state across rollbacks. Re-display the form with the user's input intact, surface the failure inline, let them retry from where they were. Most React form libraries (React Hook Form, Tanstack Form) handle this if configured correctly; raw `useState` form state usually doesn't.
+
+For multi-step forms with non-trivial state, pair this scenario with the [multi-step wizard / checkout](/scenarios/multi-step-wizard-checkout) pattern: prefetch the next step's bundle on the current step's near-completion, optimistically navigate, and roll back to the previous step on validation failure.
+
+## Accessibility
+
+1. **`aria-pressed`** on toggle-form buttons reflects the optimistic state.
+2. **`role="alert"`** on the rollback message — the user thought their submission succeeded.
+3. **Don't lose mid-flight user input** — if the user is still typing in another field when the optimistic submission fails, the rollback must not clobber their work.
+4. **Focus management on rollback** — move focus to the failed field (or to the error message) so keyboard users find the problem.
+5. **`prefers-reduced-motion: reduce`** for the press animation — collapse to a colour change.
+
+## References
+
+<ReferencesList refs={references} />

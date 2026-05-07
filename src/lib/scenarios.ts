@@ -33,7 +33,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "Returning user, assets cached. View Transitions for the fade between the previous page and the new one.",
     linkedPatterns: ["View Transitions", "Prefetch", "Layout stability"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "03",
@@ -44,7 +44,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "User clicks a link. Route is prefetched on hover; transition is optimistic; fallback skeleton if the network slips.",
     linkedPatterns: ["Route prefetching", "View Transitions", "Optimistic UI"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "04",
@@ -55,7 +55,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "User submits a form. Pre-action feedback within 50 ms; optimistic UI for ≤ 1 % rejection rate; determinate progress otherwise.",
     linkedPatterns: ["Optimistic UI", "Determinate progress", "Pre-action feedback"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "05",

@@ -1,0 +1,64 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveListFetch } from "@/demos/list-fetch/naive";
+import { TunedListFetch } from "@/demos/list-fetch/tuned";
+import { config as demoConfig } from "@/demos/list-fetch/config";
+import { references } from "@/lib/refs/scenario-route-navigation";
+
+export const metadata = {
+  title: "Route navigation",
+  description:
+    "100 MS – 1 S band. Click a link, get a new page. Prefetch on hover, View Transitions for the handoff, optimistic redirect for the action chain. The wait should be invisible most of the time.",
+};
+
+<RegisterReferences refs={references} />
+
+# Route navigation
+
+The user clicks a link. A new page should appear. The naive answer is to wait for the click, fetch the route bundle and data, render the new page. The tuned answer is to have already done most of that work — the route bundle was prefetched on hover, the data was prefetched on mouse-deceleration, and the click triggers a near-instant View Transitions handoff between the cached previous page and the cached new page.
+
+Most navigations sit in the 100 MS – 1 S band. The goal is to push them into the 0–100 MS perceptual frame Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> describe — the navigation feels caused by the user, not awaited. Miller 1968's <Cite id="miller-1968" label="Miller 1968" /> simple-inquiry tier is the fallback budget for the cases where prefetching missed; Fitch's <Cite id="fitch" label="Fitch" /> predictive-preloading work is what gets you below it most of the time.
+
+<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+
+## What is happening in the demo
+
+The list-fetch demo stands in for the navigation: the naive side waits silently, the tuned side renders skeleton structure immediately. For a real route navigation, the tuned side stacks more tricks:
+
+1. **Prefetch on hover.** As the user moves toward the link, the route bundle and data begin loading. By the time they click, the bundle is parsed and the data is in cache.
+2. **`mousedown`-not-`click` listener.** The actual navigation begins on press, ~100–150 ms before release.
+3. **View Transitions cross-fade.** The browser captures the current page state and animates between the snapshots when the new page renders.
+4. **Skeleton fallback.** If the prefetch missed (the user clicked before hover triggered), the skeleton fills the ~200–400 ms gap.
+
+The combined effect on a fast network is a navigation that lands inside the perceptual frame — the user's click is causally indistinguishable from "the page changed instantly."
+
+## What to tune
+
+The patterns at work, in priority order:
+
+1. [Route prefetching](/patterns/route-prefetching) — viewport, hover, deceleration, pointerdown. Stack them.
+2. [View Transitions API](/patterns/view-transitions) — the cross-fade between captured snapshots.
+3. [mousedown / pointerdown vs. click](/patterns/mousedown-vs-click) — the additional ~100–150 ms head-start at click time.
+4. [Skeleton screens](/patterns/skeleton-screens) — fallback for the cache-miss case.
+5. [Optimistic UI](/patterns/optimistic-ui) — for navigations triggered by an action that the user will see results from elsewhere (e.g. clicking "Send" then navigating to inbox), render the optimistic state on the destination immediately.
+
+## When perceived performance hurts you here
+
+Aggressive prefetching has a cost. Every prefetched route the user does not navigate to is wasted bandwidth — and on slow networks, can compete with the active page's resources. The browser's connection-aware heuristics handle most of this, but heavy-handed manual prefetching (deceleration triggers on every link) inflates the false-positive rate.
+
+Tune the prefetch trigger to the surface. A primary CTA can use mouse-deceleration; a dense navigation menu should use viewport-entry only. The 70 % bottom-of-list trigger from [long-list-pagination](/scenarios/long-list-pagination) is a useful template.
+
+The other failure: applying View Transitions across routes that are visually unrelated. A cross-fade between a marketing landing page and a complex dashboard is decoration, not orientation. Use View Transitions where the visual relationship between the two states helps the user; skip them where the relationship is none.
+
+## Accessibility
+
+1. **Trigger prefetch on `onFocus` as well as `onMouseEnter`** — keyboard users get the same head-start.
+2. **`prefers-reduced-data`** users have asked for less network traffic; gate the more aggressive prefetch triggers (deceleration, mousedown) accordingly.
+3. **`prefers-reduced-motion: reduce`** for the View Transitions cross-fade.
+4. **Focus management on transition** — when the new route renders, focus the main heading or a stable landmark so keyboard users land where the action is.
+5. **Don't fire screen-reader announcements on prefetch.** The user has not yet committed; an announcement before they release is premature.
+
+## References
+
+<ReferencesList refs={references} />

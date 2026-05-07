@@ -1,0 +1,56 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveListFetch } from "@/demos/list-fetch/naive";
+import { TunedListFetch } from "@/demos/list-fetch/tuned";
+import { config as demoConfig } from "@/demos/list-fetch/config";
+import { references } from "@/lib/refs/scenario-page-load-warm-cache";
+
+export const metadata = {
+  title: "Page load (warm cache)",
+  description:
+    "100 MS – 1 S band. Returning user with cached assets. The naive surface still flashes a blank. The tuned surface uses the View Transitions API plus prefetched data so the previous page cross-fades into the new one.",
+};
+
+<RegisterReferences refs={references} />
+
+# Page load (warm cache)
+
+A returning user. The bundle is cached. The route data was prefetched on hover or at viewport entry. There is no real wait — and yet the naive surface still flashes a blank between the previous page and the new one. The tuned surface treats the navigation as a transition between two states of the same document, not as a new document fetch.
+
+This scenario sits in the 100 MS – 1 S band and usually lands on the fast end of it. Miller 1968's <Cite id="miller-1968" label="Miller 1968" /> simple-inquiry tier is where most warm-cache loads belong — the network round-trip is shorter than the perceptual frame Card et al. 1991 <Cite id="card-1991" label="Card et al. 1991" /> measured. The wait is essentially gone; what remains is whether the visual handoff feels instantaneous or jarring.
+
+<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+
+## What is happening in the demo
+
+The demo is the list-fetch demo from [page-load-cold](/scenarios/page-load-cold) — same five rows, same 1.5 s p50 latency. Imagine here that the latency is the warm-cache 200–400 ms case rather than the cold 1.5 s one; the affordances behave the same because the cognitive bands they target are the same.
+
+For a real warm-cache load, the difference between naive and tuned shifts. The naive surface unmounts the previous page, paints an empty layout, and remounts the new one — even though most of the bytes were already present. The tuned surface uses the [View Transitions API](/patterns/view-transitions) to cross-fade between snapshots: the browser captures the current page, swaps to the new content, and animates between the two states automatically.
+
+Browser support is broad enough as of 2025 to use View Transitions as the primary route-transition mechanism, with a graceful fallback to instant swap on the unsupported set. Frameworks (Next.js, Astro, SvelteKit, Remix) expose it through their navigation primitives.
+
+## What to tune
+
+The patterns at work, in priority order:
+
+1. [View Transitions API](/patterns/view-transitions) — the cross-fade between cached states. This is the headline lever for warm-cache loads.
+2. [Route prefetching](/patterns/route-prefetching) — the *reason* the cache is warm in the first place. Prefetch on viewport, hover, or mouse-deceleration so the data is there before the click.
+3. [Layout stability](/patterns/skeleton-screens) — even with cached assets, late-arriving data can shift layout. Pre-reserve dimensions; honour the Cumulative Layout Shift budget.
+
+## When perceived performance hurts you here
+
+The transition can over-sell. A 300 ms cross-fade between two pages that are visually similar reads as a wait the user did not have. Tune the duration to the visual distance between the two states — for similar pages, 100–150 ms; for substantively different pages, 200–250 ms.
+
+The other failure: applying View Transitions to pages that are not actually warm. If the new page's data fails to prefetch and the transition reveals an empty layout, the user feels worse than if you had just shown them a skeleton. Always pair View Transitions with [skeleton screens](/patterns/skeleton-screens) as the fallback for the case where the cache misses.
+
+## Accessibility
+
+1. **`prefers-reduced-motion: reduce`** is mandatory for the View Transitions cross-fade. Replace with an instant snap or a simple opacity change.
+2. **Manage focus across the transition.** When the new page renders, focus the main heading (or a stable landmark) so keyboard users land on the right element.
+3. **Don't trap announcements.** Assistive tech ignores the transition itself, but if the new page's heading or main landmark renders late, the announcement comes late.
+4. **Layout stability** — even with View Transitions, late data should reserve its space. Don't ship a transition into an unstable layout.
+
+## References
+
+<ReferencesList refs={references} />
