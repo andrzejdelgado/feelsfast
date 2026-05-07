@@ -135,7 +135,7 @@ export default function HomePage() {
         <h2 className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
           Why does it matter?
         </h2>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-foreground">
+        <p className="mt-4 text-lg leading-relaxed text-foreground">
           Three findings the field is built on. Each is decades old; each is still
           load-bearing in modern UX work.
         </p>
@@ -164,7 +164,7 @@ export default function HomePage() {
         <h2 className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
           Four time bands
         </h2>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-foreground">
+        <p className="mt-4 text-lg leading-relaxed text-foreground">
           The right cue depends on how long the user is actually waiting. The
           platform organises every pattern, scenario, and demo around four bands —
           and so does this page.
@@ -181,7 +181,7 @@ export default function HomePage() {
               <p className="mt-2 text-lg font-medium tracking-tight text-foreground">
                 {band.title}
               </p>
-              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {band.body}
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function HomePage() {
         <h2 className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
           See it
         </h2>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-foreground">
+        <p className="mt-4 text-lg leading-relaxed text-foreground">
           One technique, two implementations, identical wait. Replay the card to
           re-run both sides in sync.
         </p>
@@ -212,7 +212,7 @@ export default function HomePage() {
         <h2 className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
           Tour the platform
         </h2>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-foreground">
+        <p className="mt-4 text-lg leading-relaxed text-foreground">
           Four sections, one canon. Concepts builds the vocabulary, Patterns is the
           toolbox, Scenarios shows them in user flows, the Playground is every demo
           in one place.
@@ -255,7 +255,7 @@ export default function HomePage() {
         <h2 className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
           Install the skill
         </h2>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-foreground">
+        <p className="mt-4 text-lg leading-relaxed text-foreground">
           A single markdown file you install in Claude Code, Cursor, Codex, Cline,
           or any agent that reads markdown skills. Once installed, the AI
           recognises the time band of every async UI it generates and applies the
