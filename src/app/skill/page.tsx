@@ -25,14 +25,14 @@ const installCommands = [
 
 export default function SkillPage() {
   return (
-    <article className="px-8 py-12 lg:px-12 xl:px-16">
+    <article className="mx-auto max-w-3xl px-8 py-12 lg:px-12 xl:px-16">
       <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
         New
       </p>
       <h1 className="mt-2 text-4xl font-medium leading-tight tracking-tight">
         Skill
       </h1>
-      <p className="mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground">
+      <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
         A single skill file you install in Claude Code, Cursor, Copilot, Aider, or any
         agent that reads markdown skills. Once installed, the AI recognises the time
         band of every async UI it generates and applies the right perceived-performance
@@ -40,7 +40,7 @@ export default function SkillPage() {
         you.
       </p>
 
-      <section className="mt-12 max-w-4xl">
+      <section className="mt-12">
         <h2 className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Install
         </h2>
@@ -64,7 +64,7 @@ export default function SkillPage() {
         </div>
       </section>
 
-      <section className="mt-12 max-w-4xl">
+      <section className="mt-12">
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Source

@@ -121,20 +121,20 @@ function EssayCard({ essay }: { essay: Essay }) {
 
 export default function ConceptsPage() {
   return (
-    <article className="px-8 py-12 lg:px-12 xl:px-16">
+    <article className="mx-auto max-w-3xl px-8 py-12 lg:px-12 xl:px-16">
       <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
         7 essays
       </p>
       <h1 className="mt-2 text-4xl font-medium leading-tight tracking-tight">
         Concepts
       </h1>
-      <p className="mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground">
+      <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
         Short, opinionated essays on how time is perceived, why the gap between objective
         and subjective performance matters, and where the canonical thresholds actually
         come from. Every claim cites a primary source.
       </p>
 
-      <ol className="mt-12 max-w-4xl space-y-3">
+      <ol className="mt-12 space-y-3">
         {essays.map((essay) => (
           <li key={essay.slug}>
             <EssayCard essay={essay} />

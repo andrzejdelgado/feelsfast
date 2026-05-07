@@ -13,23 +13,23 @@ import type { Reference } from "./ReferencesProvider";
  */
 export function ReferencesList({ refs }: { refs: readonly Reference[] }) {
   return (
-    <ol className="mt-6 list-none space-y-3 pl-0">
+    <ol className="mt-6 list-none space-y-5 pl-0">
       {refs.map((ref) => (
         <li
           key={ref.id}
           id={`ref-${ref.id}`}
-          className="grid scroll-mt-24 gap-2 sm:grid-cols-[auto_1fr] sm:gap-4"
+          className="scroll-mt-24 space-y-1.5"
         >
-          <span className="inline-flex h-fit shrink-0 items-center self-start whitespace-nowrap rounded-sm bg-secondary px-1.5 py-0.5 font-mono text-[0.75rem] font-medium text-primary">
+          <span className="inline-flex w-fit items-center whitespace-nowrap rounded-sm bg-secondary px-1.5 py-0.5 font-mono text-[0.75rem] font-medium text-primary">
             [{ref.label}]
           </span>
-          <span className="text-sm leading-relaxed text-foreground">
+          <p className="text-sm leading-relaxed text-foreground">
             {typeof ref.citation === "string" ? (
               <CitationText text={ref.citation} />
             ) : (
               ref.citation
             )}
-          </span>
+          </p>
         </li>
       ))}
     </ol>
