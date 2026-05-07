@@ -1,0 +1,60 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
+import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
+import { config as demoConfig } from "@/demos/ai-streaming/config";
+import { references } from "@/lib/refs/scenario-ai-chat-streaming-response";
+
+export const metadata = {
+  title: "AI · Chat / streaming response",
+  description:
+    "1–10 S band, AI tag. The assistant returns a ~200-character answer. Naive: total wait, then full response drops in. Tuned: ~600 ms thinking state, then tokens stream at a natural reading pace.",
+};
+
+<RegisterReferences refs={references} />
+
+# AI · Chat / streaming response
+
+The user submits a prompt to an AI surface. The total time to last token is roughly the same on both sides — call it 5–6 seconds. The naive surface goes blank for those seconds, then drops the full response in at the end. The tuned surface fills the same wait with a brief thinking state and a token-by-token reveal pacing the response to a natural reading rhythm. Same clock, very different experience.
+
+This scenario sits in the 1–10 S band. Card et al. 1991's <Cite id="card-1991" label="Card et al. 1991" /> ~100 ms perceptual frame sets the cadence floor for the token reveal. Block & Zakay 1997's <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> filled-duration principle is the underlying mechanism — streaming converts an empty wait into a filled one. Myers 1985's <Cite id="myers-1985" label="Myers 1985" /> indeterminate-feedback baseline is what the thinking state covers during time-to-first-token.
+
+<DemoRunner config={demoConfig} Naive={NaiveAIStreaming} Tuned={TunedAIStreaming} />
+
+## What is happening in the demo
+
+Both sides simulate the same total work — a 5,500 ms p50 wait drawn from a gamma distribution. The naive side waits the entire duration with an empty box, then renders the full response at once. The tuned side has two distinct phases.
+
+**Phase 1 — Thinking** (~600 ms with gamma jitter). Three pulsing dots in the muted-foreground colour. The model is doing the time-to-first-token work; the thinking state is the only honest signal that the input registered and processing has begun. Without it, the user wonders whether their submit even fired. Past 5 seconds without first token, this would escalate to [tool-call transparency](/patterns/ai-tool-call-transparency) or [engaging loading](/patterns/engaging-loading); for a typical chat response, the dots cover the gap.
+
+**Phase 2 — Streaming.** Characters reveal in chunks of 1–2 at a time at ~30 ms intervals, with slight randomness so the cadence does not feel mechanical. A pulsing primary-color cursor sits at the tail and disappears on completion. ARIA live announcements fire on phase changes; `motion-safe:` gates the dots and cursor for users who have asked for less motion.
+
+The total wall-clock time is identical. What changed is whether the user is reading along with the model or staring at a blank box.
+
+## What to tune
+
+The patterns at work, in priority order:
+
+1. [Thinking state](/patterns/ai-thinking-state) — the time-to-first-token bridge. Indeterminate by design; replaced as soon as content begins.
+2. [Token-by-token streaming](/patterns/ai-token-streaming) — variable-chunk reveal cadence at ~30 ms intervals. Constant rate feels mechanical; instant per-token jitters the eye.
+3. [Cancellation affordance](/patterns/ai-cancellation-affordance) — the stop button (not in this minimal demo) needs to register within ~100 ms even if the underlying abort takes longer.
+4. [Pre-action feedback](/patterns/pre-action-feedback) — the submit button itself (also not in this demo) should flip to a loading state instantly on press.
+
+## When perceived performance hurts you here
+
+If your time-to-first-token consistently exceeds 5–10 seconds, the thinking-state-plus-streaming pattern is no longer enough. The user crosses the unit-task boundary and starts to disengage. The fix at that point is real engineering — model selection, retrieval optimisation, parallel inference — not a longer thinking state. See [Concepts §6](/concepts/when-perceived-performance-hurts-you) on production surfaces and the looks-fast / is-fast trap.
+
+The other failure mode: streaming the response *too fast*. Token reveal at 5 ms intervals reads as flashing text rather than typing; the user cannot encode it in real time. The cadence has to land in a band the human reading system can handle — roughly ~30 ms per character chunk for native English readers, slightly more for content with code or technical vocabulary.
+
+## Accessibility
+
+1. **`aria-live="polite"`** on the streaming container so screen readers announce updates as they arrive. Avoid `aria-live="assertive"` — it interrupts other speech.
+2. **`aria-busy`** flips with each phase: `true` during thinking, `true` during streaming, `false` on done.
+3. **`motion-safe:`** on the thinking dots and the cursor. For reduced-motion users, the dots stay static (still informative) and the cursor disappears entirely.
+4. **Don't strip semantics during streaming.** If the model produces markdown — code blocks, lists, headings — render them with the right elements as the tokens accumulate. A streaming `<pre><code>` block reads better than a paragraph that retroactively becomes a code block.
+5. **Cancellation must be reachable from keyboard.** Escape by convention; surface it visibly the first few times.
+
+## References
+
+<ReferencesList refs={references} />

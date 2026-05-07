@@ -22,7 +22,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "First arrival on the site, no cache. Skeleton-driven layout while the server-rendered content streams in.",
     linkedPatterns: ["Skeleton screens", "Streaming SSR", "LQIP", "Critical CSS"],
-    status: "planned",
+    status: "published",
   },
   {
     number: "02",
@@ -66,7 +66,7 @@ export const scenarios: readonly Scenario[] = [
     blurb:
       "User types into a search box. Input always responsive; results dim during stale state; cancellation on every keystroke. (Live demo on /playground.)",
     linkedPatterns: ["Pre-action feedback", "Stale-while-revalidate", "Debounced re-render"],
-    status: "drafting",
+    status: "published",
   },
   {
     number: "06",
@@ -192,7 +192,7 @@ export const scenarios: readonly Scenario[] = [
       "Cancellation affordance",
       "Determinate progress where possible",
     ],
-    status: "drafting",
+    status: "published",
   },
   {
     number: "17",

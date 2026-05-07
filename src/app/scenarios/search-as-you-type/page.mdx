@@ -1,0 +1,58 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveSearchAsYouType } from "@/demos/search-as-you-type/naive";
+import { TunedSearchAsYouType } from "@/demos/search-as-you-type/tuned";
+import { config as demoConfig } from "@/demos/search-as-you-type/config";
+import { references } from "@/lib/refs/scenario-search-as-you-type";
+
+export const metadata = {
+  title: "Search as you type",
+  description:
+    "0–100 MS band. The user types into a search box; each keystroke triggers either an expensive filter that blocks the input or a deferred filter that lets the input stay instant. The difference is whether the user feels they are typing or fighting.",
+};
+
+<RegisterReferences refs={references} />
+
+# Search as you type
+
+The user types into a search box. Each keystroke could either kick off an expensive filter that blocks the input, or trigger a deferred filter that runs as low-priority work while the input stays responsive. The difference between the two — same dataset, same filter logic, same artificial work per keystroke — is whether the user feels they are typing or fighting.
+
+This scenario sits in the 0–100 MS band. Card-Moran-Newell's <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame is the upper bound for input responsiveness; Miller's <Cite id="miller-1968" label="Miller 1968" /> keystroke-echo tier is at 0.1 s for a reason. The naive side breaks both. The tuned side honours both.
+
+<DemoRunner config={demoConfig} Naive={NaiveSearchAsYouType} Tuned={TunedSearchAsYouType} />
+
+## What is happening in the demo
+
+Both sides use the same dataset (~38 fruit names) and the same filter cost (~80 ms of synchronous CPU per keystroke). The difference is *how* the filter runs.
+
+The naive side runs the filter synchronously inside the input's `onChange` handler. The input value update and the result update both wait for the filter to finish. When you type fast — say, "stra" in three keystrokes — each keystroke blocks for ~80 ms before the next can register. The input visibly stutters; characters appear behind your fingers.
+
+The tuned side wraps the filter in React 19's `useDeferredValue`. The filter still costs ~80 ms on the same input — but React schedules it as low-priority work and keeps the input render at high priority. The input updates instantly; the results catch up a frame or two later. While the catch-up is in flight, the result list dims to 60 % opacity (the `isStale` signal) and `aria-busy="true"` is set, so screen-reader users know a refresh is happening.
+
+The total CPU work is identical. The user's experience is not.
+
+## What to tune
+
+The patterns at work, in priority order:
+
+1. [Pre-action feedback](/patterns/pre-action-feedback) — the input echo is the first promise the system makes about responsiveness. Breaking it on the first keystroke loses the user's trust on every keystroke after.
+2. [Stale-while-revalidate](/patterns/stale-while-revalidate) — the dimmed previous results during the refresh are the same idea applied to the result panel: serve what we have, validate in the background, swap when ready.
+3. [Time-aware feedback](/patterns/time-aware-feedback) — at this scale of latency we are inside the 0–100 ms band. No spinner, no skeleton; the input itself is the affordance.
+
+## When perceived performance hurts you here
+
+Search-as-you-type is a *production* surface in the [consumption-vs-production sense](/concepts/when-perceived-performance-hurts-you) — the user is reaching to act, not to read. Eizenberg's <Cite id="eizenberg" label="Eizenberg" /> argument applies directly: a polished placeholder over the result panel does not save the experience if the input itself lags. Every perception trick on this surface needs to *protect* input responsiveness, not paper over its absence.
+
+The most common failure mode in production: a debounce-only solution that *does* keep the input responsive but renders nothing during the debounce window. The user types, sees their characters echo instantly, then stares at a blank result panel for 300 ms while the debounce timer drains. That is half-tuned. Stale-while-revalidate fills the gap; the input echo alone does not.
+
+## Accessibility
+
+1. **`aria-busy`** on the result list during stale-state refresh; flips to `false` on the catch-up.
+2. **Live region for result counts** — when the result count changes substantively (e.g. from 5 to 1), announce politely. Avoid announcing every single keystroke.
+3. **Keyboard arrow navigation** for picking results without leaving the input. Down-arrow into the list, Up-arrow back, Enter to commit, Escape to clear.
+4. **Don't trap focus during typing.** The input is the user's home; results should never steal focus mid-type.
+
+## References
+
+<ReferencesList refs={references} />

@@ -1,0 +1,62 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveListFetch } from "@/demos/list-fetch/naive";
+import { TunedListFetch } from "@/demos/list-fetch/tuned";
+import { config as demoConfig } from "@/demos/list-fetch/config";
+import { references } from "@/lib/refs/scenario-page-load-cold";
+
+export const metadata = {
+  title: "Page load (cold)",
+  description:
+    "1–10 S band. First arrival on the page, no cache. The naive surface holds an empty box for the entire wait; the tuned surface renders skeleton placeholders that match the final layout, swapping in the real content once data arrives.",
+};
+
+<RegisterReferences refs={references} />
+
+# Page load (cold)
+
+A first-time visitor lands on the page. Nothing is cached. The server (or the route bundle, or the data fetch) takes 1.5 seconds to respond. During those 1.5 seconds the user is staring at *something* — and that something is the entire perception layer for this scenario.
+
+The naive answer is to render nothing until everything is ready. The tuned answer is to render the layout immediately, fill it with placeholders the user can read as structure, and swap in the real content the moment it arrives. The total time-to-content is identical. The total time-to-*useful-something-on-screen* is fundamentally different.
+
+This scenario sits in the 1–10 S band. Miller 1968's <Cite id="miller-1968" label="Miller 1968" /> simple-inquiry tier puts most cold loads in the 2–5 s comfortable range; Block & Zakay 1997 <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> and James 1890 <Cite id="james-1890" label="James 1890" /> are the source-of-record for why filling that wait with structure makes it register as shorter.
+
+<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+
+## What is happening in the demo
+
+Both sides simulate the same fetch — a 1,500 ms p50 wait drawn from a gamma distribution, returning the same 5-item list. The naive side renders an empty 8-rem-tall box for the duration of the fetch, then drops the list in. The tuned side renders five skeleton rows immediately — same dimensions as the final list items, with `animate-pulse` on two dimensional bars per row — and swaps in the real items when the fetch resolves.
+
+The skeleton is layout-matching, not generic. Each placeholder row has a 32-character-wide bar (the "name" line) and a 48-character-wide bar (the "role" line). When the real data arrives, the visual change is a swap, not a jump. The user's eye is already in the right place.
+
+The shimmer animation respects `prefers-reduced-motion` — for users who have asked for less motion, the placeholders hold a static low-contrast state instead of pulsing. They still serve the filled-duration purpose; they just do not animate.
+
+## What to tune
+
+The patterns at work:
+
+1. [Skeleton screens](/patterns/skeleton-screens) — the foundational pattern for this scenario. Layout-matching placeholders that fill the prospective-empty wait.
+2. [Streaming SSR / Suspense](/patterns/streaming-ssr) — when paired with React 19's Suspense, the skeleton is the fallback. The shell ships first, the data fills in.
+3. [Image progressive loading](/patterns/image-progressive-loading) — for content with images (most pages do), LQIP / blur-up extends the skeleton principle to the visual layer.
+4. [Time-aware feedback](/patterns/time-aware-feedback) — at the 1–10 s band, skeleton over spinner. Below 1 s, no loader. Above 10 s, escalate to engagement.
+
+## When perceived performance hurts you here
+
+The cold-load case is the cleanest place for skeleton screens to do their work — the user is in *consumption* mode (they came to read, not to act), and the layout is predictable enough that a layout-matching skeleton is honest.
+
+The failure mode is shipping a skeleton on a surface where the user is in *production* mode. A search input under a skeleton is a search input the user cannot use; a button placeholder is a button they cannot press. See [Concepts §6](/concepts/when-perceived-performance-hurts-you) for the consumption-vs-production line.
+
+The other failure: a skeleton that does *not* match the final layout. A generic shimmer at the top of the page is still a prospective-empty wait — the user's eye has nothing to anchor on. Match the row count, the column widths, the vertical rhythm. Otherwise the skeleton is decoration, not perception engineering.
+
+## Accessibility
+
+1. **`aria-busy="true"`** on the skeleton container; flips to `false` once content arrives.
+2. **`aria-label="Loading [thing]"`** describing what is loading. "Loading list" is enough; "Loading" alone is not.
+3. **`motion-reduce:animate-none`** on the shimmer. Static low-contrast blocks still convey loading state.
+4. **Manage focus across the swap.** If the user triggered the load (clicked through to this page), move focus to the new content's first heading, or to a stable landmark, so keyboard users do not lose their place.
+5. **Layout stability.** The skeleton's dimensions must match the resolved content's dimensions — otherwise the swap creates a Cumulative Layout Shift (CLS) that hurts both perception and Web Vitals.
+
+## References
+
+<ReferencesList refs={references} />
