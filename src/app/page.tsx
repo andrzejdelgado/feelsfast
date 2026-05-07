@@ -148,7 +148,7 @@ export default function HomePage() {
               <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
                 {stat.label}
               </p>
-              <p className="mt-2 font-mono text-3xl font-medium tracking-tight text-primary">
+              <p className="mt-2 font-mono text-2xl font-medium tracking-tight text-primary">
                 {stat.headline}
               </p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
