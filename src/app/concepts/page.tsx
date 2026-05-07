@@ -56,8 +56,16 @@ const essays = [
     title: "Time perception illusions you can exploit",
     blurb:
       "Anstis on contrast and motion. Harrison et al. on backwards-decelerating progress bars. The geometric-mean indifference threshold. When illusions are honest and when they cross into deception.",
-    citations: ["Anstis 2001", "Anstis 2003", "Anstis 2004", "Harrison et al. 2010"],
-    status: "planned" as const,
+    citations: [
+      "Anstis 2001",
+      "Anstis 2003",
+      "Anstis 2004",
+      "Harrison et al. 2007",
+      "Harrison et al. 2010",
+      "Church et al.",
+      "Mishunov 2015",
+    ],
+    status: "published" as const,
   },
   {
     slug: "when-perceived-performance-hurts-you",

@@ -1,0 +1,95 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { references } from "@/lib/refs/time-perception-illusions";
+
+export const metadata = {
+  title: "Time perception illusions you can exploit",
+  description:
+    "Three honest illusions backed by the perception literature: low-contrast slowdown (Anstis 2001/2003/2004), backwards-decelerating progress bars (Harrison et al. 2007/2010, ~12 % perceived speed-up), and the geometric-mean indifference threshold (Church et al. via Mishunov 2015).",
+};
+
+<RegisterReferences refs={references} />
+
+# Time perception illusions you can exploit
+
+The previous essay decomposed a wait into its phases. This one is about what to do when the wait is honest, unavoidable, and you want it to feel shorter without lying about it.
+
+Here is the surprising part: the perception literature tells us that the same wait can feel like 80 % of itself or 120 % of itself depending on what you put on the screen. The clock does not change. The user's experience does. And the techniques that get you the 20 % savings are not vague — they are documented in CHI papers, vision-science journals, and a few oddball perceptual studies that turn out to apply directly to skeleton screens and progress bars.
+
+I'd argue every designer working on perceived performance should know three of these illusions. They are honest in the sense that they exploit how human perception works, not how the user expects the system to behave. They do not promise that the system is faster than it is. They just shorten what the user feels.
+
+## Low contrast feels slower
+
+The first one is older and wider than UX. Stuart Anstis's <Cite id="anstis-2003" label="Anstis 2003" /> 2003 paper — building on his earlier 2001 work <Cite id="anstis-2001" label="Anstis 2001" /> on the "footsteps illusion" — measured a strange effect: moving objects appear to move slower at low contrast than at high contrast. The physical speed is identical. The perceived speed is not.
+
+A grey bar moving across a black-and-white striped background appears to "step" — speeding up on light stripes (where it has high contrast) and slowing on dark stripes (where it has low contrast). Anstis's 2004 follow-up <Cite id="anstis-2004" label="Anstis 2004" /> generalised the effect: it is the contrast of the leading and trailing edges, not the lateral edges, that drives the apparent speed. Even on uniform backgrounds, lower edge-contrast shrinks perceived motion amplitude.
+
+The UX consequence is direct. A high-contrast loading shimmer looks faster than a low-contrast one. A skeleton screen with crisp edges feels more responsive than one with soft, ghostly outlines. A subtle pulse animation on a low-contrast skeleton block actually feels *slower* than a sharp pulse on a high-contrast block, even when both run at the same frame rate.
+
+Two practical applications:
+
+1. **Skeleton screens should default to higher contrast than designers usually pick.** The instinct is to keep them subtle; the perception research says subtlety reads as slowness.
+2. **Progressive image loading (LQIP, blur-up) benefits from sharpening the edges first.** A low-quality placeholder that establishes high-contrast outlines lets the user "see" the image arriving, even before the textures resolve.
+
+The illusion is honest because it exploits a property of vision, not a misrepresentation of the system. The skeleton is doing what it claims to be doing — placeholding for content. It is just doing so in a way that respects how perception actually works.
+
+## Backwards-decelerating progress bars
+
+The second illusion is more direct and more measurable. Chris Harrison and colleagues <Cite id="harrison-2010" label="Harrison et al. 2010" /> ran a controlled CHI study on progress-bar pacing in 2010, building on their earlier UIST 2007 work <Cite id="harrison-2007" label="Harrison et al. 2007" />. They tested several animation patterns on bars of identical real duration:
+
+1. Plain solid bar (the baseline).
+2. Bar with bands moving forward (in the direction of progress).
+3. Bar with bands moving backwards (against the direction of progress).
+4. Bands accelerating.
+5. Bands decelerating.
+
+The result: bars with bands moving *backwards* and *decelerating* over the course of the wait felt the shortest. A 5.0-second bar with this pattern felt equivalent to a ~5.6-second plain bar — about 11–12 % perceived shorter <Cite id="harrison-2010" label="Harrison et al. 2010" />.
+
+The mechanism is the same train-passing-by-train illusion you experience sitting in a subway. When two objects move in opposite directions, your perceptual system reads the relative speed as the sum of both. Backwards-moving bands inside a forwards-moving bar exaggerate the apparent forward speed. The deceleration adds a second layer: bars that finish strong feel faster than bars that crawl to the line.
+
+This is a real, measurable, empirically-grounded effect. It is small — 12 %, not 50 % — but it is consistent and free. Implementing it is a CSS keyframe animation. The cost is roughly one developer-hour and the gain is roughly the same as objectively shaving 600 ms off a 5-second wait.
+
+The catch, raised in earlier essays, is that this only helps when the wait is *honest* — when you have real progress to report. A fake progress bar with a fixed CSS duration does not benefit from any of this; it is just a lie that looks slightly fancier. Only ship animated progress when the bar actually reflects reality.
+
+## The geometric-mean indifference threshold
+
+The third one is the most counterintuitive. It is also the one most teams miss.
+
+When users compare your product's loading time to a competitor's, they do not respond linearly. The threshold of indifference between two waits — the point at which the user genuinely cannot tell which is faster — sits at the *geometric mean* of the two durations, not the arithmetic mean.
+
+If your competitor loads in 2 seconds and your product loads in 5 seconds, the indifference point is √(2 × 5) ≈ 3.16 seconds. To make your product feel "as fast as" the competitor, you need to ship a sub-3.16-second experience, not a sub-3.5-second one. Above 3.16 s, users feel you as slower; below it, they feel you as competitive even though the clock disagrees.
+
+This finding has roots in animal-interval-timing studies — Russell Church and colleagues at Brown demonstrated the geometric-mean property in trained interval discrimination tasks <Cite id="church-macinnis-guilhardi" label="Church et al." /> — and Denys Mishunov surfaced it for the UX community in his 2015 Smashing Magazine essay <Cite id="mishunov-2015" label="Mishunov 2015" />.
+
+The implication for performance budgets: if you are competing on speed, you cannot just match the competitor's response time. The threshold is non-linear. The arithmetic mean of 2 s and 5 s is 3.5 s; you would still feel slower at 3.5 s than at 3.16 s. The geometric mean is the actual breakpoint.
+
+This is also why "we are 30 % faster than the leader" claims rarely register with users. Below the geometric-mean indifference threshold, the difference is invisible. Above it, the difference is felt regardless of how it is marketed.
+
+## Honest illusions and the line
+
+I'd argue these three illusions sit on the honest side of a line. They exploit how perception works, not what users believe about the system. They do not promise more than the product delivers. They just compress how the wait registers.
+
+The deceptive side of the line includes:
+
+1. **Fake progress bars** with fixed CSS durations that do not reflect real progress.
+2. **Skeleton screens for primarily-interactive surfaces** (search inputs, sliders) where the user wants to *act*, not read.
+3. **"Engaging loading" sequences** that are deliberately padded to make the wait feel like a feature.
+4. **Optimistic UI without a visible failure path** — the rare-but-real failure case rolls back silently and the user never knows why their action did not stick.
+
+The difference is whether the user's mental model of the system matches reality. Anstis-driven contrast tuning, Harrison-driven progress pacing, and the geometric-mean threshold all preserve the user's mental model. They do not lie. They do not misrepresent. They just respect how perception works and use that to spend the same wait better.
+
+Lines in this territory are easy to cross. The cure is to ask, when you ship a perception-layer trick: would the user be upset if they knew exactly what the UI was doing? If yes, you are over the line. If no — and Anstis, Harrison, and the geometric-mean threshold are all firmly "no" — you are fine.
+
+## What to do with this
+
+Three takeaways before the next essay:
+
+1. **Pick higher contrast than feels natural for skeletons and shimmers.** The instinct toward subtlety reads as slowness. Anstis's data is twenty years old and still ignored.
+2. **If you have determinate progress, animate it backwards-decelerating.** A CSS keyframe ships it for ~12 % perceived speed-up. The trick is real progress data; without that, you should not be using a progress bar at all.
+3. **Set your performance budgets against the geometric mean, not the arithmetic.** If competitors load in 2 s and you load in 4 s, your real target is the geometric mean of those — ~2.83 s — not the average. Below it, you are competitive. Above it, you are not.
+
+The next essay covers when perceived performance hurts you — Eizenberg's argument extended, the latency JNDs in direct manipulation that fall well below the 100 ms folk wisdom, and the surfaces where polished placeholders become polished lies.
+
+## References
+
+<ReferencesList refs={references} />
