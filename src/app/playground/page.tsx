@@ -1,4 +1,8 @@
 import type { Metadata } from "next";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveListFetch } from "@/demos/list-fetch/naive";
+import { TunedListFetch } from "@/demos/list-fetch/tuned";
+import { config as listFetchConfig } from "@/demos/list-fetch/config";
 
 export const metadata: Metadata = {
   title: "Playground",
@@ -8,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function PlaygroundPage() {
   return (
-    <article className="mx-auto max-w-2xl px-6 py-12">
+    <article className="mx-auto max-w-3xl px-6 py-12">
       <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
         Sandbox
       </p>
@@ -16,12 +20,22 @@ export default function PlaygroundPage() {
         Playground
       </h1>
       <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-        Compose patterns into a single demo and toggle the perception layer across all of
-        them at once. Useful for the moment when you want to feel several techniques stacking
-        together, not just each one in isolation.
+        Compose patterns into a single demo and toggle the perception layer across all
+        of them at once. The first working demo lives below — more land in Phase 3 as
+        Scenarios fill in.
       </p>
-      <p className="mt-8 font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        Coming in Phase 4.
+
+      <div className="mt-10">
+        <DemoRunner
+          config={listFetchConfig}
+          Naive={NaiveListFetch}
+          Tuned={TunedListFetch}
+        />
+      </div>
+
+      <p className="mt-10 font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        Demo runner — proof of concept · gamma-distributed latency · Replay re-runs both
+        sides · Perception toggle mirrors the naive into the right column when off
       </p>
     </article>
   );
