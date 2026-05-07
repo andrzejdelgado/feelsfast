@@ -285,7 +285,7 @@ export const scenarios: readonly Scenario[] = [
       "Streaming render",
       "Cancellation affordance",
     ],
-    status: "planned",
+    status: "published",
   },
   {
     number: "24",
@@ -302,7 +302,7 @@ export const scenarios: readonly Scenario[] = [
       "Cancellation affordance",
       "Determinate progress where possible",
     ],
-    status: "planned",
+    status: "published",
   },
 ];
 

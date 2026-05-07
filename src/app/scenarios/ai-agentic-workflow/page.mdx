@@ -1,0 +1,67 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/naive";
+import { TunedAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/tuned";
+import { config as demoConfig } from "@/demos/ai-agentic-workflow/config";
+import { references } from "@/lib/refs/scenario-ai-agentic-workflow";
+
+export const metadata = {
+  title: "Agentic workflow",
+  description:
+    "10 S+ band. A multi-step agent — plan, research, synthesise, verify, write — runs for ~20 s. Naive: spinner. Tuned: timeline of phases with current step highlighted, sub-step progress within each phase, and cancellation always available.",
+};
+
+<RegisterReferences refs={references} />
+
+# Agentic workflow
+
+Long-running agents — Deep Research, Devin, Cursor agent runs, browse-and-summarise tools, multi-step refactors — push past the 10-second wall Nielsen 1993 <Cite id="nielsen-1993" label="Nielsen 1993" /> placed at the edge of attention. By minute two the user is in another tab, has switched contexts, has half-forgotten what they asked for. The perception layer's job is no longer to compress the wait — the wait is the work — but to keep the agent legible *to a user who is no longer looking*.
+
+The two perception levers at this scale are (1) phase-level transparency that lets a returning user understand what the agent has done and where it currently is, and (2) cancellation that does not feel like flushing a hostage. Both are absent from the naive "Running agent…" spinner. Both are central to the tuned design.
+
+This scenario is in the 10 S+ band Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> placed past the unit-task limit. The Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame is the budget for each individual phase-state transition — when "Synthesise findings" turns from pending to running, that change has to land within a perceptual frame of the previous phase finishing. Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> covers the per-phase determinate progress where the agent has measurable units (sources read, citations verified). Harrison et al. 2010 <Cite id="harrison-2010" label="Harrison et al. 2010" /> covers the perceptual speed-up the per-phase bar can claim from a backwards-decelerating animation.
+
+<DemoRunner config={demoConfig} Naive={NaiveAiAgenticWorkflow} Tuned={TunedAiAgenticWorkflow} />
+
+## What is happening in the demo
+
+A simulated agent runs five phases — Plan, Research sources, Synthesise findings, Verify citations, Write report — at gamma-jittered durations totalling ~20 seconds. Two of the phases (Research, Verify) have measurable unit counts (12 sources, 8 citations); the other three are duration-only. Click Run agent on either side.
+
+The naive side disables the button, shows a generic `Loader2` spinner with "Running agent…" text for the full duration, then renders "Report ready." There is no signal of what phase the agent is in, no per-phase progress, no cancellation. A user who comes back after 30 seconds has no way to tell the agent stalled vs. finished — the spinner looks the same in both cases.
+
+The tuned side renders each phase as its own row. The currently-running phase has a primary-coloured spinner, a primary-coloured border, and (where the phase has units) a determinate sub-step bar with a "7 / 12 sources" counter. Phases already done have a green check, the final unit count, and a neutral border. Phases not yet started are dimmed circles. A cancel button appears next to Run agent while the agent is running. Cancellation discards partial work — the message is honest about what happens.
+
+The unit-counts on the determinate phases turn the wait into understood work. "Reading 7 of 12 sources" tells the user the agent is two thirds of the way through the research phase; the user can decide whether to keep watching or come back later. That decision is the *real* perception payoff at this scale — the user gets agency over their own attention.
+
+## What to tune
+
+1. [AI tool-call transparency](/patterns/ai-tool-call-transparency) — the headline pattern, scaled up. Each phase is a coarse-grained tool call; sub-steps within a phase are fine-grained.
+2. [AI cancellation affordance](/patterns/ai-cancellation-affordance) — cancellation must always be available *and* honest about partial-work disposition.
+3. [Determinate progress](/patterns/determinate-progress) — wherever the phase has measurable units, the bar shows them. "20-second wait" is opaque; "7 of 12 sources" is understood work.
+4. [Engaging loading](/patterns/engaging-loading) — at 10 S+ engagement copy is mandatory, but the phase labels themselves carry it. No filler messages.
+5. [Background sync](/patterns/background-sync) — for genuine multi-minute agents, pair the foreground timeline with a notification on completion so the user can leave the tab.
+6. [Time-aware feedback](/patterns/time-aware-feedback) — at 10 S+ a spinner is the wrong register. The timeline + per-phase progress + cancellation is the only acceptable level of detail.
+
+## When perceived performance hurts you here
+
+The phase labels lie if they do not match what the agent is actually doing. An agent that surfaces "Verifying citations" while it is silently re-running the entire research phase shows the user the wrong abstraction — and unlike the [tool-execution](/scenarios/ai-tool-execution) scenario where every tool call is a real boundary, agentic workflows often have the *same* model context spanning several phases and the model deciding internally what to do next. The phase decomposition has to come from the agent's plan, not from a fixed UI scaffold.
+
+The other failure mode is the over-decomposed timeline. Twenty rows of micro-phases for a thirty-second run is unreadable; the user gets the same opacity as a single spinner because they cannot parse the rows fast enough to track which is current. Five-to-seven phases is the comfortable upper bound; past that, group phases into sections.
+
+Cancellation honesty is the load-bearing trust mechanism. If "Cancel" actually means "stop after the current phase," say that. If partial work is preserved (the research phase results survive even though the verify phase was cut short), say *that*. If the agent's tool calls are irreversible — files written to disk, transactions committed — surface the irreversibility before cancellation, not after.
+
+Background hand-off is the right escape past two minutes. A "Notify me when done" pill that converts the foreground task into a notification subscription is the equivalent of the email-when-ready pattern from [data-export-download](/scenarios/data-export-download). Past the threshold where the user genuinely cannot keep watching, the perception layer's job is to gracefully *release* their attention, not to demand it.
+
+## Accessibility
+
+1. **`aria-live="polite"`** on the timeline so each phase transition is announced to screen readers.
+2. **`role="progressbar"`** with `aria-valuenow / aria-valuemax` on the running phase's determinate bar.
+3. **`aria-busy`** on the running row, removed when it completes — same shape as a single determinate progress bar but per-phase.
+4. **Cancellation must be keyboard-accessible** and announced when activated. The "Stopping after current phase…" message should be `role="status"`.
+5. **`prefers-reduced-motion`** — the spinner becomes a static dot, the bar's width transition becomes instantaneous, the cross-row state changes happen without animation. The information remains; only the motion is suppressed.
+6. **Long-running agent + tab-blur** — pair with a Web Notification (with explicit user permission) for users who navigate away. The notification text should mirror the final phase's status: "Report ready" not "Process completed."
+
+## References
+
+<ReferencesList refs={references} />

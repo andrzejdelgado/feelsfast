@@ -1,0 +1,65 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveAiToolExecution } from "@/demos/ai-tool-execution/naive";
+import { TunedAiToolExecution } from "@/demos/ai-tool-execution/tuned";
+import { config as demoConfig } from "@/demos/ai-tool-execution/config";
+import { references } from "@/lib/refs/scenario-ai-tool-execution";
+
+export const metadata = {
+  title: "Tool execution / agentic step",
+  description:
+    "1 – 10 S band. Agent reads files, runs queries, edits code. Naive: opaque \"Working…\" spinner. Tuned: each tool call streams in as the agent runs it, with status icons and result detail. Cancellation always available.",
+};
+
+<RegisterReferences refs={references} />
+
+# Tool execution / agentic step
+
+When an agent does something — reads a file, runs a search, edits code, executes a query — there is a 1 – 10 S window of real wall-clock time the perception layer has to manage. The work is not waiting on a model token stream; it is waiting on the tool itself. A spinner that says "Working…" for six seconds gives the user nothing. A streaming list of the actual tool calls — "Read package.json. Searched for useState. Edited SearchBox.tsx. Ran typecheck." — is the same wait, but the user reads the trajectory in real time and learns to trust the agent.
+
+This is the perception scenario where AI agents either build trust or don't. Tool-call transparency is what makes Cursor's agent mode, Claude Code, and v0's iteration loops feel collaborative rather than oracular. The user does not just see the result; they see the *work*.
+
+This scenario is in the 1 – 10 S band Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> describes for unit-task latency. Each individual tool-call status update has to clear the Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame so the stream registers as live, not as a series of state mutations. The Doherty 1982 <Cite id="doherty-1982" label="Doherty 1982" /> ~400 ms productivity break covers the time-to-first-tool-call — past it, the agent feels stalled before it has even started. The Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> finding that progress indicators outperform blank waits extends to non-numeric progress: a list of completed tool calls is a percent-done indicator with the percent implied by the count.
+
+<DemoRunner config={demoConfig} Naive={NaiveAiToolExecution} Tuned={TunedAiToolExecution} />
+
+## What is happening in the demo
+
+A simulated agent executes four tool calls in sequence: read package.json, search for useState across the source tree, edit SearchBox.tsx, run typecheck. Each step has its own gamma-jittered duration around the medians declared in the demo config (350 ms, 1.1 s, 700 ms, 1.5 s — total ~3.65 s p50). Click Run agent on either side.
+
+The naive side disables the button, shows a generic `Loader2` spinner with "Working…" text for the full ~3.65-second duration, then renders the final summary. The user has no signal of what the agent is doing at any moment. If a step hangs (real models do this), they cannot tell whether to keep waiting or stop. Cancellation is missing because there is nothing to cancel against — the only handle is "the whole thing."
+
+The tuned side renders each tool call as a discrete row as the agent runs it. The currently-executing step has a primary-coloured spinner, the steps already done have a green check plus their result detail, the steps not yet started are dimmed circles. A cancel button appears next to Run agent while the agent is running — the user can stop at any point, and they can stop *because they can see what is currently happening*. Cancellation that does not show what is being cancelled is barely cancellation at all.
+
+The visual register here is the same as a long-running command's terminal output — `npm install` printing each package as it resolves, `git fetch` showing the count of objects received. The user trusts the work because they see the work.
+
+## What to tune
+
+1. [AI tool-call transparency](/patterns/ai-tool-call-transparency) — the headline pattern. Every tool call surfaces; every status update is in real time.
+2. [AI cancellation affordance](/patterns/ai-cancellation-affordance) — cancellation must be visible while the agent runs, and the cancellation point should be the *next* tool call boundary, not an immediate hard stop.
+3. [Engaging loading](/patterns/engaging-loading) — the streaming list is intrinsically engaging because it carries information. No filler copy needed.
+4. [AI thinking state](/patterns/ai-thinking-state) — for the brief gap before the first tool call, a "Thinking…" state covers the model's reasoning step.
+5. [Time-aware feedback](/patterns/time-aware-feedback) — at 1 – 10 S the tool-call list is the right register; below that, the spinner is fine; above that, see the [agentic workflow](/scenarios/ai-agentic-workflow) scenario.
+
+## When perceived performance hurts you here
+
+Tool-call transparency only helps if the names and details are honest. An agent that surfaces "Reading user data" but is actually scanning the entire database is showing the user a misleading abstraction — the trust budget the transparency paid into gets withdrawn when the user notices the gap. If you cannot describe the tool call accurately in a short label, the answer is to redesign the tool call, not to hide it behind a generic name.
+
+The other failure mode is the firehose. A tool that fires fifty individual sub-calls — say, "read each of these 50 files individually" — should not surface every one. Collapse to "Reading 50 files (12 / 50)" with a determinate counter. The principle is *legible* progress, not *granular* progress.
+
+For tools that *do* return data the user can see — search results, code diffs, query rows — surface a snippet of the result in the tool-call row, not just the count. "Found 14 matches" reads as progress; "Found 14 matches in app/auth/, lib/session/, …" reads as understanding.
+
+Cancellation needs a graceful path. Hard-killing an agent mid-tool-call can leave files half-edited, transactions un-committed, branches in inconsistent states. The right cancellation boundary is *between* tool calls — let the current one finish, abort before the next one starts. Surface the difference: "Stopping after current step…" vs. "Stop now."
+
+## Accessibility
+
+1. **`aria-live="polite"`** on the tool-call list so screen readers announce each new step. Reserve `aria-live="assertive"` for failures or cancellation.
+2. **`aria-busy="true"`** on the running row, removed when it completes — the same pattern as a determinate progress bar but at the tool-call granularity.
+3. **`role="status"`** on the cancel button's "Stopping…" message so the cancellation is announced.
+4. **Focus management** — when the user clicks Cancel, focus stays on the cancel button (now showing the cancellation in progress) until the agent confirms the stop.
+5. **`prefers-reduced-motion`** — the spinner reduces to a static dot indicator; the appearance / disappearance of rows is instantaneous instead of animated.
+
+## References
+
+<ReferencesList refs={references} />
