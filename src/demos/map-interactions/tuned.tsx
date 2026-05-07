@@ -32,6 +32,41 @@ export function TunedMapInteractions() {
     new Map(),
   );
 
+  // Compute the visible tile set during render (pure).
+  const tiles: { x: number; y: number; key: string }[] = [];
+  const half = Math.floor(VIEWPORT / 2);
+  for (let dy = -half; dy < VIEWPORT - half; dy++) {
+    for (let dx = -half; dx < VIEWPORT - half; dx++) {
+      const x = centerX + dx;
+      const y = centerY + dy;
+      tiles.push({ x, y, key: tileKey(x, y) });
+    }
+  }
+
+  // Schedule load timers in an effect — never during render. Without
+  // this, React fires "state update on a component that hasn't mounted
+  // yet" because the setTimeout callbacks set state before the first
+  // commit completes.
+  useEffect(() => {
+    const timeouts = timeoutsRef.current;
+    tiles.forEach(({ key }) => {
+      if (loaded.has(key)) return;
+      if (timeouts.has(key)) return;
+      const id = setTimeout(() => {
+        setLoaded((prev) => {
+          if (prev.has(key)) return prev;
+          const next = new Set(prev);
+          next.add(key);
+          return next;
+        });
+        timeouts.delete(key);
+      }, gammaJitter(TILE_LOAD_P50_MS));
+      timeouts.set(key, id);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [centerX, centerY]);
+
+  // Cleanup any in-flight timers on unmount.
   useEffect(() => {
     const timeouts = timeoutsRef.current;
     return () => {
@@ -40,36 +75,10 @@ export function TunedMapInteractions() {
     };
   }, []);
 
-  const ensureLoaded = (key: string) => {
-    if (loaded.has(key)) return;
-    if (timeoutsRef.current.has(key)) return;
-    const id = setTimeout(() => {
-      setLoaded((prev) => {
-        const next = new Set(prev);
-        next.add(key);
-        return next;
-      });
-      timeoutsRef.current.delete(key);
-    }, gammaJitter(TILE_LOAD_P50_MS));
-    timeoutsRef.current.set(key, id);
-  };
-
   const pan = (dx: number, dy: number) => {
     setCenterX((x) => x + dx);
     setCenterY((y) => y + dy);
   };
-
-  const tiles: { x: number; y: number; key: string }[] = [];
-  const half = Math.floor(VIEWPORT / 2);
-  for (let dy = -half; dy < VIEWPORT - half; dy++) {
-    for (let dx = -half; dx < VIEWPORT - half; dx++) {
-      const x = centerX + dx;
-      const y = centerY + dy;
-      const key = tileKey(x, y);
-      tiles.push({ x, y, key });
-      ensureLoaded(key);
-    }
-  }
 
   return (
     <div className="space-y-2">
