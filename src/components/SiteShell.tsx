@@ -1,5 +1,6 @@
 import { Sidebar } from "./Sidebar";
 import { ReferencesPanel } from "./ReferencesPanel";
+import { MobileNav } from "./MobileNav";
 
 /**
  * SiteShell — the 3-column desktop layout per PRD §7.3.
@@ -19,7 +20,10 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <div className="min-w-0">{children}</div>
+      <div className="min-w-0">
+        <MobileNav />
+        {children}
+      </div>
 
       <aside
         className="hidden border-l border-border bg-sidebar lg:block"
