@@ -1,4 +1,5 @@
 import type { MDXComponents } from "mdx/types";
+import { BackToSection } from "@/components/BackToSection";
 import { Cite } from "@/components/Cite";
 import { CodeBlock } from "@/components/CodeBlock";
 
@@ -18,7 +19,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ...components,
     h1: ({ children, ...props }) => (
       <h1
-        className="text-4xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl"
+        className="text-4xl font-medium leading-tight tracking-tight text-foreground"
         {...props}
       >
         {children}
@@ -135,6 +136,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     Cite,
     wrapper: ({ children }) => (
       <article className="mx-auto max-w-3xl px-8 py-12 lg:px-12 xl:px-16">
+        <div className="mb-6">
+          <BackToSection />
+        </div>
         {children}
       </article>
     ),

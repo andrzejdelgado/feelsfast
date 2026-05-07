@@ -45,7 +45,7 @@ export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
   return (
     <section
       aria-labelledby={headingId}
-      className="rounded-lg border border-border bg-card p-6"
+      className="my-8 rounded-lg border border-border bg-card p-6"
     >
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">

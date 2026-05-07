@@ -34,10 +34,10 @@ export function CodeBlock({ children, className }: CodeBlockProps) {
   };
 
   return (
-    <div className={cn("group relative my-5", className)}>
+    <div className={cn("group relative my-8", className)}>
       <pre
         ref={ref}
-        className="overflow-x-auto rounded-lg border border-border bg-secondary px-4 py-3.5 font-mono text-[0.8125rem] leading-relaxed text-foreground"
+        className="whitespace-pre-wrap break-words rounded-lg border border-border bg-secondary px-4 py-3.5 pr-20 font-mono text-[0.8125rem] leading-relaxed text-foreground"
       >
         {children}
       </pre>
