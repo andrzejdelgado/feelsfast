@@ -33,8 +33,8 @@ export function TunedSkeletonPulse({ seed = 1 }: { seed?: number }) {
       <Block className="h-3 w-2/3" />
       <style>{`
         @keyframes skeleton-pulse {
-          0%, 100% { opacity: 0.5; }
-          50%      { opacity: 1;   }
+          0%, 100% { background-color: var(--muted); }
+          50%      { background-color: color-mix(in oklch, var(--muted) 55%, var(--muted-foreground)); }
         }
       `}</style>
     </div>
