@@ -173,20 +173,20 @@ export default function HomePage() {
           {bands.map((band, i) => (
             <div
               key={band.label}
-              className="rounded-lg border border-border bg-card p-5"
+              className="relative rounded-lg border border-border bg-card p-5"
             >
               <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
                 {band.label}
               </p>
-              <div className="mt-2 flex items-center justify-between gap-4">
-                <p className="text-lg font-medium tracking-tight text-foreground">
-                  {band.title}
-                </p>
-                <BandTitleAnim index={i} />
-              </div>
+              <p className="mt-2 text-lg font-medium tracking-tight text-foreground">
+                {band.title}
+              </p>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {band.body}
               </p>
+              <span className="pointer-events-none absolute right-5 top-[3.5rem] flex items-center">
+                <BandTitleAnim index={i} />
+              </span>
             </div>
           ))}
         </div>
@@ -290,7 +290,7 @@ function BandTitleAnim({ index }: { index: number }) {
       {index === 0 ? <SnapDot /> : null}
       {index === 1 ? <BounceDots /> : null}
       {index === 2 ? <ShimmerBar /> : null}
-      {index === 3 ? <CrawlTrack /> : null}
+      {index === 3 ? <RadarPing /> : null}
       <style>{`
         @keyframes band-title-snap {
           0%, 70%, 100% { transform: scale(1);    opacity: 1;   }
@@ -304,11 +304,14 @@ function BandTitleAnim({ index }: { index: number }) {
           0%   { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
-        @keyframes band-title-crawl {
-          0%   { transform: translateX(0);    opacity: 0.3; }
-          12%  { opacity: 1; }
-          88%  { opacity: 1; }
-          100% { transform: translateX(2rem); opacity: 0.3; }
+        @keyframes band-title-ping {
+          0%   { transform: scale(1);   opacity: 0.7; }
+          80%  { transform: scale(2.6); opacity: 0;   }
+          100% { transform: scale(2.6); opacity: 0;   }
+        }
+        @keyframes band-title-pulse {
+          0%, 100% { opacity: 0.55; }
+          50%      { opacity: 1;    }
         }
       `}</style>
     </span>
@@ -355,21 +358,17 @@ function ShimmerBar() {
   );
 }
 
-function CrawlTrack() {
+function RadarPing() {
   return (
-    <span className="relative flex h-2 w-12 items-center">
+    <span className="relative grid size-3 place-items-center">
       <span
         aria-hidden
-        className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, var(--muted-foreground) 0 4px, transparent 4px 8px)",
-          opacity: 0.45,
-        }}
+        className="absolute inset-0 rounded-full border border-primary motion-reduce:animate-none"
+        style={{ animation: "band-title-ping 2400ms ease-out infinite" }}
       />
       <span
-        className="relative size-2 rounded-full bg-primary motion-reduce:animate-none"
-        style={{ animation: "band-title-crawl 5400ms ease-in-out infinite" }}
+        className="relative block size-2 rounded-full bg-primary motion-reduce:animate-none"
+        style={{ animation: "band-title-pulse 2400ms ease-in-out infinite" }}
       />
     </span>
   );
