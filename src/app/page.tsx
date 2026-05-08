@@ -170,7 +170,7 @@ export default function HomePage() {
           and so does this page.
         </p>
         <div className="mt-8 space-y-3">
-          {bands.map((band) => (
+          {bands.map((band, i) => (
             <div
               key={band.label}
               className="rounded-lg border border-border bg-card p-5"
@@ -178,9 +178,12 @@ export default function HomePage() {
               <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
                 {band.label}
               </p>
-              <p className="mt-2 text-lg font-medium tracking-tight text-foreground">
-                {band.title}
-              </p>
+              <div className="mt-2 flex items-center justify-between gap-4">
+                <p className="text-lg font-medium tracking-tight text-foreground">
+                  {band.title}
+                </p>
+                <BandTitleAnim index={i} />
+              </div>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {band.body}
               </p>
@@ -278,6 +281,97 @@ export default function HomePage() {
         </p>
       </section>
     </article>
+  );
+}
+
+function BandTitleAnim({ index }: { index: number }) {
+  return (
+    <span aria-hidden className="shrink-0 leading-none">
+      {index === 0 ? <SnapDot /> : null}
+      {index === 1 ? <BounceDots /> : null}
+      {index === 2 ? <ShimmerBar /> : null}
+      {index === 3 ? <CrawlTrack /> : null}
+      <style>{`
+        @keyframes band-title-snap {
+          0%, 70%, 100% { transform: scale(1);    opacity: 1;   }
+          80%           { transform: scale(0.55); opacity: 0.5; }
+        }
+        @keyframes band-title-bounce {
+          0%, 100% { transform: translateY(0);    opacity: 0.45; }
+          50%      { transform: translateY(-3px); opacity: 1;    }
+        }
+        @keyframes band-title-shimmer {
+          0%   { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+        @keyframes band-title-crawl {
+          0%   { transform: translateX(0);    opacity: 0.3; }
+          12%  { opacity: 1; }
+          88%  { opacity: 1; }
+          100% { transform: translateX(2rem); opacity: 0.3; }
+        }
+      `}</style>
+    </span>
+  );
+}
+
+function SnapDot() {
+  return (
+    <span
+      className="block size-2.5 rounded-full bg-primary motion-reduce:animate-none"
+      style={{ animation: "band-title-snap 1600ms ease-in-out infinite" }}
+    />
+  );
+}
+
+function BounceDots() {
+  return (
+    <span className="flex items-end gap-1">
+      {[0, 160, 320].map((delay) => (
+        <span
+          key={delay}
+          className="size-1.5 rounded-full bg-primary motion-reduce:animate-none"
+          style={{
+            animation: "band-title-bounce 900ms ease-in-out infinite",
+            animationDelay: `${delay}ms`,
+          }}
+        />
+      ))}
+    </span>
+  );
+}
+
+function ShimmerBar() {
+  return (
+    <span
+      className="block h-1.5 w-12 rounded motion-reduce:animate-none"
+      style={{
+        backgroundImage:
+          "linear-gradient(90deg, var(--muted) 0%, color-mix(in oklch, var(--muted) 60%, var(--primary)) 50%, var(--muted) 100%)",
+        backgroundSize: "200% 100%",
+        animation: "band-title-shimmer 1400ms linear infinite",
+      }}
+    />
+  );
+}
+
+function CrawlTrack() {
+  return (
+    <span className="relative flex h-2 w-12 items-center">
+      <span
+        aria-hidden
+        className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(90deg, var(--muted-foreground) 0 4px, transparent 4px 8px)",
+          opacity: 0.45,
+        }}
+      />
+      <span
+        className="relative size-2 rounded-full bg-primary motion-reduce:animate-none"
+        style={{ animation: "band-title-crawl 5400ms ease-in-out infinite" }}
+      />
+    </span>
   );
 }
 
