@@ -5,6 +5,7 @@ import { NaiveFileUpload } from "@/demos/file-upload/naive";
 import { TunedFileUpload } from "@/demos/file-upload/tuned";
 import { config as demoConfig } from "@/demos/file-upload/config";
 import { references } from "@/lib/refs/scenario-file-upload-batch";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "File upload (batch)",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # File upload (batch)
+
+<RelatedRail of="file-upload-batch" kind="scenario" />
 
 The user picks twelve files and clicks Upload. The wall-clock time crosses ten seconds easily — past the unit-task boundary, the user is going to disengage if the perception layer does not earn its keep. The pattern stack is bigger than the single-file case, but the principles are the same.
 

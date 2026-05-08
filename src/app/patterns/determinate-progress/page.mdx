@@ -4,6 +4,7 @@ import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveFileUpload } from "@/demos/file-upload/naive";
 import { TunedFileUpload } from "@/demos/file-upload/tuned";
 import { references } from "@/lib/refs/pattern-determinate-progress";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Determinate progress bars",
@@ -14,6 +15,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Determinate progress bars
+
+<RelatedRail of="determinate-progress" kind="pattern" />
 
 <DemoRunner
   config={{

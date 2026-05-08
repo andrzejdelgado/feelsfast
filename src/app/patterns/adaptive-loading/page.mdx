@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-adaptive-loading";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Adaptive loading (performance scaler)",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Adaptive loading (performance scaler)
+
+<RelatedRail of="adaptive-loading" kind="pattern" />
 
 Most teams calibrate their loading patterns to one slice of their user distribution — typically the dev-team's own machines on a fast office network. The skeletons shimmer for 800 ms because that is the median wait the team experienced during development. The user on a 3G connection from a moving train sees the same 800 ms skeleton over a wait that actually lasts 6 s, and the affordance bears no relationship to their reality.
 

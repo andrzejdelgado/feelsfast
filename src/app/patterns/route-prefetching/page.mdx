@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-route-prefetching";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Route prefetching",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Route prefetching
+
+<RelatedRail of="route-prefetching" kind="pattern" />
 
 A user clicks a link. The browser fetches the route bundle and data, the server responds, the new page renders. With route prefetching, the bundle and data are already warm by the time the click happens — sometimes already cached, sometimes mid-flight. The navigation feels instant or near-instant; the wait the user *would have* experienced never registers.
 

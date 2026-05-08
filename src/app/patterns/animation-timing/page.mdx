@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-animation-timing";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Animation timing for state changes",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Animation timing for state changes
+
+<RelatedRail of="animation-timing" kind="pattern" />
 
 Most UIs ship animations at one of two durations: too fast to read or too slow to wait for. The right answer is neither — the duration depends on the cognitive transition the animation is bridging. Three families cover the vast majority of state changes.
 

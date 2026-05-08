@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-time-aware-feedback";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Time-aware feedback",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Time-aware feedback
+
+<RelatedRail of="time-aware-feedback" kind="pattern" />
 
 Most UIs ship the wrong loading affordance for the wait they actually have. A spinner at 600 ms, a skeleton at 12 s, a progress bar at 200 ms — these are all common, and all wrong. Time-aware feedback is the rule sheet that picks the right affordance per band.
 

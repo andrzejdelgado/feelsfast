@@ -5,6 +5,7 @@ import { NaiveInlineCompletion } from "@/demos/ai-inline-completion/naive";
 import { TunedInlineCompletion } from "@/demos/ai-inline-completion/tuned";
 import { config as demoConfig } from "@/demos/ai-inline-completion/config";
 import { references } from "@/lib/refs/scenario-ai-inline-completion";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Inline completion / suggestion",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Inline completion / suggestion
+
+<RelatedRail of="ai-inline-completion" kind="scenario" />
 
 Inline completion is the perception case where the AI runs while the user is *still typing*. Cursor, Copilot, v0, and every other typing-time inference product lives in this scenario. The trick is not making the model fast — modelling latency is what it is. The trick is making the request system fire only when the user has actually stopped, cancel itself the moment the user starts again, and never display a suggestion that does not match the text the user can see.
 

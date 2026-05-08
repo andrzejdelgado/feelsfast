@@ -4,6 +4,7 @@ import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { references } from "@/lib/refs/pattern-skeleton-screens";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Skeleton screens",
@@ -14,6 +15,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Skeleton screens
+
+<RelatedRail of="skeleton-screens" kind="pattern" />
 
 <DemoRunner
   config={{

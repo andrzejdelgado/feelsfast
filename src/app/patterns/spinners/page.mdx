@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-spinners";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Spinners (when appropriate)",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Spinners (when appropriate)
+
+<RelatedRail of="spinners" kind="pattern" />
 
 Spinners get a bad rap. Half the perceived-performance literature uses "spinner" as a stand-in for *bad loading affordance*, and most of the time the criticism is right. But the spinner is not always wrong — it has a narrow, defensible window.
 

@@ -5,6 +5,7 @@ import { NaiveSearchAsYouType } from "@/demos/search-as-you-type/naive";
 import { TunedSearchAsYouType } from "@/demos/search-as-you-type/tuned";
 import { config as demoConfig } from "@/demos/search-as-you-type/config";
 import { references } from "@/lib/refs/scenario-chat-input";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Chat input (typing-time feedback)",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Chat input (typing-time feedback)
+
+<RelatedRail of="chat-input" kind="scenario" />
 
 The user types into a chat composer. The input must echo inside the perceptual frame Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> describe — anything the input does that blocks for more than 50 ms (typeahead suggestions, mention parsing, markdown preview) puts the user in the same active-mode trap [search-as-you-type](/scenarios/search-as-you-type) covers.
 

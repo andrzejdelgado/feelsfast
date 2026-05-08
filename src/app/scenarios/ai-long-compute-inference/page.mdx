@@ -5,6 +5,7 @@ import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
 import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
 import { config as demoConfig } from "@/demos/ai-streaming/config";
 import { references } from "@/lib/refs/scenario-ai-long-compute-inference";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "AI · Long compute / Inference",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # AI · Long compute / Inference
+
+<RelatedRail of="ai-long-compute-inference" kind="scenario" />
 
 The user submits a request that is going to take 30 seconds or more. Image generation. A complex analytical query. A long-context reasoning task. The user has crossed the unit-task boundary; static skeletons no longer carry their weight; engagement is the last move before they leave.
 

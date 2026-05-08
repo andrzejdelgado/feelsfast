@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-touch-pointer-down";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Touch start / pointer down on touch",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Touch start / pointer down on touch
+
+<RelatedRail of="touch-pointer-down" kind="pattern" />
 
 The folkloric "100 ms feels instant" rule is right for content updates and form submissions. It is wrong by an order of magnitude for direct manipulation. Jota et al. 2013 <Cite id="jota-2013" label="Jota et al. 2013" /> measured touch-input JNDs and found users could discriminate latencies as low as ~33 ms for dragging — roughly a third of the 100 ms threshold for content updates. Tapping was higher (~82 ms) but still well below 100 ms. Deber et al. 2015 <Cite id="deber-2015" label="Deber et al. 2015" /> confirmed and extended these numbers; Ng et al. 2012 <Cite id="ng-2012" label="Ng et al. 2012" /> earlier showed experienced users detecting improvements down to single-millisecond ranges.
 

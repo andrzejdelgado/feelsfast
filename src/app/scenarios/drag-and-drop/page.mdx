@@ -5,6 +5,7 @@ import { NaiveDragAndDrop } from "@/demos/drag-and-drop/naive";
 import { TunedDragAndDrop } from "@/demos/drag-and-drop/tuned";
 import { config as demoConfig } from "@/demos/drag-and-drop/config";
 import { references } from "@/lib/refs/scenario-drag-and-drop";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Drag and drop",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Drag and drop
+
+<RelatedRail of="drag-and-drop" kind="scenario" />
 
 Drag-and-drop lives in the most demanding band on the platform — direct manipulation, where the cursor and the content are coupled in real time. The Jota et al. 2013 <Cite id="jota-2013" label="Jota et al. 2013" /> result puts the just-noticeable difference for direct-touch dragging at ~33 ms; experienced users in Ng et al. 2012 <Cite id="ng-2012" label="Ng et al. 2012" /> resolve down to single-millisecond differences. Deber et al. 2015 <Cite id="deber-2015" label="Deber et al. 2015" /> separates direct-touch from indirect-touch budgets — pointer-driven web reorder is on the indirect side, with somewhat looser perceptual tolerances, but only because the cursor has already abstracted the physical input.
 

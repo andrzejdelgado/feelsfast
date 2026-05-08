@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-streaming-ssr";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Streaming SSR / Suspense",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Streaming SSR / Suspense
+
+<RelatedRail of="streaming-ssr" kind="pattern" />
 
 Server-side rendering used to be a binary: the server held the whole response until every part was ready, then shipped it as one HTML document. Streaming flips the unit. The server starts shipping HTML as soon as the *shell* is ready and continues sending chunks as each section's data resolves. The browser parses and paints what it has; the user sees the layout in tens of milliseconds and the slow data fills in incrementally.
 

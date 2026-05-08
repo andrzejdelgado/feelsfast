@@ -5,6 +5,7 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-page-load-warm-cache";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Page load (warm cache)",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Page load (warm cache)
+
+<RelatedRail of="page-load-warm-cache" kind="scenario" />
 
 A returning user. The bundle is cached. The route data was prefetched on hover or at viewport entry. There is no real wait — and yet the naive surface still flashes a blank between the previous page and the new one. The tuned surface treats the navigation as a transition between two states of the same document, not as a new document fetch.
 

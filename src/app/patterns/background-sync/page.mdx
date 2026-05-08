@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-background-sync";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Background sync",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Background sync
+
+<RelatedRail of="background-sync" kind="pattern" />
 
 The fastest wait is the one the user does not see. Background sync moves the operation off the user's perceived path entirely — the action commits to local storage immediately, the network request runs whenever the system can deliver it, the user gets on with their day. Conceptually it is the most aggressive perception-layer pattern in the catalog: it does not shorten the wait, it deletes it.
 

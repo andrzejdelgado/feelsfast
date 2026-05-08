@@ -5,6 +5,7 @@ import { NaiveFileUpload } from "@/demos/file-upload/naive";
 import { TunedFileUpload } from "@/demos/file-upload/tuned";
 import { config as demoConfig } from "@/demos/file-upload/config";
 import { references } from "@/lib/refs/scenario-file-upload-single";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "File upload (single)",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # File upload (single)
+
+<RelatedRail of="file-upload-single" kind="scenario" />
 
 The user picks a file and clicks Upload. The bytes have to transfer; there is real wall-clock time the perception layer cannot remove. What the perception layer *can* do is replace a generic spinner with a determinate progress bar that reflects actual progress, render the file's metadata optimistically, and finish with a clear success affordance.
 

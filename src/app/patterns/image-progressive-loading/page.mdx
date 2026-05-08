@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-image-progressive-loading";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Image progressive loading (LQIP, blur-up)",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Image progressive loading (LQIP, blur-up)
+
+<RelatedRail of="image-progressive-loading" kind="pattern" />
 
 A full image is heavy. A 4 KB placeholder embedded in the markup, blurred and stretched to the full dimensions, is light. Show the placeholder first; swap the real image in once it has loaded. The user sees roughly the right shape and colour within ~80 ms; the texture catches up over the next half-second. The wait is the same in clock terms; the experience is meaningfully fuller.
 

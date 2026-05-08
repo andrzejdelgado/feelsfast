@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-pre-action-feedback";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Pre-action feedback (`:active`, button press)",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Pre-action feedback
+
+<RelatedRail of="pre-action-feedback" kind="pattern" />
 
 The user clicks a button. Before anything happens at the server, the system needs to confirm that the input was received. If the acknowledgment lands within ~50 ms, the click feels caused by the user. If it lands past 200 ms, the user is reaching for the button again, suspecting nothing happened. If it lands past 1 s, they have entered the passive phase and the active-mode budget is gone.
 

@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-ai-tool-call-transparency";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Tool-call transparency",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Tool-call transparency
+
+<RelatedRail of="ai-tool-call-transparency" kind="pattern" />
 
 An agent that runs for thirty seconds with a generic spinner is a black box. The user has no signal what the agent is actually doing, no way to judge whether it is on track, and no idea whether to wait or cancel. Tool-call transparency replaces the black box with a narrated stream of activity — *Reading user-controller.ts*, *Searching for `validateInput`*, *Running tests…* — so the user follows along with the work.
 

@@ -5,6 +5,7 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-data-table-loading";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Data table loading",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Data table loading
+
+<RelatedRail of="data-table-loading" kind="scenario" />
 
 The user clicks a column header to sort, types into a filter box, or changes the page size. The table re-queries; the user waits for the new data. The naive answer is to blank the table during the query. The tuned answer is to keep the layout intact, render skeleton rows that match the column widths, and dim the previous data while the new query is in flight.
 

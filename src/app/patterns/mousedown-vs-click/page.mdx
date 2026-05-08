@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-mousedown-vs-click";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "mousedown / pointerdown vs. click",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # mousedown / pointerdown vs. click
+
+<RelatedRail of="mousedown-vs-click" kind="pattern" />
 
 When a user clicks a button, their finger or mouse button does not snap up and down instantly. They press, hold for ~100–150 ms, and release. The `click` event fires on release; `mousedown` and `pointerdown` fire on press. If your handler sits on `click`, you have spent that 100–150 ms doing nothing while the user was already committed to the action.
 

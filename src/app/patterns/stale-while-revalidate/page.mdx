@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-stale-while-revalidate";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Stale-while-revalidate",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Stale-while-revalidate
+
+<RelatedRail of="stale-while-revalidate" kind="pattern" />
 
 A user requests a resource. The cache has it, but the cached copy is past its freshness window. The classical response is to invalidate, fetch, and serve the fresh response — incurring the full network round-trip on the user's perceived load time. Stale-while-revalidate (SWR) flips the priority: serve the stale copy immediately, fetch the fresh copy in the background, swap it in when ready.
 

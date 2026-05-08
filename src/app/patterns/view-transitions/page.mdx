@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-view-transitions";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "View Transitions API",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # View Transitions API
+
+<RelatedRail of="view-transitions" kind="pattern" />
 
 The View Transitions API is the web platform's answer to a problem framework authors have been re-solving for fifteen years: smooth animated transitions between two states of a page, without requiring a single component tree to own both states. The browser snapshots the old state, lets the new state render, then animates between the two snapshots automatically.
 

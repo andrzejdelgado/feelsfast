@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-empty-state-loading";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Empty states that hint at loading",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Empty states that hint at loading
+
+<RelatedRail of="empty-state-loading" kind="pattern" />
 
 A common failure mode in loading affordance: the page renders, shows nothing, and the user cannot tell whether the load is still happening or whether the load finished and there are no items. Both states are blank. Both states look identical. The user waits, then guesses.
 

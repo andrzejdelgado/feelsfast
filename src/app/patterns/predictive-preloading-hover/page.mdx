@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-predictive-preloading-hover";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Predictive preloading (hover, mouse deceleration)",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Predictive preloading (hover, mouse deceleration)
+
+<RelatedRail of="predictive-preloading-hover" kind="pattern" />
 
 A user who is about to click a button slows their cursor as they approach it. The deceleration is automatic, unconscious, and surprisingly predictable. If you watch the cursor's velocity vector and predict the landing spot before the click happens, you can begin loading the target before the user has committed.
 

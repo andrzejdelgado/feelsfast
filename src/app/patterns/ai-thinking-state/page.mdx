@@ -4,6 +4,7 @@ import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
 import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
 import { references } from "@/lib/refs/pattern-ai-thinking-state";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Thinking state (pre-first-token)",
@@ -14,6 +15,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Thinking state (pre-first-token)
+
+<RelatedRail of="ai-thinking-state" kind="pattern" />
 
 <DemoRunner
   config={{

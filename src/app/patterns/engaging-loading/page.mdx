@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-engaging-loading";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Engaging loading states",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Engaging loading states
+
+<RelatedRail of="engaging-loading" kind="pattern" />
 
 Past ten seconds, the user is leaving. They have crossed the unit-task boundary, their attention is wandering, and a static skeleton is no longer enough — there is too much empty time for the prospective fill to compress. Engaging loading states are the last move before the user simply abandons the wait.
 

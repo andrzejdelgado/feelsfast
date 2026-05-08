@@ -5,6 +5,7 @@ import { NaiveAiToolExecution } from "@/demos/ai-tool-execution/naive";
 import { TunedAiToolExecution } from "@/demos/ai-tool-execution/tuned";
 import { config as demoConfig } from "@/demos/ai-tool-execution/config";
 import { references } from "@/lib/refs/scenario-ai-tool-execution";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Tool execution / agentic step",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Tool execution / agentic step
+
+<RelatedRail of="ai-tool-execution" kind="scenario" />
 
 When an agent does something — reads a file, runs a search, edits code, executes a query — there is a 1 – 10 S window of real wall-clock time the perception layer has to manage. The work is not waiting on a model token stream; it is waiting on the tool itself. A spinner that says "Working…" for six seconds gives the user nothing. A streaming list of the actual tool calls — "Read package.json. Searched for useState. Edited SearchBox.tsx. Ran typecheck." — is the same wait, but the user reads the trajectory in real time and learns to trust the agent.
 

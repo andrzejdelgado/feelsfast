@@ -5,6 +5,7 @@ import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
 import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
 import { config as demoConfig } from "@/demos/optimistic-actions/config";
 import { references } from "@/lib/refs/scenario-optimistic-actions";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Optimistic actions (like, save, undo)",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Optimistic actions (like, save, undo)
+
+<RelatedRail of="optimistic-actions" kind="scenario" />
 
 The user clicks "Like." The naive answer is to wait for the server before the heart fills in — a small button with a small wait, but a wait the user feels every time. The tuned answer is to flip the heart immediately, send the request in the background, and roll back visibly if the rare failure case fires. At 99 % success the user's experience is sub-perceptible feedback; at 1 % they get an honest, recoverable error.
 

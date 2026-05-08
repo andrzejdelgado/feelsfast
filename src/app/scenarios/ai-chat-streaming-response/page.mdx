@@ -5,6 +5,7 @@ import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
 import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
 import { config as demoConfig } from "@/demos/ai-streaming/config";
 import { references } from "@/lib/refs/scenario-ai-chat-streaming-response";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "AI · Chat / streaming response",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # AI · Chat / streaming response
+
+<RelatedRail of="ai-chat-streaming-response" kind="scenario" />
 
 The user submits a prompt to an AI surface. The total time to last token is roughly the same on both sides — call it 5–6 seconds. The naive surface goes blank for those seconds, then drops the full response in at the end. The tuned surface fills the same wait with a brief thinking state and a token-by-token reveal pacing the response to a natural reading rhythm. Same clock, very different experience.
 

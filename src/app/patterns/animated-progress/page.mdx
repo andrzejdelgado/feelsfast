@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-animated-progress";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Animated progress (backwards-decelerating ribs)",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Animated progress (backwards-decelerating ribs)
+
+<RelatedRail of="animated-progress" kind="pattern" />
 
 A determinate progress bar with bands moving backwards and decelerating over the wait feels meaningfully shorter than a plain bar of the same duration. Chris Harrison and colleagues <Cite id="harrison-2010" label="Harrison et al. 2010" /> measured the effect at CHI 2010: a 5.0-second bar with this pattern felt equivalent to a ~5.6-second plain bar, a ~11–12 % perceptual speed-up. Their earlier UIST 2007 paper <Cite id="harrison-2007" label="Harrison et al. 2007" /> set up the broader finding — animation pattern measurably alters perceived duration even with identical real duration.
 

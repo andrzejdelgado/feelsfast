@@ -5,6 +5,7 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-auth-oauth";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Auth / OAuth flow",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Auth / OAuth flow
+
+<RelatedRail of="auth-oauth" kind="scenario" />
 
 Sign in. Or click "Continue with Google" and round-trip through a third-party. The wait is one to several seconds — most of it the network handshake the user can do nothing about. The perception layer cannot shorten the handshake; it can ensure the wait is filled with affordances rather than blank.
 

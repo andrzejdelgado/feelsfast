@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { DemoRunner, type DemoConfig } from "@/components/DemoRunner";
 import { cn } from "@/lib/utils";
+import { demoContext } from "@/lib/relations";
 
 import { config as listFetchConfig } from "@/demos/list-fetch/config";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
@@ -135,12 +137,14 @@ type FilterValue = "all" | BandId;
 
 type DemoEntry =
   | {
+      /** Folder name under src/demos/ — drives the cross-link lookup. */
+      demoKey: string;
       config: DemoConfig;
       Naive: React.ComponentType<{ seed?: number }>;
       Tuned: React.ComponentType<{ seed?: number }>;
     }
   | {
-      /** Used as the React `key` only — no DemoRunner header is rendered. */
+      /** Used as the React `key` and as the demoKey for cross-link lookup. */
       key: string;
       Custom: React.ComponentType;
     };
@@ -159,11 +163,11 @@ const bands: Band[] = [
     description:
       "Instant input. The user has not started waiting yet. Patterns here give a head-start, not a status — pre-action feedback, optimistic flips, direct-manipulation latency budgets. Anything that announces a wait at this scale damages the experience.",
     demos: [
-      { config: optimisticActionsConfig, Naive: NaiveOptimisticActions, Tuned: TunedOptimisticActions },
+      { demoKey: "optimistic-actions", config: optimisticActionsConfig, Naive: NaiveOptimisticActions, Tuned: TunedOptimisticActions },
       { key: "map-interactions", Custom: MapInteractionsCard },
-      { config: realTimeUpdatesConfig, Naive: NaiveRealTimeUpdates, Tuned: TunedRealTimeUpdates },
-      { config: mousedownConfig, Naive: NaiveMousedown, Tuned: TunedMousedown },
-      { config: iconFlipConfig, Naive: NaiveIconFlip, Tuned: TunedIconFlip },
+      { demoKey: "real-time-updates", config: realTimeUpdatesConfig, Naive: NaiveRealTimeUpdates, Tuned: TunedRealTimeUpdates },
+      { demoKey: "technique-mousedown", config: mousedownConfig, Naive: NaiveMousedown, Tuned: TunedMousedown },
+      { demoKey: "technique-icon-flip", config: iconFlipConfig, Naive: NaiveIconFlip, Tuned: TunedIconFlip },
     ],
   },
   {
@@ -172,12 +176,12 @@ const bands: Band[] = [
     description:
       "Perceptible, but no determinate progress yet. Cues say \"active, working\" without claiming an end-point — indeterminate spinners, top-edge trickle bars, a brief pulse on the affected element.",
     demos: [
-      { config: spinnerConfig, Naive: NaiveSpinner, Tuned: TunedSpinner },
-      { config: trickleBarConfig, Naive: NaiveTrickleBar, Tuned: TunedTrickleBar },
-      { config: marqueeBarConfig, Naive: NaiveMarqueeBar, Tuned: TunedMarqueeBar },
-      { config: threeDotConfig, Naive: NaiveThreeDotBounce, Tuned: TunedThreeDotBounce },
-      { config: pulsingOrbConfig, Naive: NaivePulsingOrb, Tuned: TunedPulsingOrb },
-      { config: counterConfig, Naive: NaiveCounter, Tuned: TunedCounter },
+      { demoKey: "technique-spinner", config: spinnerConfig, Naive: NaiveSpinner, Tuned: TunedSpinner },
+      { demoKey: "technique-trickle-bar", config: trickleBarConfig, Naive: NaiveTrickleBar, Tuned: TunedTrickleBar },
+      { demoKey: "technique-marquee-bar", config: marqueeBarConfig, Naive: NaiveMarqueeBar, Tuned: TunedMarqueeBar },
+      { demoKey: "technique-three-dot-bounce", config: threeDotConfig, Naive: NaiveThreeDotBounce, Tuned: TunedThreeDotBounce },
+      { demoKey: "technique-pulsing-orb", config: pulsingOrbConfig, Naive: NaivePulsingOrb, Tuned: TunedPulsingOrb },
+      { demoKey: "technique-counter", config: counterConfig, Naive: NaiveCounter, Tuned: TunedCounter },
     ],
   },
   {
@@ -186,21 +190,21 @@ const bands: Band[] = [
     description:
       "The engaged wait. The user is consciously waiting on the result and most perception techniques live here — skeletons, progress bars, LQIPs, AI thinking cues, the Instagram-style top-edge gradient bar.",
     demos: [
-      { config: listFetchConfig, Naive: NaiveListFetch, Tuned: TunedListFetch },
-      { config: aiStreamingConfig, Naive: NaiveAIStreaming, Tuned: TunedAIStreaming },
-      { config: fileUploadConfig, Naive: NaiveFileUpload, Tuned: TunedFileUpload },
-      { config: imageGalleryConfig, Naive: NaiveImageGallery, Tuned: TunedImageGallery },
-      { config: toolExecutionConfig, Naive: NaiveAiToolExecution, Tuned: TunedAiToolExecution },
-      { config: topBarConfig, Naive: NaiveTopBar, Tuned: TunedTopBar },
-      { config: skeletonSimpleConfig, Naive: NaiveSkeletonSimple, Tuned: TunedSkeletonSimple },
-      { config: skeletonTrueConfig, Naive: NaiveSkeletonTrue, Tuned: TunedSkeletonTrue },
-      { config: shimmerSkeletonConfig, Naive: NaiveShimmerSkeleton, Tuned: TunedShimmerSkeleton },
-      { config: skeletonPulseConfig, Naive: NaiveSkeletonPulse, Tuned: TunedSkeletonPulse },
-      { config: skeletonRevealConfig, Naive: NaiveSkeletonReveal, Tuned: TunedSkeletonReveal },
-      { config: decelBarConfig, Naive: NaiveDecelBar, Tuned: TunedDecelBar },
-      { config: imageColorConfig, Naive: NaiveImageColor, Tuned: TunedImageColor },
-      { config: imageBrandConfig, Naive: NaiveImageBrand, Tuned: TunedImageBrand },
-      { config: thinkingGradientConfig, Naive: NaiveThinkingGradient, Tuned: TunedThinkingGradient },
+      { demoKey: "list-fetch", config: listFetchConfig, Naive: NaiveListFetch, Tuned: TunedListFetch },
+      { demoKey: "ai-streaming", config: aiStreamingConfig, Naive: NaiveAIStreaming, Tuned: TunedAIStreaming },
+      { demoKey: "file-upload", config: fileUploadConfig, Naive: NaiveFileUpload, Tuned: TunedFileUpload },
+      { demoKey: "image-gallery", config: imageGalleryConfig, Naive: NaiveImageGallery, Tuned: TunedImageGallery },
+      { demoKey: "ai-tool-execution", config: toolExecutionConfig, Naive: NaiveAiToolExecution, Tuned: TunedAiToolExecution },
+      { demoKey: "technique-top-bar", config: topBarConfig, Naive: NaiveTopBar, Tuned: TunedTopBar },
+      { demoKey: "technique-skeleton-simple", config: skeletonSimpleConfig, Naive: NaiveSkeletonSimple, Tuned: TunedSkeletonSimple },
+      { demoKey: "technique-skeleton-true", config: skeletonTrueConfig, Naive: NaiveSkeletonTrue, Tuned: TunedSkeletonTrue },
+      { demoKey: "technique-shimmer-skeleton", config: shimmerSkeletonConfig, Naive: NaiveShimmerSkeleton, Tuned: TunedShimmerSkeleton },
+      { demoKey: "technique-skeleton-pulse", config: skeletonPulseConfig, Naive: NaiveSkeletonPulse, Tuned: TunedSkeletonPulse },
+      { demoKey: "technique-skeleton-reveal", config: skeletonRevealConfig, Naive: NaiveSkeletonReveal, Tuned: TunedSkeletonReveal },
+      { demoKey: "technique-decel-bar", config: decelBarConfig, Naive: NaiveDecelBar, Tuned: TunedDecelBar },
+      { demoKey: "technique-image-color", config: imageColorConfig, Naive: NaiveImageColor, Tuned: TunedImageColor },
+      { demoKey: "technique-image-brand", config: imageBrandConfig, Naive: NaiveImageBrand, Tuned: TunedImageBrand },
+      { demoKey: "technique-thinking-gradient", config: thinkingGradientConfig, Naive: NaiveThinkingGradient, Tuned: TunedThinkingGradient },
     ],
   },
   {
@@ -209,12 +213,12 @@ const bands: Band[] = [
     description:
       "Past the wall. The user's attention drifts; patterns here are about giving them something to do or freeing them entirely — engagement copy, branded sequences, foreground-to-background hand-offs.",
     demos: [
-      { config: dataExportConfig, Naive: NaiveDataExport, Tuned: TunedDataExport },
-      { config: agenticConfig, Naive: NaiveAiAgenticWorkflow, Tuned: TunedAiAgenticWorkflow },
-      { config: rotatingTipsConfig, Naive: NaiveRotatingTips, Tuned: TunedRotatingTips },
-      { config: brandedStoryConfig, Naive: NaiveBrandedStory, Tuned: TunedBrandedStory },
-      { config: miniGameConfig, Naive: NaiveMiniGame, Tuned: TunedMiniGame },
-      { config: notifyCompleteConfig, Naive: NaiveNotifyComplete, Tuned: TunedNotifyComplete },
+      { demoKey: "data-export", config: dataExportConfig, Naive: NaiveDataExport, Tuned: TunedDataExport },
+      { demoKey: "ai-agentic-workflow", config: agenticConfig, Naive: NaiveAiAgenticWorkflow, Tuned: TunedAiAgenticWorkflow },
+      { demoKey: "technique-rotating-tips", config: rotatingTipsConfig, Naive: NaiveRotatingTips, Tuned: TunedRotatingTips },
+      { demoKey: "technique-branded-story", config: brandedStoryConfig, Naive: NaiveBrandedStory, Tuned: TunedBrandedStory },
+      { demoKey: "technique-mini-game", config: miniGameConfig, Naive: NaiveMiniGame, Tuned: TunedMiniGame },
+      { demoKey: "technique-notify-complete", config: notifyCompleteConfig, Naive: NaiveNotifyComplete, Tuned: TunedNotifyComplete },
     ],
   },
 ];
@@ -279,18 +283,23 @@ export function PlaygroundContent() {
             </p>
 
             <div className="mt-6 space-y-6">
-              {band.demos.map((demo) =>
-                "Custom" in demo ? (
-                  <demo.Custom key={demo.key} />
-                ) : (
-                  <DemoRunner
-                    key={demo.config.title}
-                    config={demo.config}
-                    Naive={demo.Naive}
-                    Tuned={demo.Tuned}
-                  />
-                ),
-              )}
+              {band.demos.map((demo) => {
+                const demoKey = "Custom" in demo ? demo.key : demo.demoKey;
+                return (
+                  <div key={demoKey}>
+                    {"Custom" in demo ? (
+                      <demo.Custom />
+                    ) : (
+                      <DemoRunner
+                        config={demo.config}
+                        Naive={demo.Naive}
+                        Tuned={demo.Tuned}
+                      />
+                    )}
+                    <AppearsInStrip demoKey={demoKey} />
+                  </div>
+                );
+              })}
             </div>
           </section>
         ))}
@@ -329,5 +338,47 @@ function FilterPill({
         {count}
       </span>
     </button>
+  );
+}
+
+/**
+ * Cross-link strip that fixes the Playground-feels-orphaned problem.
+ * Each demo card now declares which Scenario it lives inside and which
+ * Pattern(s) it demonstrates, both as clickable chips.
+ */
+function AppearsInStrip({ demoKey }: { demoKey: string }) {
+  const ctx = demoContext(demoKey);
+  if (ctx.scenarios.length === 0 && ctx.patterns.length === 0) return null;
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-2 px-1 text-xs">
+      <span className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
+        Appears in
+      </span>
+      {ctx.scenarios.map((s) => (
+        <Link
+          key={`s-${s.slug}`}
+          href={`/scenarios/${s.slug}`}
+          className="inline-flex items-center rounded-md border border-border bg-card px-2 py-0.5 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+        >
+          <span className="mr-1 font-mono text-[0.6875rem] uppercase tracking-wider opacity-70">
+            Scenario
+          </span>
+          <span>{s.title}</span>
+        </Link>
+      ))}
+      {ctx.patterns.map((p) => (
+        <Link
+          key={`p-${p.slug}`}
+          href={`/patterns/${p.slug}`}
+          className="inline-flex items-center rounded-md border border-border bg-card px-2 py-0.5 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+        >
+          <span className="mr-1 font-mono text-[0.6875rem] uppercase tracking-wider opacity-70">
+            Pattern
+          </span>
+          <span>{p.title}</span>
+        </Link>
+      ))}
+    </div>
   );
 }

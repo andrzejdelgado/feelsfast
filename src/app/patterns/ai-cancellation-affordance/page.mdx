@@ -1,6 +1,7 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { references } from "@/lib/refs/pattern-ai-cancellation-affordance";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Cancellation affordance for streaming / long ops",
@@ -11,6 +12,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Cancellation affordance
+
+<RelatedRail of="ai-cancellation-affordance" kind="pattern" />
 
 The user submits a prompt, watches the assistant generate, and realises the response is going somewhere they didn't want. The stop button is what saves the interaction. Done well, it makes long AI operations feel safe — the user can commit to running anything because they can always pull out. Done poorly, it confirms the user's worst suspicion about AI: that they are passengers, not drivers.
 

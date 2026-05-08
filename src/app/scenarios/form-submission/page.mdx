@@ -5,6 +5,7 @@ import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
 import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
 import { config as demoConfig } from "@/demos/optimistic-actions/config";
 import { references } from "@/lib/refs/scenario-form-submission";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Form submission",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Form submission
+
+<RelatedRail of="form-submission" kind="scenario" />
 
 The user fills out a form and clicks Submit. What happens between the click and the success page determines whether the form feels responsive or laggy. There are three layers to tune — pre-action feedback, optimistic submission for low-rejection cases, and determinate progress for the long tail — and they stack to push the perceived submission time below Doherty 1982's <Cite id="doherty-1982" label="Doherty 1982" /> productivity-cliff.
 

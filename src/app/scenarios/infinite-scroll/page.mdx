@@ -5,6 +5,7 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-infinite-scroll";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Infinite scroll",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Infinite scroll
+
+<RelatedRail of="infinite-scroll" kind="scenario" />
 
 The user keeps scrolling. The list keeps growing. The naive answer is to wait for the bottom of the visible content, then fetch the next batch. The tuned answer is to anticipate — fetch before the user reaches the boundary, render skeleton rows for the next batch immediately, and keep the layout stable as the new content lands.
 

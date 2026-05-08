@@ -5,6 +5,7 @@ import { NaiveImageGallery } from "@/demos/image-gallery/naive";
 import { TunedImageGallery } from "@/demos/image-gallery/tuned";
 import { config as demoConfig } from "@/demos/image-gallery/config";
 import { references } from "@/lib/refs/scenario-image-gallery";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Image gallery",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Image gallery
+
+<RelatedRail of="image-gallery" kind="scenario" />
 
 Image-heavy layouts are the worst-case for naive loading. A grid of six photos at 250 KB each is a megabyte and a half on the wire — and the eye notices every tile that is missing. A user who sees six gray boxes backfilling in arbitrary order experiences six separate waits, one per tile, each registering as absence. The same six images backed by LQIP placeholders register as a single resolution event — the layout was already there, the detail is what is arriving.
 

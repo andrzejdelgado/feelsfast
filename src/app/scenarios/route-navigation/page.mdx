@@ -5,6 +5,7 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-route-navigation";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Route navigation",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Route navigation
+
+<RelatedRail of="route-navigation" kind="scenario" />
 
 The user clicks a link. A new page should appear. The naive answer is to wait for the click, fetch the route bundle and data, render the new page. The tuned answer is to have already done most of that work — the route bundle was prefetched on hover, the data was prefetched on mouse-deceleration, and the click triggers a near-instant View Transitions handoff between the cached previous page and the cached new page.
 

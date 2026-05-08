@@ -5,6 +5,7 @@ import { NaiveRealTimeUpdates } from "@/demos/real-time-updates/naive";
 import { TunedRealTimeUpdates } from "@/demos/real-time-updates/tuned";
 import { config as demoConfig } from "@/demos/real-time-updates/config";
 import { references } from "@/lib/refs/scenario-real-time-updates";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Real-time updates / live data",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Real-time updates / live data
+
+<RelatedRail of="real-time-updates" kind="scenario" />
 
 Live feeds — Slack threads, Linear activity, GitHub PR queues, build dashboards — share a perception failure mode that is easy to overlook because nothing is *broken*: when a new event arrives, the list reorders silently. The user, whose eyes were elsewhere, has to re-scan the entire list to find what changed. The new entry is delivered, but the user does not perceive it as new.
 

@@ -4,6 +4,7 @@ import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
 import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
 import { references } from "@/lib/refs/pattern-optimistic-ui";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Optimistic UI",
@@ -14,6 +15,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Optimistic UI
+
+<RelatedRail of="optimistic-ui" kind="pattern" />
 
 <DemoRunner
   config={{

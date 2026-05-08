@@ -5,6 +5,7 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-multi-step-wizard-checkout";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Multi-step wizard / checkout",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Multi-step wizard / checkout
+
+<RelatedRail of="multi-step-wizard-checkout" kind="scenario" />
 
 Multi-step flows — checkouts, onboarding, signup wizards — are the cleanest place to apply predictive preloading. The user's path through the steps is mostly linear; the next step is highly predictable from the current one. Fetching the next step's bundle and data while the user is filling the current one collapses the perceived transition time to near-zero.
 

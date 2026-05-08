@@ -5,6 +5,7 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-long-list-pagination";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Long list / pagination",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Long list / pagination
+
+<RelatedRail of="long-list-pagination" kind="scenario" />
 
 The user scrolls through a 200-item list, or clicks "Next" on a paginated table. The naive answer is to wait for the next page's data, then drop it in. The tuned answer is to render skeleton rows for the next page immediately and to predictively preload before the user reaches the boundary — most of the time, the data is already there when the skeleton renders.
 

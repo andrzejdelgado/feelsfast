@@ -5,6 +5,7 @@ import { NaiveAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/naive";
 import { TunedAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/tuned";
 import { config as demoConfig } from "@/demos/ai-agentic-workflow/config";
 import { references } from "@/lib/refs/scenario-ai-agentic-workflow";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Agentic workflow",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Agentic workflow
+
+<RelatedRail of="ai-agentic-workflow" kind="scenario" />
 
 Long-running agents — Deep Research, Devin, Cursor agent runs, browse-and-summarise tools, multi-step refactors — push past the 10-second wall Nielsen 1993 <Cite id="nielsen-1993" label="Nielsen 1993" /> placed at the edge of attention. By minute two the user is in another tab, has switched contexts, has half-forgotten what they asked for. The perception layer's job is no longer to compress the wait — the wait is the work — but to keep the agent legible *to a user who is no longer looking*.
 

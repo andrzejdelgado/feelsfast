@@ -5,6 +5,7 @@ import { NaiveSearchAsYouType } from "@/demos/search-as-you-type/naive";
 import { TunedSearchAsYouType } from "@/demos/search-as-you-type/tuned";
 import { config as demoConfig } from "@/demos/search-as-you-type/config";
 import { references } from "@/lib/refs/scenario-search-as-you-type";
+import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Search as you type",
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Search as you type
+
+<RelatedRail of="search-as-you-type" kind="scenario" />
 
 The user types into a search box. Each keystroke could either kick off an expensive filter that blocks the input, or trigger a deferred filter that runs as low-priority work while the input stays responsive. The difference between the two — same dataset, same filter logic, same artificial work per keystroke — is whether the user feels they are typing or fighting.
 
