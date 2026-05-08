@@ -1,15 +1,18 @@
 /**
  * Pixel-art sports-car icon as inline SVG. 16×16 viewBox, sized via the
  * consumer's `className` (caller passes `size-[1em]` to match font-
- * size). Three concurrent animations — body bounce, two-frame wheel
- * cycle, and staggered wind streaks behind the car — all running on
- * `steps(1)` keyframes for the frame-flip pixel-art feel.
+ * size). Two concurrent animations — two-frame wheel cycle and
+ * staggered wind streaks behind the car — running on `steps(1)`
+ * keyframes for the frame-flip pixel-art feel. Body is static (no
+ * bounce).
  *
  * Loops forever and intentionally does not honour
  * `prefers-reduced-motion` (deliberate request).
  *
- * Palette is purple-cyan-silver to read as a sports-car illustration
- * rather than a brand element; wind streaks are muted-foreground.
+ * Body uses three shades of the platform accent (Claude orange) for
+ * depth: a lighter highlight on the roof and front of the hood, the
+ * base accent across the body, and a darker shade as the under-body
+ * shadow. Windshield is light cyan, wheels black with a silver hub.
  * `shape-rendering: crispEdges` keeps the pixels crisp at every
  * display size.
  */
@@ -35,24 +38,26 @@ export function RaceCarIcon({
         <rect x="0" y="9" width="3" height="1" fill="#5e5d59" className="rc-wind-3" />
       </g>
 
-      {/* Body group — bounces */}
-      <g className="rc-body">
-        {/* Roof */}
-        <rect x="6" y="5" width="3" height="1" fill="#7c4cd8" />
+      {/* Body group — static, no bounce */}
+      <g>
+        {/* Roof — light highlight (sun catches the top) */}
+        <rect x="6" y="5" width="3" height="1" fill="#efa988" />
 
-        {/* Windshield row — pillars + glass */}
-        <rect x="5" y="6" width="1" height="1" fill="#7c4cd8" />
+        {/* Windshield row — pillars (mid accent) + glass */}
+        <rect x="5" y="6" width="1" height="1" fill="#d97757" />
         <rect x="6" y="6" width="3" height="1" fill="#b9e7f0" />
-        <rect x="9" y="6" width="1" height="1" fill="#7c4cd8" />
+        <rect x="9" y="6" width="1" height="1" fill="#d97757" />
 
-        {/* Body upper (slightly narrower; ends at col 14) */}
-        <rect x="2" y="7" width="13" height="1" fill="#7c4cd8" />
+        {/* Body upper — mid accent across the band */}
+        <rect x="2" y="7" width="13" height="1" fill="#d97757" />
+        {/* Hood front-light highlight */}
+        <rect x="11" y="7" width="3" height="1" fill="#efa988" />
 
-        {/* Body main (full width, ends at col 15 for pointed front) */}
-        <rect x="1" y="8" width="15" height="1" fill="#7c4cd8" />
+        {/* Body main — mid accent, full width */}
+        <rect x="1" y="8" width="15" height="1" fill="#d97757" />
 
-        {/* Body lower / shadow stripe (narrower for taper) */}
-        <rect x="2" y="9" width="12" height="1" fill="#4d2a8c" />
+        {/* Body lower — dark accent shadow stripe */}
+        <rect x="2" y="9" width="12" height="1" fill="#a8472a" />
       </g>
 
       {/* Wheels — Frame A: horizontal spoke */}
@@ -90,13 +95,6 @@ export function RaceCarIcon({
       </g>
 
       <style>{`
-        .rc-body {
-          animation: rc-bounce 220ms steps(1) infinite;
-        }
-        @keyframes rc-bounce {
-          0%, 49.99% { transform: translateY(0); }
-          50%, 100%  { transform: translateY(-6.25%); }
-        }
         .rc-wheels-a { animation: rc-flicker-a 160ms steps(1) infinite; }
         .rc-wheels-b { animation: rc-flicker-b 160ms steps(1) infinite; }
         @keyframes rc-flicker-a {
