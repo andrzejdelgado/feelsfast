@@ -170,23 +170,20 @@ export default function HomePage() {
           and so does this page.
         </p>
         <div className="mt-8 space-y-3">
-          {bands.map((band, i) => (
+          {bands.map((band) => (
             <div
               key={band.label}
-              className="flex items-start gap-5 rounded-lg border border-border bg-card p-5 sm:gap-6"
+              className="rounded-lg border border-border bg-card p-5"
             >
-              <BandVisual index={i} />
-              <div className="min-w-0 flex-1">
-                <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
-                  {band.label}
-                </p>
-                <p className="mt-2 text-lg font-medium tracking-tight text-foreground">
-                  {band.title}
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {band.body}
-                </p>
-              </div>
+              <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
+                {band.label}
+              </p>
+              <p className="mt-2 text-lg font-medium tracking-tight text-foreground">
+                {band.title}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {band.body}
+              </p>
             </div>
           ))}
         </div>
@@ -284,60 +281,3 @@ export default function HomePage() {
   );
 }
 
-function BandVisual({ index }: { index: number }) {
-  return (
-    <div
-      aria-hidden
-      className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-background"
-    >
-      {index === 0 ? <InstantDot /> : null}
-      {index === 1 ? <ThreeDotBounce /> : null}
-      {index === 2 ? <ShimmerStripes /> : null}
-      {index === 3 ? <SlowCrawl /> : null}
-    </div>
-  );
-}
-
-function InstantDot() {
-  return <span className="size-3 rounded-full bg-primary" />;
-}
-
-function ThreeDotBounce() {
-  return (
-    <span className="flex items-end gap-1">
-      {[0, 1, 2].map((i) => (
-        <span key={i} className="size-1.5 rounded-full bg-primary" />
-      ))}
-    </span>
-  );
-}
-
-function ShimmerStripes() {
-  return (
-    <span className="flex w-9 flex-col gap-1.5">
-      {["w-full", "w-5/6", "w-3/4"].map((w) => (
-        <span
-          key={w}
-          className={`h-1.5 rounded bg-muted ${w}`}
-        />
-      ))}
-    </span>
-  );
-}
-
-function SlowCrawl() {
-  return (
-    <span className="relative flex h-2 w-12 items-center">
-      <span
-        aria-hidden
-        className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, var(--muted-foreground) 0 4px, transparent 4px 8px)",
-          opacity: 0.45,
-        }}
-      />
-      <span className="relative size-2 rounded-full bg-primary" />
-    </span>
-  );
-}
