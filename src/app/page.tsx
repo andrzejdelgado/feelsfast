@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CopyButton } from "@/components/CopyButton";
 import { DemoRunner } from "@/components/DemoRunner";
 import { HeroPerceptionDemo } from "@/components/HeroPerceptionDemo";
+import { RaceCarIcon } from "@/components/RaceCarIcon";
 
 import { config as shimmerConfig } from "@/demos/technique-shimmer-skeleton/config";
 import { NaiveShimmerSkeleton } from "@/demos/technique-shimmer-skeleton/naive";
@@ -100,7 +101,14 @@ export default function HomePage() {
           feelsfast.fyi · v0.9
         </p>
         <h1 className="mt-3 text-4xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl">
-          Learn how to engineer user experiences that feel fast
+          Learn how to engineer user experiences that feel{" "}
+          <span className="whitespace-nowrap">
+            fast
+            <RaceCarIcon
+              className="ml-1 inline-block size-[1em]"
+              style={{ verticalAlign: "-0.15em" }}
+            />
+          </span>
         </h1>
         <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
           {siteConfig.description}
