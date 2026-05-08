@@ -38,7 +38,7 @@ export function CodeBlock({ children, className }: CodeBlockProps) {
     <div className={cn("relative my-8", className)}>
       <pre
         ref={ref}
-        className="whitespace-pre-wrap break-words rounded-lg border border-border bg-secondary px-4 py-3.5 pr-24 font-mono text-[0.8125rem] leading-relaxed text-foreground"
+        className="whitespace-pre-wrap break-words rounded-lg border border-border bg-secondary px-4 py-3.5 font-mono text-[0.8125rem] leading-relaxed text-foreground"
       >
         {children}
       </pre>
