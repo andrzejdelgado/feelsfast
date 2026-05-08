@@ -37,21 +37,25 @@ const stats = [
 
 const bands = [
   {
+    id: "instant",
     label: "0–100 MS",
     title: "Instant input",
     body: "The user has not started waiting yet. Patterns here give a head-start, not a status — pre-action feedback, optimistic flips, direct-manipulation latency budgets. Anything that announces a wait at this scale damages the experience.",
   },
   {
+    id: "responsive",
     label: "100 MS – 1 S",
     title: "Perceptible wait",
     body: 'Cues say "active, working" without claiming an end-point. Indeterminate spinners, marquee bars, top-edge trickle bars, three-dot bounces. The system is honest about not knowing how long this will take.',
   },
   {
+    id: "engaged",
     label: "1 – 10 S",
     title: "Engaged wait",
     body: "Where most perception techniques live. The user is consciously waiting on the result and the cue is doing real work — masking absence with content-true skeletons, smoothing the wait with shimmer or LQIP, trading linear progress for backwards-decelerating ribs.",
   },
   {
+    id: "long",
     label: "10 S+",
     title: "Past the wall",
     body: "The user's attention is no longer reliably on the task. Patterns here are about giving them something to do or freeing them from the wait entirely — engagement copy, branded sequences, foreground-to-background hand-offs.",
@@ -169,26 +173,48 @@ export default function HomePage() {
           platform organises every pattern, scenario, and demo around four bands —
           and so does this page.
         </p>
-        <div className="mt-8 space-y-3">
-          {bands.map((band, i) => (
-            <div
-              key={band.label}
-              className="flex items-start gap-5 rounded-lg border border-border bg-card p-5 sm:gap-6"
-            >
-              <BandVisual index={i} />
-              <div className="min-w-0 flex-1">
-                <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
-                  {band.label}
-                </p>
-                <p className="mt-2 text-lg font-medium tracking-tight text-foreground">
-                  {band.title}
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {band.body}
-                </p>
-              </div>
-            </div>
-          ))}
+        <div className="relative mt-8 pl-8">
+          <div
+            aria-hidden
+            className="absolute left-[5px] top-3 bottom-3 w-px bg-primary/30"
+          />
+          <ul className="space-y-3">
+            {bands.map((band, i) => (
+              <li key={band.id} className="relative">
+                <span
+                  aria-hidden
+                  className="absolute -left-[26px] top-6 size-3 rounded-full border-2 border-card bg-primary"
+                />
+                <Link
+                  href={`/playground#band-${band.id}`}
+                  className="group block overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-primary"
+                >
+                  <div className="relative h-20 overflow-hidden border-b border-border bg-background">
+                    <BandStage index={i} />
+                  </div>
+                  <div className="p-5">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <p className="font-mono text-2xl font-medium uppercase tracking-tight text-primary sm:text-3xl">
+                        {band.label}
+                      </p>
+                      <span
+                        aria-hidden
+                        className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground/70 transition-colors group-hover:text-primary"
+                      >
+                        Open in playground →
+                      </span>
+                    </div>
+                    <p className="mt-3 text-lg font-medium tracking-tight text-foreground">
+                      {band.title}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {band.body}
+                    </p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -284,72 +310,85 @@ export default function HomePage() {
   );
 }
 
-function BandVisual({ index }: { index: number }) {
+function BandStage({ index }: { index: number }) {
   return (
-    <div
-      aria-hidden
-      className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-background"
-    >
-      {index === 0 ? <InstantDot /> : null}
-      {index === 1 ? <ThreeDotBounce /> : null}
-      {index === 2 ? <ShimmerStripes /> : null}
-      {index === 3 ? <SlowCrawl /> : null}
+    <>
+      {index === 0 ? <InstantStage /> : null}
+      {index === 1 ? <ActiveStage /> : null}
+      {index === 2 ? <EngagedStage /> : null}
+      {index === 3 ? <PastWallStage /> : null}
       <style>{`
         @keyframes band-snap {
-          0%, 60%, 100% { transform: scale(1); opacity: 1; }
-          70%           { transform: scale(0.78); opacity: 0.55; }
+          0%, 55%, 100% { transform: scale(1); opacity: 1; }
+          65%           { transform: scale(0.7); opacity: 0.55; }
+        }
+        @keyframes band-orbit {
+          0%   { transform: translateX(-100%); }
+          100% { transform: translateX(100%);  }
         }
         @keyframes band-bounce {
-          0%, 100% { transform: translateY(0);   opacity: 0.45; }
-          50%      { transform: translateY(-3px); opacity: 1;    }
+          0%, 100% { transform: translateY(0);    opacity: 0.4; }
+          50%      { transform: translateY(-6px); opacity: 1;   }
         }
         @keyframes band-shimmer {
           0%   { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
         @keyframes band-crawl {
-          0%   { transform: translateX(-1.5rem); opacity: 0.2; }
-          50%  { opacity: 1; }
-          100% { transform: translateX(1.5rem); opacity: 0.2; }
+          0%   { transform: translateX(0%);   opacity: 0.25; }
+          10%  { opacity: 1; }
+          90%  { opacity: 1; }
+          100% { transform: translateX(100%); opacity: 0.25; }
         }
       `}</style>
+    </>
+  );
+}
+
+function InstantStage() {
+  return (
+    <div className="absolute inset-0 flex items-center justify-start px-6">
+      <span
+        aria-hidden
+        className="size-4 rounded-full bg-primary motion-reduce:animate-none"
+        style={{ animation: "band-snap 1600ms ease-in-out infinite" }}
+      />
+      <span
+        aria-hidden
+        className="ml-3 font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground/70"
+      >
+        Snap
+      </span>
     </div>
   );
 }
 
-function InstantDot() {
+function ActiveStage() {
   return (
-    <span
-      className="size-3 rounded-full bg-primary motion-reduce:animate-none"
-      style={{ animation: "band-snap 1800ms ease-in-out infinite" }}
-    />
-  );
-}
-
-function ThreeDotBounce() {
-  return (
-    <span className="flex items-end gap-1">
-      {[0, 140, 280].map((delay) => (
+    <div className="absolute inset-0 flex items-center justify-center gap-2">
+      {[0, 160, 320].map((delay) => (
         <span
           key={delay}
-          className="size-1.5 rounded-full bg-primary motion-reduce:animate-none"
+          aria-hidden
+          className="size-2.5 rounded-full bg-primary motion-reduce:animate-none"
           style={{
-            animation: "band-bounce 900ms ease-in-out infinite",
+            animation: "band-bounce 1000ms ease-in-out infinite",
             animationDelay: `${delay}ms`,
           }}
         />
       ))}
-    </span>
+    </div>
   );
 }
 
-function ShimmerStripes() {
+function EngagedStage() {
   return (
-    <span className="flex w-9 flex-col gap-1.5">
-      {["w-full", "w-5/6", "w-3/4"].map((w) => (
+    <div className="absolute inset-0 flex flex-col justify-center gap-2 px-6">
+      {["w-full", "w-5/6", "w-2/3"].map((w) => (
         <span
           key={w}
-          className={`h-1.5 rounded ${w} motion-reduce:animate-none`}
+          aria-hidden
+          className={`h-2 rounded ${w} motion-reduce:animate-none`}
           style={{
             backgroundImage:
               "linear-gradient(90deg, var(--muted) 0%, color-mix(in oklch, var(--muted) 60%, var(--primary)) 50%, var(--muted) 100%)",
@@ -358,26 +397,29 @@ function ShimmerStripes() {
           }}
         />
       ))}
-    </span>
+    </div>
   );
 }
 
-function SlowCrawl() {
+function PastWallStage() {
   return (
-    <span className="relative flex h-2 w-12 items-center">
-      <span
-        aria-hidden
-        className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, var(--muted-foreground) 0 4px, transparent 4px 8px)",
-          opacity: 0.45,
-        }}
-      />
-      <span
-        className="relative size-2 rounded-full bg-primary motion-reduce:animate-none"
-        style={{ animation: "band-crawl 5200ms ease-in-out infinite" }}
-      />
-    </span>
+    <div className="absolute inset-0 flex items-center px-6">
+      <div className="relative h-2 w-full">
+        <span
+          aria-hidden
+          className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(90deg, var(--muted-foreground) 0 4px, transparent 4px 10px)",
+            opacity: 0.45,
+          }}
+        />
+        <span
+          aria-hidden
+          className="absolute left-0 top-0 size-2 rounded-full bg-primary motion-reduce:animate-none"
+          style={{ animation: "band-crawl 7200ms ease-in-out infinite" }}
+        />
+      </div>
+    </div>
   );
 }
