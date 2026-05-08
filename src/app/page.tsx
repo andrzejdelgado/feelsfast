@@ -294,50 +294,19 @@ function BandVisual({ index }: { index: number }) {
       {index === 1 ? <ThreeDotBounce /> : null}
       {index === 2 ? <ShimmerStripes /> : null}
       {index === 3 ? <SlowCrawl /> : null}
-      <style>{`
-        @keyframes band-snap {
-          0%, 60%, 100% { transform: scale(1); opacity: 1; }
-          70%           { transform: scale(0.78); opacity: 0.55; }
-        }
-        @keyframes band-bounce {
-          0%, 100% { transform: translateY(0);   opacity: 0.45; }
-          50%      { transform: translateY(-3px); opacity: 1;    }
-        }
-        @keyframes band-shimmer {
-          0%   { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-        @keyframes band-crawl {
-          0%   { transform: translateX(-1.5rem); opacity: 0.2; }
-          50%  { opacity: 1; }
-          100% { transform: translateX(1.5rem); opacity: 0.2; }
-        }
-      `}</style>
     </div>
   );
 }
 
 function InstantDot() {
-  return (
-    <span
-      className="size-3 rounded-full bg-primary motion-reduce:animate-none"
-      style={{ animation: "band-snap 1800ms ease-in-out infinite" }}
-    />
-  );
+  return <span className="size-3 rounded-full bg-primary" />;
 }
 
 function ThreeDotBounce() {
   return (
     <span className="flex items-end gap-1">
-      {[0, 140, 280].map((delay) => (
-        <span
-          key={delay}
-          className="size-1.5 rounded-full bg-primary motion-reduce:animate-none"
-          style={{
-            animation: "band-bounce 900ms ease-in-out infinite",
-            animationDelay: `${delay}ms`,
-          }}
-        />
+      {[0, 1, 2].map((i) => (
+        <span key={i} className="size-1.5 rounded-full bg-primary" />
       ))}
     </span>
   );
@@ -349,13 +318,7 @@ function ShimmerStripes() {
       {["w-full", "w-5/6", "w-3/4"].map((w) => (
         <span
           key={w}
-          className={`h-1.5 rounded ${w} motion-reduce:animate-none`}
-          style={{
-            backgroundImage:
-              "linear-gradient(90deg, var(--muted) 0%, color-mix(in oklch, var(--muted) 60%, var(--primary)) 50%, var(--muted) 100%)",
-            backgroundSize: "200% 100%",
-            animation: "band-shimmer 1400ms linear infinite",
-          }}
+          className={`h-1.5 rounded bg-muted ${w}`}
         />
       ))}
     </span>
@@ -374,10 +337,7 @@ function SlowCrawl() {
           opacity: 0.45,
         }}
       />
-      <span
-        className="relative size-2 rounded-full bg-primary motion-reduce:animate-none"
-        style={{ animation: "band-crawl 5200ms ease-in-out infinite" }}
-      />
+      <span className="relative size-2 rounded-full bg-primary" />
     </span>
   );
 }
