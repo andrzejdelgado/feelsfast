@@ -173,20 +173,20 @@ export default function HomePage() {
           {bands.map((band, i) => (
             <div
               key={band.label}
-              className="relative rounded-lg border border-border bg-card p-5"
+              className="rounded-lg border border-border bg-card p-5"
             >
               <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
                 {band.label}
               </p>
-              <p className="mt-2 text-lg font-medium tracking-tight text-foreground">
-                {band.title}
-              </p>
+              <div className="mt-2 flex items-center gap-4">
+                <p className="text-lg font-medium tracking-tight text-foreground">
+                  {band.title}
+                </p>
+                <BandTitleAnim index={i} />
+              </div>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {band.body}
               </p>
-              <span className="pointer-events-none absolute right-5 top-[3.5rem] flex items-center">
-                <BandTitleAnim index={i} />
-              </span>
             </div>
           ))}
         </div>
