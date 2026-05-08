@@ -170,20 +170,23 @@ export default function HomePage() {
           and so does this page.
         </p>
         <div className="mt-8 space-y-3">
-          {bands.map((band) => (
+          {bands.map((band, i) => (
             <div
               key={band.label}
-              className="rounded-lg border border-border bg-card p-5"
+              className="flex items-start gap-5 rounded-lg border border-border bg-card p-5 sm:gap-6"
             >
-              <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
-                {band.label}
-              </p>
-              <p className="mt-2 text-lg font-medium tracking-tight text-foreground">
-                {band.title}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {band.body}
-              </p>
+              <BandVisual index={i} />
+              <div className="min-w-0 flex-1">
+                <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
+                  {band.label}
+                </p>
+                <p className="mt-2 text-lg font-medium tracking-tight text-foreground">
+                  {band.title}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {band.body}
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -278,5 +281,103 @@ export default function HomePage() {
         </p>
       </section>
     </article>
+  );
+}
+
+function BandVisual({ index }: { index: number }) {
+  return (
+    <div
+      aria-hidden
+      className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-background"
+    >
+      {index === 0 ? <InstantDot /> : null}
+      {index === 1 ? <ThreeDotBounce /> : null}
+      {index === 2 ? <ShimmerStripes /> : null}
+      {index === 3 ? <SlowCrawl /> : null}
+      <style>{`
+        @keyframes band-snap {
+          0%, 60%, 100% { transform: scale(1); opacity: 1; }
+          70%           { transform: scale(0.78); opacity: 0.55; }
+        }
+        @keyframes band-bounce {
+          0%, 100% { transform: translateY(0);   opacity: 0.45; }
+          50%      { transform: translateY(-3px); opacity: 1;    }
+        }
+        @keyframes band-shimmer {
+          0%   { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+        @keyframes band-crawl {
+          0%   { transform: translateX(-1.5rem); opacity: 0.2; }
+          50%  { opacity: 1; }
+          100% { transform: translateX(1.5rem); opacity: 0.2; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function InstantDot() {
+  return (
+    <span
+      className="size-3 rounded-full bg-primary motion-reduce:animate-none"
+      style={{ animation: "band-snap 1800ms ease-in-out infinite" }}
+    />
+  );
+}
+
+function ThreeDotBounce() {
+  return (
+    <span className="flex items-end gap-1">
+      {[0, 140, 280].map((delay) => (
+        <span
+          key={delay}
+          className="size-1.5 rounded-full bg-primary motion-reduce:animate-none"
+          style={{
+            animation: "band-bounce 900ms ease-in-out infinite",
+            animationDelay: `${delay}ms`,
+          }}
+        />
+      ))}
+    </span>
+  );
+}
+
+function ShimmerStripes() {
+  return (
+    <span className="flex w-9 flex-col gap-1.5">
+      {["w-full", "w-5/6", "w-3/4"].map((w) => (
+        <span
+          key={w}
+          className={`h-1.5 rounded ${w} motion-reduce:animate-none`}
+          style={{
+            backgroundImage:
+              "linear-gradient(90deg, var(--muted) 0%, color-mix(in oklch, var(--muted) 60%, var(--primary)) 50%, var(--muted) 100%)",
+            backgroundSize: "200% 100%",
+            animation: "band-shimmer 1400ms linear infinite",
+          }}
+        />
+      ))}
+    </span>
+  );
+}
+
+function SlowCrawl() {
+  return (
+    <span className="relative flex h-2 w-12 items-center">
+      <span
+        aria-hidden
+        className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(90deg, var(--muted-foreground) 0 4px, transparent 4px 8px)",
+          opacity: 0.45,
+        }}
+      />
+      <span
+        className="relative size-2 rounded-full bg-primary motion-reduce:animate-none"
+        style={{ animation: "band-crawl 5200ms ease-in-out infinite" }}
+      />
+    </span>
   );
 }
