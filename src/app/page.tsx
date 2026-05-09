@@ -101,15 +101,11 @@ export default function HomePage() {
           feelsfast.fyi · v0.9
         </p>
         <h1 className="mt-3 text-4xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl">
-          Learn how to engineer user experiences that feel{" "}
-          <span className="whitespace-nowrap">
-            fast
-            <RaceCarIcon
-              className="ml-1 inline-block size-[1em]"
-              style={{ verticalAlign: "-0.15em" }}
-            />
-          </span>
+          Learn how to engineer user experiences that feel fast
         </h1>
+        <div className="mt-10 flex justify-center">
+          <RaceCarIcon className="size-[4.5rem] sm:size-24" />
+        </div>
         <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
           {siteConfig.description}
         </p>
