@@ -8,10 +8,10 @@ import { cn } from "@/lib/utils";
  * the car carries the brand palette without the source pixels being
  * re-authored.
  *
- * Two animations sell speed without modifying the bitmap:
- *   - a tiny vertical jitter on the img (engine-vibration / high-RPM feel)
- *   - five staggered wind streaks behind the car, shorter and faster than
- *     a normal trail to read as "wind ripping past"
+ * Two animation layers sell speed without modifying the bitmap:
+ *   - five staggered wind streaks behind the car (left of the bitmap)
+ *   - per-wheel diagonal spoke pixels overlaid on top of the bitmap, two
+ *     frames alternating to suggest a spinning hub
  *
  * Loops forever and intentionally does not honour
  * `prefers-reduced-motion` (deliberate request).
@@ -31,24 +31,24 @@ export function RaceCarIcon({
     >
       {/* Wind streaks — animated SVG layer behind the car */}
       <svg
-        viewBox="0 0 16 16"
+        viewBox="0 0 96 48"
         preserveAspectRatio="none"
         className="absolute inset-0 size-full"
         style={{ shapeRendering: "crispEdges", overflow: "visible" }}
         xmlns="http://www.w3.org/2000/svg"
       >
-        <rect x="0" y="6" width="2" height="1" fill="#5e5d59" className="rc-wind-1" />
-        <rect x="0" y="7" width="3" height="1" fill="#5e5d59" className="rc-wind-2" />
-        <rect x="0" y="8" width="2" height="1" fill="#5e5d59" className="rc-wind-3" />
-        <rect x="0" y="9" width="3" height="1" fill="#5e5d59" className="rc-wind-4" />
-        <rect x="0" y="10" width="2" height="1" fill="#5e5d59" className="rc-wind-5" />
+        <rect x="0" y="20" width="8"  height="2" fill="#5e5d59" className="rc-wind-1" />
+        <rect x="0" y="24" width="12" height="2" fill="#5e5d59" className="rc-wind-2" />
+        <rect x="0" y="28" width="8"  height="2" fill="#5e5d59" className="rc-wind-3" />
+        <rect x="0" y="32" width="12" height="2" fill="#5e5d59" className="rc-wind-4" />
+        <rect x="0" y="36" width="8"  height="2" fill="#5e5d59" className="rc-wind-5" />
       </svg>
 
-      {/* Car bitmap — unmodified pixels, accent-shifted via CSS filter, jitter via transform */}
+      {/* Car bitmap — unmodified pixels, accent-shifted via CSS filter */}
       <img
         src="/car.png"
         alt=""
-        className="relative size-full rc-shake"
+        className="relative size-full"
         style={{
           imageRendering: "pixelated",
           objectFit: "contain",
@@ -56,13 +56,43 @@ export function RaceCarIcon({
         }}
       />
 
+      {/* Wheel spoke overlay — on top of the bitmap, two diagonal frames */}
+      <svg
+        viewBox="0 0 96 48"
+        className="pointer-events-none absolute inset-0 size-full"
+        style={{ shapeRendering: "crispEdges" }}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Frame A — top-left + bottom-right diagonal */}
+        <g className="rc-wheels-a">
+          {/* Rear wheel */}
+          <rect x="20" y="33" width="2" height="2" fill="#141413" />
+          <rect x="24" y="37" width="2" height="2" fill="#141413" />
+          {/* Front wheel */}
+          <rect x="72" y="33" width="2" height="2" fill="#141413" />
+          <rect x="76" y="37" width="2" height="2" fill="#141413" />
+        </g>
+        {/* Frame B — top-right + bottom-left diagonal */}
+        <g className="rc-wheels-b">
+          {/* Rear wheel */}
+          <rect x="24" y="33" width="2" height="2" fill="#141413" />
+          <rect x="20" y="37" width="2" height="2" fill="#141413" />
+          {/* Front wheel */}
+          <rect x="76" y="33" width="2" height="2" fill="#141413" />
+          <rect x="72" y="37" width="2" height="2" fill="#141413" />
+        </g>
+      </svg>
+
       <style>{`
-        .rc-shake {
-          animation: rc-shake 100ms steps(1) infinite;
+        .rc-wheels-a { animation: rc-flicker-a 160ms steps(1) infinite; }
+        .rc-wheels-b { animation: rc-flicker-b 160ms steps(1) infinite; }
+        @keyframes rc-flicker-a {
+          0%, 49.99% { opacity: 1; }
+          50%, 100%  { opacity: 0; }
         }
-        @keyframes rc-shake {
-          0%, 49.99% { transform: translateY(-1.5%); }
-          50%, 100%  { transform: translateY(1.5%); }
+        @keyframes rc-flicker-b {
+          0%, 49.99% { opacity: 0; }
+          50%, 100%  { opacity: 1; }
         }
         .rc-wind-1 { animation: rc-wind 180ms steps(1) infinite; }
         .rc-wind-2 { animation: rc-wind 180ms steps(1) infinite; animation-delay: -36ms; }
