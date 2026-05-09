@@ -105,7 +105,7 @@ export default function HomePage() {
           <span className="whitespace-nowrap">
             fast
             <RaceCarIcon
-              className="ml-1 inline-block h-12 w-24"
+              className="ml-3 inline-block h-12 w-24"
               style={{ verticalAlign: "-0.15em" }}
             />
           </span>
