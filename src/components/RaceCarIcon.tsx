@@ -8,10 +8,11 @@ import { cn } from "@/lib/utils";
  * the car carries the brand palette without the source pixels being
  * re-authored.
  *
- * Two animation layers sell speed without modifying the bitmap:
- *   - five staggered wind streaks behind the car (left of the bitmap)
- *   - per-wheel diagonal spoke pixels overlaid on top of the bitmap, two
- *     frames alternating to suggest a spinning hub
+ * One animation layer sells speed without modifying the bitmap: five
+ * staggered wind streaks behind the car (left of the bitmap). Earlier
+ * versions overlaid per-wheel diagonal spoke pixels; those were removed
+ * because the pixels read as noise close to the wheels rather than as
+ * a spinning hub.
  *
  * Loops forever and intentionally does not honour
  * `prefers-reduced-motion` (deliberate request).
@@ -56,44 +57,7 @@ export function RaceCarIcon({
         }}
       />
 
-      {/* Wheel spoke overlay — on top of the bitmap, two diagonal frames */}
-      <svg
-        viewBox="0 0 96 48"
-        className="pointer-events-none absolute inset-0 size-full"
-        style={{ shapeRendering: "crispEdges" }}
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* Frame A — top-left + bottom-right diagonal */}
-        <g className="rc-wheels-a">
-          {/* Rear wheel */}
-          <rect x="20" y="33" width="2" height="2" fill="#141413" />
-          <rect x="24" y="37" width="2" height="2" fill="#141413" />
-          {/* Front wheel */}
-          <rect x="72" y="33" width="2" height="2" fill="#141413" />
-          <rect x="76" y="37" width="2" height="2" fill="#141413" />
-        </g>
-        {/* Frame B — top-right + bottom-left diagonal */}
-        <g className="rc-wheels-b">
-          {/* Rear wheel */}
-          <rect x="24" y="33" width="2" height="2" fill="#141413" />
-          <rect x="20" y="37" width="2" height="2" fill="#141413" />
-          {/* Front wheel */}
-          <rect x="76" y="33" width="2" height="2" fill="#141413" />
-          <rect x="72" y="37" width="2" height="2" fill="#141413" />
-        </g>
-      </svg>
-
       <style>{`
-        .rc-wheels-a { animation: rc-flicker-a 160ms steps(1) infinite; }
-        .rc-wheels-b { animation: rc-flicker-b 160ms steps(1) infinite; }
-        @keyframes rc-flicker-a {
-          0%, 49.99% { opacity: 1; }
-          50%, 100%  { opacity: 0; }
-        }
-        @keyframes rc-flicker-b {
-          0%, 49.99% { opacity: 0; }
-          50%, 100%  { opacity: 1; }
-        }
         .rc-wind-1 { animation: rc-wind 180ms steps(1) infinite; }
         .rc-wind-2 { animation: rc-wind 180ms steps(1) infinite; animation-delay: -36ms; }
         .rc-wind-3 { animation: rc-wind 180ms steps(1) infinite; animation-delay: -72ms; }
