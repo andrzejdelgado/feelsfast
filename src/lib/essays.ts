@@ -1,6 +1,6 @@
 export type EssayStatus = "published" | "drafting" | "planned";
 
-export type EssayCategory = "foundations" | "practice";
+export type EssayCategory = "foundations" | "practice" | "ai";
 
 export type EssayCategoryMeta = {
   id: EssayCategory;
@@ -20,6 +20,12 @@ export const essayCategories: readonly EssayCategoryMeta[] = [
     label: "Practice",
     blurb:
       "Applying the science — anatomy of a wait, illusions you can exploit, where the perception layer breaks down, and budgets that include perception.",
+  },
+  {
+    id: "ai",
+    label: "AI",
+    blurb:
+      "Where perceived performance meets AI tools. Why AI waits are shaped differently from the web waits the rest of the platform is tuned for, and where the perception layer breaks down under generative uncertainty.",
   },
 ];
 
@@ -147,6 +153,39 @@ export const essays: readonly Essay[] = [
     blurb:
       "INP and Web Vitals as a starting point. How to add perception to a quantitative budget. The role of adaptive loading and the performance scaler.",
     citations: ["Doherty 1982", "Card, Moran & Newell 1983", "Fitch"],
+    status: "published",
+  },
+  {
+    slug: "ai-changes-the-shape-of-the-wait",
+    number: "08",
+    title: "AI changes the shape of the wait",
+    category: "ai",
+    blurb:
+      "AI waits are not the deterministic page-load waits the rest of the platform is tuned for. Three properties change: duration variance across two orders of magnitude, conversational shape, and the answer arriving mid-wait. Which classical thresholds survive the move to AI, and which do not.",
+    citations: [
+      "Block & Zakay 1997",
+      "Miller 1968",
+      "Nielsen 1993",
+      "Card et al. 1991",
+      "Card, Moran & Newell 1983",
+      "Doherty 1982",
+      "Ziegler et al. 2022",
+    ],
+    status: "published",
+  },
+  {
+    slug: "honesty-in-ai-ux",
+    number: "09",
+    title: "Honesty in AI UX",
+    category: "ai",
+    blurb:
+      "Where AI perception engineering crosses into deception. Fake streaming, manipulated cadence, confident UX over uncertain output, hidden tool calls, cancellation theatre. The line between polish and lying — and how to stay on the right side of it.",
+    citations: [
+      "Eizenberg",
+      "Block & Zakay 1997",
+      "Anstis 2003",
+      "Guo et al. 2017",
+    ],
     status: "published",
   },
 ];

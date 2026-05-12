@@ -1,0 +1,108 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { EssayNav } from "@/components/EssayNav";
+import { references } from "@/lib/refs/honesty-in-ai-ux";
+
+export const metadata = {
+  title: "Honesty in AI UX",
+  description:
+    "Where AI perception engineering crosses into deception — fake streaming, manipulated cadence, confident UX over uncertain output, hidden tool calls, cancellation theatre. The line between polish and lying, and the five failure modes that cross it.",
+};
+
+<RegisterReferences refs={references} />
+
+# Honesty in AI UX
+
+The sixth essay argued that perceived performance can hurt you on direct-manipulation surfaces, on optimistic UI without failure handling, and where "looks fast" cosmetically beats "is fast" without making the product faster. Each of those failure modes was about the web — objects on pages, inputs to servers.
+
+AI introduces a fourth failure mode that the canon does not yet have a clean name for. I'd argue it is the most important one — because AI is the surface where perception engineering and *correctness* come into the sharpest tension, and the canon's existing tools handle correctness only obliquely.
+
+The shorthand for this essay: perception polish is fine when the referent is honest. It crosses into deception when the referent is uncertain, wrong, or hidden.
+
+## What the referent is
+
+Three quick definitions before we use the term heavily.
+
+1. **The referent** is the thing the perception cue is referring to. A skeleton screen refers to "content is loading." A press animation refers to "your click registered." A progress bar refers to "the operation is X % complete."
+2. **The cue** is the visible element — the skeleton, the press animation, the bar fill.
+3. **Honesty** is the relationship between the two: does the cue accurately describe what is happening underneath?
+
+On a typical web surface, the referent is settled. The page is loading or it is not. The click registered or it did not. The operation is at 60 % or it is not. The cue is a visualisation of an objective fact, and the perception job is to communicate that fact more pleasantly than the raw event would.
+
+On AI surfaces, the referent is often not settled. The model is "thinking" but you cannot know how much thinking is left. The streamed tokens are arriving but you cannot know whether they are the right tokens. The cancel button is visible, but does it actually stop the server-side work? The cue exists; the referent is mushy. This is where honesty becomes the design problem.
+
+## Five failure modes
+
+Five patterns I see across AI products that cross the line from polish into deception. Listed in roughly increasing severity.
+
+### 1. Fake streaming
+
+The model returned the full response in 1.2 seconds. The product trickles the tokens out over 4 seconds anyway so the user gets the "live" feel. This is fake streaming.
+
+The argument *for* it: streaming feels more conversational, gives the user time to read at a cadence, sets the right expectation for slower responses where the trickle is real.
+
+The argument *against* it — which I'd argue is the right one: the user calibrates how much they trust the streaming cue based on cases like this. If they ever notice the trickle is decoupled from the actual model latency — a 12-token reply that takes 4 seconds to render, an obviously cached response that streams anyway — they stop trusting the cue everywhere. The honesty cost is product-wide; the local benefit is small.
+
+Block & Zakay's <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> filled-vs-empty argument justifies streaming when the streaming is real — the user's retrospective duration is shorter because the wait was filled with arriving content rather than empty. Fake streaming cheats the same mechanism rather than honouring it. The user gets the *feeling* of arrived content without the content actually having arrived later than it did.
+
+The fix is to stream when streaming is real, and render when the response is local. The cadence change between the two becomes a useful signal: an instant render tells the user the model had a quick path; a streamed response tells them it was generated fresh. Both signals are accurate. Faking them collapses the signal.
+
+### 2. Manipulated cadence
+
+A relative of fake streaming, less egregious but more common. The product slows down or speeds up token streaming to hit a "comfortable reading pace" regardless of how fast the model is actually producing tokens.
+
+I'd argue speeding up is worse than slowing down. Speeding tokens beyond reading speed reads as "the model is showing off" — the user cannot keep up, scans rather than reads, and registers the response as faster than it actually was, but trusts it less. Slowing tokens to reading pace is more defensible, but only if the actual model is producing faster than reading speed (mostly true with modern frontier models). The user's perception of "how long did I wait" anchors on the reading cadence, so retiming the stream is retiming perceived duration.
+
+Eizenberg's <Cite id="eizenberg" label="Eizenberg" /> argument from the previous essay re-applies, in a sharper form. He framed it for the web: a polished placeholder is not a substitute for interactivity. The AI version is a polished cadence is not a substitute for actual latency. The wait was what it was. Dressing it up is selling the user a duration they did not experience.
+
+The defensible version is to set a cadence floor for the model's natural pace (so that on cached, instant responses the trickle is honest about being a presentational choice the user can detect) and let the cadence be the natural model pace otherwise. Do not retime the stream to make it feel faster or slower than it was.
+
+### 3. Confident UX over uncertain output
+
+The model is 60 % sure about its answer. The text says things like "I'm not certain, but..." The UX renders the response in the same typography, the same colour, the same prominence as a 99 %-sure answer. This is a render-uncertainty problem and it is severe.
+
+Guo et al. <Cite id="guo-2017" label="Guo et al. 2017" /> showed that modern neural networks tend to be over-confident in their probability estimates and proposed temperature scaling as a calibration fix. The model knows it is uncertain; the calibration layer can quantify the uncertainty; the UX layer typically discards both. The result is a user reading a "low-confidence" answer in the same visual register as a "high-confidence" one and trusting the two equally.
+
+The fix is to render the model's calibration. Where the model hedges textually, the UI should hedge visually: lower contrast, smaller type, a low-confidence badge, a citation request. The cost is some visual complexity. The benefit is that users learn to trust the high-confidence outputs because the low-confidence ones are visibly different.
+
+Anstis's <Cite id="anstis-2003" label="Anstis 2003" /> finding from essay 05 helps here: low-contrast motion feels slower than high-contrast motion. Apply the same principle to AI confidence — low-contrast styling for low-confidence content gives the user a perceptual signal that the model is uncertain, without making them parse hedging language. The hedge is the rendering, not the prose.
+
+### 4. Hidden tool calls
+
+The agent reads three files, runs a search, edits a function, runs the tests, and explains what it did. The UI shows "Thinking..." for 90 seconds and then presents the final answer. The tool calls were hidden by default; the user could expand them with a click but had no reason to.
+
+This is the perception version of the skeleton-screen-at-80-ms-with-content-at-4-s failure from essay 06 — the user was held in the dark for 90 seconds when there were 90 seconds of legible work to surface. Honesty here means tool calls expand by default for non-trivial work. Hide them only after the work is done and the user has acknowledged the result, and only at the user's option.
+
+The bonus: tool-call transparency is also the strongest trust device AI products have. The user can see what the agent did. If the agent did something wrong, the user can see it. If the agent did the right thing, the user knows why to trust it. Hiding tool calls is hiding the audit trail — and the audit trail is where calibrated trust comes from. Get this one wrong and your users will go from "this is magic" to "this is a black box I do not trust" in a single embarrassing incident.
+
+### 5. Cancellation theatre
+
+The cancel button is visible during the stream. The user clicks it. The UI says "Cancelled." The server keeps generating tokens in the background, finishes the inference, and bills the user for it.
+
+This one happens. It is rare in chat surfaces but common in agentic workflows where the orchestrator does not have clean cancel semantics. The UI says "stopped"; the work continues. The user trusts the cue; the cue is lying.
+
+I'd argue this is the most severe failure mode of the five because it weaponises the most trust-load-bearing cue in the entire AI UX surface. Cancellation is what makes every wait an opt-in instead of a sentence. Without it, the user is committed to whatever the model decided to do; with it, they have an escape hatch. A fake escape hatch is worse than no escape hatch — the user thinks they got out when they did not.
+
+The fix is engineering, not design: real cancellation needs to propagate through the inference layer and the tool layer. Where it cannot, the UI should not claim it can. A button that says "Cancel after current step" is honest about its limits. A button that says "Cancel" but does not actually cancel is fraud.
+
+## The principle
+
+These five patterns are different on the surface — fake streams, manipulated cadence, confident styling over uncertain text, hidden tool calls, fake cancel — but they share a common shape. In each case, the UX layer is making a claim that the underlying system cannot back. The user is told the model is fast when it is not, told the model is sure when it is not, told the work is hidden when it should be visible, told the cancellation happened when it did not.
+
+Eizenberg <Cite id="eizenberg" label="Eizenberg" /> framed this for the web: a polished placeholder is not a substitute for interactivity. The AI version is harder because the referent is unstable. A web app either is or is not interactive; an AI response either is or is not accurate, complete, or done — and the model itself often does not know which. The honesty discipline becomes: design the UX so that the user can see the parts the model knows are uncertain, the parts the agent is working on, the moments where the model finished, and the limits of the cancel affordance.
+
+The opposite — uncertainty hidden, work hidden, boundary blurred, cancel theatrical — buys local polish at the cost of global trust. And in AI products, where the entire value proposition rests on whether the user trusts the output, trust is not a thing you can spend down lightly.
+
+## What to do with this
+
+Three takeaways. These are also the final ones in this set of essays.
+
+1. **Audit every perception cue against its referent.** For each animation, badge, transition, or progress signal on your AI surface, name the underlying system event the cue refers to. If you cannot name it, the cue is decorative and you can probably delete it. If the cue claims more than the referent does, the cue is dishonest and you should fix it.
+2. **Render uncertainty where the model is uncertain.** Lower-contrast typography for low-confidence content, explicit confidence badges where the model exposes them, citation requests for claims the model cannot ground. The cost is a slightly busier surface. The benefit is calibrated user trust — users start trusting the high-confidence outputs precisely because the low-confidence ones are visibly different.
+3. **Make cancel actually cancel.** If the engineering does not support real cancellation, the button should not exist — and the wait should be designed to be cancellable from the next conversation turn instead. A fake cancel button is the AI equivalent of a placeholder over a non-interactive page, and it costs more trust than the local convenience is worth.
+
+The eight essays before this one were about *how* to make a wait feel faster. This last one is about where the line is. Perception engineering is one of the strongest tools in the catalogue. It is also the tool with the largest range — from "the product feels alive" to "the product is lying to me." The line is not always obvious. It is always worth marking.
+
+<EssayNav />
+
+<ReferencesList refs={references} />

@@ -1,0 +1,92 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { EssayNav } from "@/components/EssayNav";
+import { references } from "@/lib/refs/ai-changes-the-shape-of-the-wait";
+
+export const metadata = {
+  title: "AI changes the shape of the wait",
+  description:
+    "AI waits are not the deterministic web waits the rest of the platform is tuned for. Three things change — duration spans two orders of magnitude, the wait is conversational rather than navigational, and the answer arrives mid-wait. Which classical thresholds survive the move to AI, and which break.",
+};
+
+<RegisterReferences refs={references} />
+
+# AI changes the shape of the wait
+
+The previous seven essays assumed something nobody bothered to state out loud: the wait has a known shape. A page load takes 800 ms to 4 seconds. A form submit takes 200 ms to a few seconds. A search query is bounded above by a timeout you control. You can measure the p50 and the p90, you know roughly where the wait is going to land, and you can put a skeleton screen at the right place because you know what "the right place" means.
+
+AI breaks all three.
+
+I'd argue the cleanest way to see this is to look at what AI waits and web waits do not share, rather than what they do.
+
+## Three properties that change
+
+Three differences are load-bearing. The rest is detail.
+
+1. **Duration variance across two orders of magnitude.** A Copilot autocomplete returns in ~180 ms. A Claude chat response takes ~4 seconds. An o1-style reasoning response takes ~45 seconds. An agentic workflow — Cursor's compose, Devin, a long Claude tool-using session — can run for minutes. The same physical surface (the chat composer) produces all four. The user does not know in advance which one they are about to wait for, and the perception cue cannot ask.
+2. **The shape is conversational, not navigational.** Web waits are mostly "click → page" — the wait sits between an input and a settled destination state, and the perception job is to keep the user oriented while the destination loads. AI waits sit between an input and an answer; the answer arrives in pieces; the conversation continues. There is no destination state. The wait is followed by another wait.
+3. **The wait is filled by the answer arriving.** The token-by-token streaming pattern that every modern LLM converged on is the most aggressive form of "filled time" in any UI category. Block & Zakay's <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> meta-analysis is the long-standing justification for skeleton screens and engaging loaders — filled retrospective duration is shorter than empty retrospective duration. AI streaming applies the same mechanism, but instead of filling the wait with a placeholder, the product fills it with the actual answer.
+
+The three properties compound. A wait of unknown length, with no destination state, where the answer arrives mid-wait, is a different perception animal than a web click-to-page wait. Same toolbox; different problem. The bad AI waits I see in the wild are usually waits where someone applied a web heuristic to an AI surface — a generic spinner across a 30-second stream, a "Loading..." copy where a thinking-state cue belonged, a determinate progress bar promising 60 % done when the model has no notion of percent.
+
+## The new anatomy
+
+Essay 04 broke every wait into four phases — pre-action signal, response, animation, completion. The framing applies to AI surfaces but it maps a little oddly. I'd argue the AI wait has its own four-phase anatomy, with a different shape:
+
+1. **Pre-action signal** — identical to web. The user reaches for the send button. The 100 ms perceptual frame still holds. `mousedown` over `click` still works.
+2. **Thinking** — the new phase. After the user hits send and before the first token arrives, the model is doing something the user cannot see. Could be 200 ms. Could be 30 seconds. There is no web analog.
+3. **Streaming** — the answer arrives as a stream of tokens, optionally interrupted by tool calls that expose mid-stream agent work. The user is reading the answer *as it forms*. This is the bulk of the wait for most AI surfaces.
+4. **Settled** — the response is complete. The cancel button disappears, the input becomes active again, and the user can react.
+
+Two things to point out about this anatomy.
+
+First, the user is doing something different in each phase. In *thinking*, they are waiting passively. In *streaming*, they are reading actively. In *settled*, they are deciding what to do next. The perception cues required for each are different — and conflating them is the source of most bad AI UX. A spinner that lives across all four phases is not a perception treatment; it is the absence of one.
+
+Second, the streaming phase blurs the line between "the wait" and "the result." There is no clean "the wait ended, here is the answer" event. The answer was the wait. The user's experience of "how long did I wait" anchors heavily on the reading-cadence of the streamed tokens, not on the wall-clock duration. This is why AI UX teams are obsessive about token cadence — and why the products that get it right feel categorically better than the ones that do not.
+
+## Which classical thresholds still hold
+
+Useful to be specific about which parts of the canon survive the move to AI.
+
+1. **The 100 ms perceptual frame.** Card, Moran & Newell's <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms upper bound for the input-to-acknowledgement loop is intact. When the user hits send, the input has to deactivate, the cursor has to clear, the cancel affordance has to appear, all within ~100 ms. Same as the web. The failure mode is worse: on web a sluggish acknowledgement produces a double-click and a duplicate submit; on AI it produces two parallel inference jobs, two streams competing for the same composer, and a billing event the user did not intend.
+2. **The 1 s flow break.** Nielsen's <Cite id="nielsen-1993" label="Nielsen 1993" /> 1-second threshold applies, but only to the *first-token* moment, not the full response. If the model takes more than ~1 s to start streaming, the user has slipped out of active mode. The thinking-state cue — pulsing orb, three-dot bounce, a calm "Thinking..." label — is what keeps the active connection alive past 1 s and into the streaming phase.
+3. **The 10 s wall.** Nielsen's <Cite id="nielsen-1993" label="Nielsen 1993" /> attention-drift threshold applies, with a footnote. Past 10 seconds of pure *thinking*, the user disengages. Past 10 seconds of *streaming*, the user is still engaged because the answer is arriving. The wall moves. For agentic workflows that disappear into 30-second tool-call sequences, you have to surface what the agent is doing — otherwise the wall closes and the user goes to another tab.
+
+These three thresholds are doing work in AI UX. They map onto different events than they did on the web, but the perception physics is the same.
+
+## Which ones break
+
+A few thresholds that get repeated in AI UX writeups do not actually translate.
+
+1. **Doherty's 400 ms productivity cliff.** Doherty's <Cite id="doherty-1982" label="Doherty 1982" /> finding applies to autocomplete-band AI surfaces. Cursor, Copilot, and v0's inline completions all live inside this budget; the GitHub Research study by Ziegler et al. <Cite id="ziegler-2022" label="Ziegler et al. 2022" /> on Copilot productivity is the modern follow-up, and it confirms that completion timing in the sub-second range materially affects acceptance rates. But Doherty is irrelevant for the chat surface. A 3-second chat response is not a productivity-cliff event because the user is not doing repeated transactions — they are having a conversation. Citing Doherty for chat latency is a category error you see a lot in AI UX hot takes.
+2. **The unit-task model.** Card et al. <Cite id="card-1991" label="Card et al. 1991" /> framed responsiveness in unit-task tiers — perceptual (~100 ms), immediate (~1 s), unit-task (~10 s). The tiers assume the user has a discrete task they are completing. AI conversations are continuous; there is no clean unit-task boundary. Trying to enforce tier-based budgets on a chat surface produces UX that feels mechanical — "your last response was 2.3 s, well within target" is not a thing a user is having.
+3. **Time-to-Interactive (TTI).** A perfectly reasonable web metric. Useless for AI surfaces. On a chat surface the input becomes interactive again only after the response completes, which is variable; trying to optimise TTI on chat tells you nothing about whether the wait felt good.
+4. **Miller's transaction taxonomy.** Miller's <Cite id="miller-1968" label="Miller 1968" /> seventeen transaction types assume bounded server-side work — the system has a known thing to do and a known time to do it in. AI is unbounded in both senses. The taxonomy holds for the autocomplete band (those are recognisable Miller transactions) but stops describing what is happening as soon as the user is in chat.
+
+## How the products converged
+
+A few minutes with Claude, ChatGPT, Gemini, Cursor, and v0 reveals that they have all converged on roughly the same shape:
+
+1. A thinking-state cue that holds the user's attention without claiming progress.
+2. Token streaming with a deliberate cadence — fast enough to feel alive, slow enough to read.
+3. A visible cancel button at every point in the stream.
+4. Tool-call surfaces that expand inline to show mid-stream agent work.
+5. A clear settled state — input re-activates, cancel disappears, focus returns to the composer.
+
+Convergence usually means the perception research is right. Block & Zakay's <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> filled-vs-empty framing predicted that streaming would beat batching; Nielsen's <Cite id="nielsen-1993" label="Nielsen 1993" /> 1-second wall predicted that thinking-state cues would be required; the 100 ms perceptual frame predicted that the send button needs to acknowledge within a frame. The shape we see across products is the shape the canon predicts when you re-apply it to a different wait.
+
+What is genuinely new in AI UX is the thinking-state itself and the tool-call surface. Both have no direct web analog. Those are the surfaces where individual product teams are doing original perception work — what shape should "the model is thinking" take? what shape should "the agent is reading three files" take? The rest of the AI wait is existing perception patterns applied carefully.
+
+## What to do with this
+
+Three takeaways before the next essay:
+
+1. **Design the four phases separately.** The thinking-state, the streaming phase, the tool-call surface, and the settled state are four distinct perception problems. Treating them as one — a generic spinner that sits across all four — is the most common AI-UX mistake. The fix is structural: name the four phases in your design system and pick a treatment per phase.
+2. **Match the cadence to the reading.** Token streaming feels good when the reading speed matches comfortable prose intake (~200–300 words per minute). Faster reads as the model showing off; slower reads as broken. The cadence is the perception control surface, not a side-effect of the API. Tune it.
+3. **Treat AI thresholds as bands, not lines.** The classical thresholds (100 ms, 1 s, 10 s) still mark perception transitions, but in AI they apply to *different events* (first-token latency, thinking-state appearance, stream completion, attention drift inside long agent runs). Map each threshold to the AI event it covers, not the wall-clock duration of the whole response.
+
+The next essay covers the dark side: where these perception tricks cross into deception. Fake streaming, manipulated cadence, hidden tool calls, polished UX over uncertain output. AI is the surface where perception engineering and honesty come into the sharpest tension, and the rest of the canon does not yet have a clean vocabulary for it.
+
+<EssayNav />
+
+<ReferencesList refs={references} />
