@@ -29,9 +29,6 @@ export default function ScenariosPage() {
         <h1 className="mt-2 text-4xl font-medium leading-tight tracking-tight">
           Scenarios
         </h1>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Every async surface that ships in a modern product, grouped by where it lives. Pick the category that matches the problem you are trying to solve.
-        </p>
       </header>
 
       <ScenariosCategorizedList groups={groups} />

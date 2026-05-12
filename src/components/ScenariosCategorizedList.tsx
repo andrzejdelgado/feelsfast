@@ -37,7 +37,7 @@ export function ScenariosCategorizedList({
     <>
       {/* Sticky filter bar — spans the full main-column width so the
           border reaches the article edges, not just max-w-4xl. */}
-      <div className="sticky top-14 z-10 mt-10 border-b border-border bg-background/95 backdrop-blur md:top-0">
+      <div className="sticky top-14 z-10 mt-6 border-b border-border bg-background/95 backdrop-blur md:top-0">
         <div
           className="mx-auto flex max-w-4xl flex-wrap items-center gap-2 px-8 py-4 lg:px-12 xl:px-16"
           role="group"

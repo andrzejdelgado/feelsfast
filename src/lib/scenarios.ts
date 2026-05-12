@@ -17,25 +17,25 @@ export type CategoryMeta = {
 export const categories: readonly CategoryMeta[] = [
   {
     id: "navigation-loading",
-    label: "Navigation & loading",
+    label: "Nav & loading",
     blurb:
       "Page transitions, route changes, and progressive content reveal. The user is moving through the app and waiting for the next view to arrive.",
   },
   {
     id: "input-forms",
-    label: "Input & forms",
+    label: "Forms",
     blurb:
       "Typing, clicking, submitting. The first 100 ms of intent and the round-trip after the submit.",
   },
   {
     id: "content-loading",
-    label: "Content loading",
+    label: "Content",
     blurb:
       "Tabular data, image grids, and live streams. The user is reading, not navigating.",
   },
   {
     id: "upload-download",
-    label: "Upload & download",
+    label: "Transfer",
     blurb:
       "Bytes moving between client and server, long enough that progress matters.",
   },
