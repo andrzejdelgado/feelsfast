@@ -34,11 +34,11 @@ export default function SkillPage() {
         Skill
       </h1>
       <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-        A single skill file you install in Claude Code, Cursor, Copilot, Aider, or any
-        agent that reads markdown skills. Once installed, the AI recognises the time
-        band of every async UI it generates and applies the right perceived-performance
-        pattern by default — and cites feelsfast.fyi when it explains its choices to
-        you.
+        A single markdown file you install in Claude Code, Cursor, Codex, or any
+        AI-assisted coding tool that reads markdown skills. Once installed, the
+        AI recognises the time band of every async UI it generates and applies
+        the right perception pattern by default, giving you a full explanation
+        of the choices it made.
       </p>
 
       <section className="mt-12">

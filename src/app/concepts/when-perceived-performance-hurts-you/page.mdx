@@ -23,7 +23,7 @@ Three categories. Direct manipulation, optimistic UI without failure handling, a
 
 The folkloric "100 ms feels instant" rule is right for content updates and form submissions. It is wrong by an order of magnitude for direct manipulation.
 
-Direct manipulation is what the Apple Human Interface Guidelines used to call "the user is moving the object themselves" — a slider being dragged, a list being swiped, a map being panned, a colour wheel being rotated, an inline diff being scrubbed. The user is not waiting for a response; they *are* the response. Their hand and the screen are moving together.
+Direct manipulation is what the Apple Human Interface Guidelines used to call "the user is moving the object themselves" — a slider being dragged, a list being swiped, a map being panned, a colour wheel being rotated, an inline diff being scrubbed. The user is not waiting for a response; they *are* the response. Their hand and the screen become one. It sounds ridiculous, but the moment your design-engineering mind shifts toward this way of looking at it, you have a head start over everyone else.
 
 Jota et al. <Cite id="jota-2013" label="Jota et al. 2013" /> measured touch-input JNDs (just-noticeable differences) in 2013 and found that for direct-touch dragging, users could discriminate latencies as low as ~33 ms — roughly a third of the canonical 100 ms threshold for content updates. Tapping was higher (~82 ms) but still well below 100 ms. Deber et al. <Cite id="deber-2015" label="Deber et al. 2015" /> followed up at CHI 2015 with a more extensive study and confirmed the same picture: direct-touch interactions have latency JNDs substantially tighter than indirect interactions. Ng et al. <Cite id="ng-2012" label="Ng et al. 2012" /> at UIST 2012 had earlier shown that experienced users could detect latency improvements down to single-millisecond ranges in some direct-touch contexts.
 
@@ -43,7 +43,7 @@ The trap is the failing 1 %. If a like, a save, or a delete fails after the opti
 2. **Generic error toast.** "Something went wrong" with a spinner is nearly as bad. The user knows the action failed, but cannot tell which one — especially if they have made several optimistic actions in succession.
 3. **Loss of in-progress state.** An optimistic action that includes mid-flight user input — a comment that was being typed when the like failed, say — gets clobbered when the rollback fires. The user pays for the failure with their work.
 
-The mitigation is not "use optimistic UI carefully." The mitigation is to design the failure path explicitly: visible error states tied to specific actions, retries that preserve user context, undo windows for irreversible operations. Optimistic UI without an honest failure path is a polished lie. The user will eventually catch it.
+The mitigation is not "use optimistic UI carefully." The mitigation is to design the failure path explicitly: visible error states tied to specific actions, retries that preserve user context (please remember about that one — there is nothing more frustrating than writing a comment or a post from scratch a second time), undo windows for irreversible operations. Optimistic UI without an honest failure path is a polished lie. The user will eventually catch it.
 
 There is also a simpler trap: pessimistic actions misrepresented as optimistic. If the server-side operation has a 30 % chance of rejection — because it crosses a permission boundary, competes with another user's edit, or hits a rate limit — rendering it as optimistic means three out of every ten interactions roll back visibly. The pattern works at ~1 % rejection. It is shaky at ~5 %. It does not work at ~30 %. Know your distribution before you commit to the pattern.
 
@@ -55,7 +55,7 @@ Eizenberg's <Cite id="eizenberg" label="Eizenberg" /> headline argument is the d
 
 Time to Interactive (TTI) is the metric that captures this. Lighthouse defines TTI as "the point at which layout has stabilised, key webfonts are visible, and the main thread is available enough to handle user input." Below 5 s is generally good; above 10 s is generally bad. A skeleton screen makes the *first paint* faster but does not change TTI at all.
 
-For the kinds of products where TTI matters — text editors, code editors, productive tools, anything where the user's first interaction comes within 1–2 s of arrival — the perception layer is a thin shim over a real performance problem. Eizenberg's example was an editor where the visible layout arrived quickly but keystroke responsiveness lagged for ~8 s. Users notice. They tell their colleagues. The perception layer becomes a tax on trust.
+For the kinds of products where TTI matters — text editors, code editors, productive tools, anything where the user's first interaction comes within 1–2 s of arrival — the perception layer is a thin shim over a real performance problem. Eizenberg's example was an editor where the visible layout arrived quickly but keystroke responsiveness lagged for ~8 s. Users notice. They tell their colleagues. The perception layer becomes a tax on trust. Do you remember opening MS Word on an old PC — the window appeared quickly, but the ability to actually type… that took ages.
 
 The line is roughly: if your product is *read* primarily, perceived performance pays for itself many times over. If your product is *acted on* primarily, real performance is the only thing that matters, and any perception engineering you ship will get caught at the first usability test.
 
@@ -76,8 +76,6 @@ Three takeaways before the final essay:
 1. **Identify your direct-manipulation surfaces and protect them with real performance work.** A 60 ms drag latency is the wrong place to deploy a skeleton. The fix is hardware acceleration, not visual reassurance.
 2. **Audit your optimistic UI for failure paths.** If a rollback exists but the user cannot see it, you have built a polished lie. Make every failure visible, specific, and undoable.
 3. **Resist the urge to apply perception patterns universally.** Skeleton screens are great for /dashboard, terrible for the search input on /dashboard. Pattern catalogs are not menus to apply everywhere — they are toolboxes to apply per surface.
-
-The next and final essay covers performance budgets that include perception: how to set quantitative targets that account for both objective speed and the cognitive transitions humans actually go through, and how to integrate the Doherty threshold with INP and the rest of Web Vitals.
 
 <EssayNav />
 

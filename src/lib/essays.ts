@@ -55,7 +55,7 @@ export const essays: readonly Essay[] = [
     title: "What perceived performance actually is",
     category: "foundations",
     blurb:
-      "The dichotomy between objective and perceived performance, the 20 % just-noticeable difference, and where looking-fast stops being a substitute for being-fast.",
+      "The dichotomy between objective and perceived performance, the 20 % just-noticeable difference, and where looking-fast stops being a substitute for being-fast and becomes a tax on the user's trust.",
     citations: [
       "Miller 1968",
       "Nielsen 1993",

@@ -21,7 +21,18 @@ I'd argue every designer working on performance should be able to say, with a st
 
 The original is Robert B. Miller's <Cite id="miller-1968" label="Miller 1968" /> 1968 paper "Response time in man-computer conversational transactions," delivered at the AFIPS Fall Joint Computer Conference. It is the source of the tiered-response-time idea. It does not contain the clean three-tier model.
 
-What Miller actually did was identify seventeen different transaction types between humans and computers — keystroke echo, request for service, error feedback, identification of an item, system response to a control input, error correction, and so on — and propose acceptable response times for each, ranging from "system reflection of action" (~0.1 s) up to "complex inquiry and response" (~10 s) and longer.
+What Miller actually did was identify seventeen different transaction types between humans and computers:
+
+1. keystroke echo,
+2. request for service,
+3. complex visual recall,
+4. error feedback,
+5. identification of an item,
+6. system response to a control input,
+7. error correction,
+8. and so on,
+
+and propose acceptable response times for each, ranging from "system reflection of action" (~0.1 s) up to "complex inquiry and response" (~10 s) and longer.
 
 The reason this matters in practice: Miller's table is more granular than the 0.1 / 1 / 10 framing. He had separate thresholds for keystroke acknowledgment, simple inquiry, complex visual recall, and error feedback. Some of these are below 1 s, some are at 2 s, some at 5 s, some at 15 s. The clean trichotomy is not in the paper; it is a later distillation.
 
@@ -84,7 +95,7 @@ These four papers are the foundation under every response-time graph you have ev
 3. **Miller 1968** populates the table between ~1 s and ~10 s with finer-grained transaction-typed thresholds.
 4. **Nielsen 1993** distils the whole thing into 0.1 / 1 / 10 for daily use.
 
-When a Web Vitals threshold (FID under 100 ms, INP under 200 ms, LCP under 2.5 s) lines up with one of these papers, that is not coincidence. The Vitals team is sitting on top of forty years of cognitive timing data. The boundaries hold up because the underlying cognition has not changed.
+When a Web Vitals threshold (First Input Delay under 100 ms, Interaction to Next Paint under 200 ms, Largest Contentful Paint under 2.5 s) lines up with one of these papers, that is not coincidence. The Vitals team is sitting on top of forty years of cognitive timing data. The boundaries hold up because the underlying cognition has not changed.
 
 ## What to do with this
 
@@ -93,8 +104,6 @@ Three takeaways before the next essay:
 1. **Cite the right paper for the right claim.** "0.1 s feels instant" is Nielsen distilling Card-Moran-Newell. "Sub-second response is more productive" is Doherty. "Keystroke echo at 0.1 s, simple inquiry at 2 s, complex inquiry at 10 s" is Miller. The folkloric "Miller said 0.1 / 1 / 10" is wrong; the correct version is "Nielsen 1993, after Miller 1968 and Card et al. 1983."
 2. **Treat the boundaries as cognitive transitions, not budgets.** They are not "you must respond under X" — they are "the user's mental state changes at X." Some products will live happily at 2 s; some die at 500 ms. The boundaries are the shape of the curve, not the curve.
 3. **Use the four sources to argue, not to decide.** Performance budgets get set by your product team and your CFO. The papers tell you which budgets cost you what. They do not tell you which budgets to set.
-
-The next essay decomposes a wait into its anatomy — pre-action signal, response, animation, completion — and shows what you can tune at each stage. After that, the time-perception illusions you can exploit: Anstis on contrast, Harrison et al. on backwards-decelerating progress bars, and the geometric-mean indifference threshold.
 
 <EssayNav />
 

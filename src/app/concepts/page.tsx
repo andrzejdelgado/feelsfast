@@ -9,7 +9,7 @@ import { ConceptsCategorizedList } from "@/components/ConceptsCategorizedList";
 export const metadata: Metadata = {
   title: "Concepts",
   description:
-    "Seven essays on the science of perceived performance — the dichotomy with objective time, the canonical thresholds (Miller, Card, Doherty), the time-perception illusions you can exploit, and where the perception layer breaks down.",
+    "Short, opinionated essays on the science of perceived performance — how humans perceive time, the canonical thresholds (Miller, Card, Doherty, Nielsen), the illusions you can exploit, where the perception layer breaks down, the decision rule for which loading affordance to ship at which time band, and what changes when the wait is AI.",
 };
 
 export default function ConceptsPage() {

@@ -22,12 +22,12 @@ const stats = [
   {
     label: "Doherty 1982",
     headline: "400 ms",
-    body: "is the productivity cliff. Sub-second response time produces measurable productivity gains across IBM's entire transaction-processing workforce. The foundational empirical finding the rest of the field rests on.",
+    body: "is the productivity cliff. Doherty & Thadani measured terminal users across IBM and found a non-linear curve: when response times dropped under 400 ms, productivity jumped — programmer transactions per hour rose 106 % moving from 3 s to 0.3 s. 400 ms is not a round target; it is where their data measurably bends. Modern Web Vitals' INP target of 200 ms sits below that cliff with margin to spare. Every \"sub-second response\" goal you have seen in a sprint planning meeting traces back here.",
   },
   {
     label: "Nielsen 1993",
     headline: "0.1 / 1 / 10 s",
-    body: "are the perception walls. Below 0.1 s an interaction feels instant. Past 1 s flow breaks. Past 10 s the user's attention drifts away from the task entirely. Three thresholds, three different patterns.",
+    body: "are the perception thresholds. Below 0.1 s an interaction feels instant to the user. Past 1 s flow breaks and the user notices things are being loaded for them. Past 10 s the user's attention drifts away from the task entirely. This changes how designers and engineers should address different load-times in different scenarios.",
   },
   {
     label: "Harrison et al. 2010",
@@ -40,22 +40,22 @@ const bands = [
   {
     label: "0–100 MS",
     title: "Instant input",
-    body: "The user has not started waiting yet. Techniques here give a head-start, not a status — pre-action feedback, optimistic flips, direct-manipulation latency budgets. Anything that announces a wait at this scale damages the experience.",
+    body: "The user does not notice they had to wait. In this timeframe everything feels instantaneous. This is the holy grail of load-times — rarely achievable for objective reasons. Yet if a product can make the user believe that things are instant, it gains trust and expands the chance of better revenue (in the end, everything is about the money). In the 0–100 ms territory the win comes through sneaky tactics: pre-action feedback, optimistic flips, direct-manipulation latency budgets.",
   },
   {
     label: "100 MS – 1 S",
     title: "Perceptible wait",
-    body: 'Cues say "active, working" without claiming an end-point. Indeterminate spinners, marquee bars, top-edge trickle bars, three-dot bounces. The system is honest about not knowing how long this will take.',
+    body: 'This range is bearable, even though the attention span of the youngest generations is, by newer studies, shrinking dramatically. Anything that lasts up to a second is still digestible. The choice is wide: one second of staring at an information abyss, or a second filled with a helpful cue that things are progressing and will be done very soon. In this band, cues say "I\'m active, I\'m working, I\'ll be done sooner than you think" without claiming an end-point. Indeterminate spinners, marquee or infinite progress bars, three-dot bounces, oscillating, bouncing, or pulsating artefacts. The system is honest about not knowing how long this will take, yet movement makes time pass faster.',
   },
   {
     label: "1 – 10 S",
     title: "Engaged wait",
-    body: "Where most perception techniques live. The user is consciously waiting on the result and the cue is doing real work — masking absence with content-true skeletons, smoothing the wait with shimmer or LQIP, trading linear progress for backwards-decelerating ribs.",
+    body: "This is the territory where most perception techniques live — where designers and engineers show their craft in making the user believe that fully loaded content is just around the corner. The whole point is to make the user consciously wait for the result while cues hint at real work happening. In other words: different techniques mask the absence of the final result with content-true artefacts, their movement, their presence — static, shimmering, or pulsating skeletons or their approximations, finite progress bars, percentage counters, and more variants that reduce perceived time further in certain scenarios.",
   },
   {
     label: "10 S+",
     title: "Past the wall",
-    body: "The user's attention is no longer reliably on the task. Techniques here are about giving them something to do or freeing them from the wait entirely — engagement copy, branded sequences, foreground-to-background hand-offs.",
+    body: "When things last more than 10 seconds, the user loses interest in the task that was put in motion. Techniques in this territory have a completely different goal: they either redirect the user's attention elsewhere, or turn the wait into a \"meaning moment.\" Patterns here are about giving them something to do or freeing them from the wait entirely — engaging copy or visuals, branded sequences, process reveals, foreground-to-background hand-offs, temporary entertainment or engagement.",
   },
 ] as const;
 
@@ -115,19 +115,20 @@ export default function HomePage() {
           What is perceived performance?
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-foreground">
-          Perceived performance is the gap between what the clock says about a wait
-          and what the user feels about it. Two products can return the same data in
-          1.6 seconds; one feels snappy and the other feels slow, and that gap is
-          the entire territory.
+          Perceived performance is the gap between the actual time a user has to
+          wait for a piece of software to load and what the user feels about that
+          wait. Two products can render the same data in 2.7 seconds; one feels
+          snappy and the other feels slow. The gap between those two perceptions
+          is the territory a designer and engineer can conquer.
         </p>
         <p className="mt-4 leading-relaxed text-muted-foreground">
-          The classical literature treats response time as the dependent variable —
-          Miller 1968, Card et al. 1991, Doherty 1982, Nielsen 1993. The modern
+          The classical literature treats response time as the dependent variable
+          — Miller 1968, Card et al. 1991, Doherty 1982, Nielsen 1993. The modern
           reading turns the variable around: the experience of duration is the
-          thing the user actually grades you on, and the clock is one of several
-          inputs to that experience. Animation pattern, content reveal order, what
-          fills the wait visually — they all bend felt time without bending real
-          time.
+          thing the user rates their experience on, and the passing clock is only
+          one of several inputs to that experience. Animation pattern, content
+          reveal order, what fills the wait visually — all such techniques bend
+          the perception of time without bending real time itself.
         </p>
       </section>
 
@@ -137,8 +138,10 @@ export default function HomePage() {
           Why does it matter?
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-foreground">
-          Three findings the field is built on. Each is decades old; each is still
-          load-bearing in modern UX work.
+          Three anthropological / psychological findings that drive the user's
+          perception. Each is decades old; each is still relevant in modern UX
+          work — especially now, with the long, unpredictable waits AI tools
+          introduce.
         </p>
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
           {stats.map((stat) => (
@@ -166,9 +169,13 @@ export default function HomePage() {
           Four time bands
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-foreground">
-          The right cue depends on how long the user is actually waiting. The
-          platform organises every pattern, scenario, and demo around four bands —
-          and so does this page.
+          What Nielsen and his peers coined in the 90s is now divided into four
+          time bands, each determining (with exceptions) which technique most
+          effectively reduces the perceived load-time. The choice of the right
+          cue depends on how long the user has to wait. The platform organises
+          everything around these four bands. Users love when things happen
+          instantly, but they can suffer through a 10 s+ wait if (a) it's worth
+          it, and (b) it &ldquo;doesn&rsquo;t hurt&rdquo; too much.
         </p>
         <div className="mt-8 space-y-3">
           {bands.map((band, i) => (

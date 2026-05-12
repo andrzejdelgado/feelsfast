@@ -29,7 +29,7 @@ The neural mechanism is dopamine. When you are mentally engaged, the dopaminergi
 
 This is not metaphor. The data backs it up. Humans tend to overestimate time spent in passive phases by about 36 % <Cite id="fitch" label="Fitch" />. A wait the clock measures at three seconds feels like four if the user crossed into passive mode during it.
 
-The practical consequence is severe and immediate. The first second of any wait is gold — keep the user active and the wait barely registers. Past one second, they enter passive mode and the time-stretching kicks in. This is exactly why patterns like pre-action feedback, optimistic UI, and predictive preloading carry their weight: they buy time inside the active window, where seconds count for less.
+The practical consequence is severe and immediate. The first second of any wait is gold — at any cost, keep the user active and the wait barely registers. Past one second, they enter passive mode and the time-stretching kicks in. This is exactly why patterns like pre-action feedback, optimistic UI, and predictive preloading carry their weight: they buy time inside the active window, where seconds count for less. The same mechanism is at work on a gamer playing FIFA on PC or console: while the actual match is loading, the engine lets you sort out a free-kick or a corner play in a mini-game on the loading screen — and because the gamer stays in active mode, the wait flies.
 
 ## Filled vs. empty duration
 
@@ -73,9 +73,9 @@ This is the same time-band table the Skill installs into your AI tools. The band
 
 Two cautions, because the literature gets misused.
 
-First, all of this is averaged behaviour. There are people who tolerate ten-second waits without flinching and people who churn at three. Your real users are a distribution, not the mean of a 1968 study. Treat the thresholds as design pressure, not as fixed constants.
+First, all of this is averaged behaviour. While the 1-second mark you may treat as set in stone, there are people who tolerate ten-second waits without flinching and people who churn at three. Your real users are a distribution, and you should study them first. Treat the thresholds as design pressure, not as fixed constants. In the end, the user decides what constitutes a passive state and what constitutes a long wait — not you.
 
-Second, none of this absolves you from making the actual UI fast. Perception research tells you how to spend the budget you have. It does not tell you how big the budget should be. If your app's TTI is fifteen seconds, a tuned loading sequence does not save you — Eizenberg's argument from the previous essay still applies. Perception engineering wins the close races. It does not win the lopsided ones.
+Second, none of this absolves you from making the actual UI fast. Perception research tells you how to spend the budget you have. It does not tell you how big the budget should be. If your app's Time to Interactive (TTI) is fifteen seconds, a tuned loading sequence does not save you — Eizenberg's argument from the previous essay still applies. Perception engineering wins the close races. It does not win the lopsided ones.
 
 ## What to do with this
 
@@ -84,8 +84,6 @@ Three takeaways before the next essay:
 1. **Treat the one-second mark as a hard threshold, not a soft target.** Cross it and the user's mental state changes. Most patterns should be optimised either to stay below it or to manage what happens when they cross it.
 2. **Use the prospective/retrospective split when designing waits.** Skeleton screens make the in-the-moment wait feel shorter; they do not make the remembered wait shorter. For long waits, manage both.
 3. **Stop treating "engaging loading" as universally good.** It buys retrospective duration. Some products want that, some do not. A boot sequence with a motivational quote is honest engagement; a multi-step loading screen disguising slow code is not.
-
-The next essay is the canonical thresholds — Miller, Card et al., Doherty, Nielsen — and exactly what they did and did not say. Most of what you have read about the 0.1 / 1 / 10-second rule is either a paraphrase or a folkloric edit. We go to the originals.
 
 <EssayNav />
 

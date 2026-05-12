@@ -25,7 +25,9 @@ The first one is older and wider than UX. Stuart Anstis's <Cite id="anstis-2003"
 
 A grey bar moving across a black-and-white striped background appears to "step" — speeding up on light stripes (where it has high contrast) and slowing on dark stripes (where it has low contrast). Anstis's 2004 follow-up <Cite id="anstis-2004" label="Anstis 2004" /> generalised the effect: it is the contrast of the leading and trailing edges, not the lateral edges, that drives the apparent speed. Even on uniform backgrounds, lower edge-contrast shrinks perceived motion amplitude.
 
-The UX consequence is direct. A high-contrast loading shimmer looks faster than a low-contrast one. A skeleton screen with crisp edges feels more responsive than one with soft, ghostly outlines. A subtle pulse animation on a low-contrast skeleton block actually feels *slower* than a sharp pulse on a high-contrast block, even when both run at the same frame rate.
+A consequence of this phenomenon outside the browser is car colour. A driver in a red car travelling against a green woodland background is more likely to get a ticket than a driver going the same speed in a green car at the same forested spot, because the contrast between red and green is more readily picked up by a police officer hidden in the bushes — the red car simply appears to move faster, or over the limit. The phenomenon shows up in road-violation statistics around the world.
+
+Back in the digital world, the UX consequence is direct. A high-contrast loading shimmer looks faster than a low-contrast one. A skeleton screen with crisp edges feels more responsive than one with soft, ghostly outlines. A subtle pulse animation on a low-contrast skeleton block actually feels *slower* than a sharp pulse on a high-contrast block, even when both run at the same frame rate. Direction matters too — without going too deep, a progress bar moving left-to-right reads as faster than the same bar moving right-to-left.
 
 Two practical applications:
 
@@ -89,9 +91,7 @@ Three takeaways before the next essay:
 
 1. **Pick higher contrast than feels natural for skeletons and shimmers.** The instinct toward subtlety reads as slowness. Anstis's data is twenty years old and still ignored.
 2. **If you have determinate progress, animate it backwards-decelerating.** A CSS keyframe ships it for ~12 % perceived speed-up. The trick is real progress data; without that, you should not be using a progress bar at all.
-3. **Set your performance budgets against the geometric mean, not the arithmetic.** If competitors load in 2 s and you load in 4 s, your real target is the geometric mean of those — ~2.83 s — not the average. Below it, you are competitive. Above it, you are not.
-
-The next essay covers when perceived performance hurts you — Eizenberg's argument extended, the latency JNDs in direct manipulation that fall well below the 100 ms folk wisdom, and the surfaces where polished placeholders become polished lies.
+3. **Set your performance budgets against the geometric mean, not the arithmetic.** If competitors load in 2 s and you load in 4 s, your real target is the geometric mean of those — ~2.83 s — not the average. Below it, you are competitive. Above it, you are not. Memorise the equation or save it somewhere: √(competitor load time × your load time) = the sub-X-second experience you need to feel as fast as the competition.
 
 <EssayNav />
 
