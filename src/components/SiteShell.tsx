@@ -55,7 +55,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             className="hidden border-l border-border bg-sidebar lg:block"
             aria-label="References for the current article"
           >
-            <div className="sticky top-0 max-h-screen overflow-y-auto">
+            <div className="sticky top-0">
               <ReferencesPanel />
             </div>
           </aside>
