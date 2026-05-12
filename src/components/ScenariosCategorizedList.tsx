@@ -35,11 +35,11 @@ export function ScenariosCategorizedList({
 
   return (
     <>
-      <div
-        className="sticky top-14 z-10 mt-10 -mx-8 border-b border-border bg-background/95 px-8 py-4 backdrop-blur md:top-0 lg:-mx-12 lg:px-12 xl:-mx-16 xl:px-16"
-      >
+      {/* Sticky filter bar — spans the full main-column width so the
+          border reaches the article edges, not just max-w-4xl. */}
+      <div className="sticky top-14 z-10 mt-10 border-b border-border bg-background/95 backdrop-blur md:top-0">
         <div
-          className="flex flex-wrap items-center gap-2"
+          className="mx-auto flex max-w-4xl flex-wrap items-center gap-2 px-8 py-4 lg:px-12 xl:px-16"
           role="group"
           aria-label="Filter scenarios by category"
         >
@@ -59,7 +59,7 @@ export function ScenariosCategorizedList({
         </div>
       </div>
 
-      <div className="mt-12 space-y-12">
+      <div className="mx-auto mt-12 max-w-4xl space-y-12 px-8 lg:px-12 xl:px-16">
         {visibleGroups.map((group) => (
           <section
             key={group.category.id}
