@@ -1,0 +1,155 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
+import type { Essay, EssayCategory, EssayCategoryMeta } from "@/lib/essays";
+
+type CategorizedGroup = {
+  category: EssayCategoryMeta;
+  items: readonly Essay[];
+};
+
+type FilterValue = "all" | EssayCategory;
+
+/**
+ * Client-side category filter for the Concepts index. Mirrors the
+ * Scenarios index — a sticky filter pill row above sectioned groups,
+ * with a label-only pill per category and a redesigned essay card.
+ */
+export function ConceptsCategorizedList({
+  groups,
+}: {
+  groups: readonly CategorizedGroup[];
+}) {
+  const [filter, setFilter] = useState<FilterValue>("all");
+
+  const visibleGroups = useMemo(
+    () =>
+      filter === "all"
+        ? groups
+        : groups.filter((g) => g.category.id === filter),
+    [filter, groups],
+  );
+
+  return (
+    <>
+      <div className="sticky top-14 z-10 mt-6 border-b border-border bg-background/95 backdrop-blur md:top-0">
+        <div
+          className="mx-auto flex max-w-4xl flex-wrap items-center gap-2 px-8 py-4 lg:px-12 xl:px-16"
+          role="group"
+          aria-label="Filter essays by category"
+        >
+          <FilterPill
+            label="All"
+            active={filter === "all"}
+            onClick={() => setFilter("all")}
+          />
+          {groups.map((group) => (
+            <FilterPill
+              key={group.category.id}
+              label={group.category.label}
+              active={filter === group.category.id}
+              onClick={() => setFilter(group.category.id)}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="mx-auto mt-12 max-w-4xl space-y-12 px-8 lg:px-12 xl:px-16">
+        {visibleGroups.map((group) => (
+          <section
+            key={group.category.id}
+            aria-labelledby={`cat-${group.category.id}`}
+          >
+            <h2
+              id={`cat-${group.category.id}`}
+              className="font-mono text-xs font-medium uppercase tracking-wider text-primary"
+            >
+              {group.category.label} · {group.items.length}
+              {group.items.length === 1 ? " essay" : " essays"}
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              {group.category.blurb}
+            </p>
+            <ol className="mt-6 space-y-3">
+              {group.items.map((essay) => (
+                <li key={essay.slug}>
+                  <EssayCard essay={essay} />
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function FilterPill({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "inline-flex items-center rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
+        active
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-border bg-card text-muted-foreground hover:border-primary hover:text-foreground",
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
+function EssayCard({ essay }: { essay: Essay }) {
+  const isReadable = essay.status === "published";
+  const className = `block rounded-lg border border-border bg-card p-5 transition-colors ${
+    isReadable ? "hover:border-primary" : "opacity-70"
+  }`;
+
+  const inner = (
+    <>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <p className="text-lg font-medium tracking-tight">{essay.title}</p>
+        <span className="shrink-0 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
+          Essay {essay.number}
+        </span>
+      </div>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        {essay.blurb}
+      </p>
+      {essay.citations.length > 0 ? (
+        <div className="mt-4 flex flex-wrap items-center gap-1.5">
+          {essay.citations.map((cite) => (
+            <span
+              key={cite}
+              className="inline-flex items-center rounded-sm border border-border bg-background px-1.5 py-0.5 font-mono text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
+            >
+              {cite}
+            </span>
+          ))}
+        </div>
+      ) : null}
+    </>
+  );
+
+  if (isReadable) {
+    return (
+      <Link href={`/concepts/${essay.slug}`} className={className}>
+        {inner}
+      </Link>
+    );
+  }
+  return <div className={className}>{inner}</div>;
+}

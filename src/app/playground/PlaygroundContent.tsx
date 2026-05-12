@@ -234,43 +234,41 @@ export function PlaygroundContent() {
   );
 
   return (
-    <article className="mx-auto max-w-4xl px-8 py-12 lg:px-12 xl:px-16">
-      <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        {totalDemos} demos · 4 time bands
-      </p>
-      <h1 className="mt-2 text-4xl font-medium leading-tight tracking-tight">
-        Playground
-      </h1>
+    <article className="py-12">
+      <header className="mx-auto max-w-4xl px-8 lg:px-12 xl:px-16">
+        <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          {totalDemos} demos · 4 time bands
+        </p>
+        <h1 className="mt-2 text-4xl font-medium leading-tight tracking-tight">
+          Playground
+        </h1>
+      </header>
 
-      <div
-        className="mt-10 flex flex-wrap items-center gap-2"
-        role="group"
-        aria-label="Filter demos by time band"
-      >
-        <FilterPill
-          label="All"
-          count={totalDemos}
-          active={filter === "all"}
-          onClick={() => setFilter("all")}
-        />
-        {bands.map((band) => (
+      <div className="sticky top-14 z-10 mt-6 border-b border-border bg-background/95 backdrop-blur md:top-0">
+        <div
+          className="mx-auto flex max-w-4xl flex-wrap items-center gap-2 px-8 py-4 lg:px-12 xl:px-16"
+          role="group"
+          aria-label="Filter demos by time band"
+        >
           <FilterPill
-            key={band.id}
-            label={band.label}
-            count={band.demos.length}
-            active={filter === band.id}
-            onClick={() => setFilter(band.id)}
+            label="All"
+            active={filter === "all"}
+            onClick={() => setFilter("all")}
           />
-        ))}
+          {bands.map((band) => (
+            <FilterPill
+              key={band.id}
+              label={band.label}
+              active={filter === band.id}
+              onClick={() => setFilter(band.id)}
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="mt-10">
-        {visibleBands.map((band, i) => (
-          <section
-            key={band.id}
-            aria-labelledby={`band-${band.id}`}
-            className={i > 0 ? "mt-16" : ""}
-          >
+      <div className="mx-auto mt-12 max-w-4xl space-y-12 px-8 lg:px-12 xl:px-16">
+        {visibleBands.map((band) => (
+          <section key={band.id} aria-labelledby={`band-${band.id}`}>
             <h2
               id={`band-${band.id}`}
               className="font-mono text-xs font-medium uppercase tracking-wider text-primary"
@@ -310,12 +308,10 @@ export function PlaygroundContent() {
 
 function FilterPill({
   label,
-  count,
   active,
   onClick,
 }: {
   label: string;
-  count: number;
   active: boolean;
   onClick: () => void;
 }) {
@@ -325,18 +321,13 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
+        "inline-flex items-center rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
         active
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border bg-card text-muted-foreground hover:border-primary hover:text-foreground",
       )}
     >
-      <span>{label}</span>
-      <span
-        className={cn("tabular-nums", active ? "opacity-80" : "opacity-60")}
-      >
-        {count}
-      </span>
+      {label}
     </button>
   );
 }
