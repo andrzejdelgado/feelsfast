@@ -123,16 +123,25 @@ function ScenarioCard({ scenario }: { scenario: Scenario }) {
 
   const inner = (
     <>
-      <p className="text-right font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
-        {scenario.band}
-      </p>
-      <p className="mt-1 text-lg font-medium tracking-tight">{scenario.title}</p>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <p className="text-lg font-medium tracking-tight">{scenario.title}</p>
+        <span className="shrink-0 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
+          {scenario.band}
+        </span>
+      </div>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
         {scenario.blurb}
       </p>
-      <p className="mt-3 font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
-        Patterns: {scenario.linkedPatterns.join(" · ")}
-      </p>
+      <div className="mt-4 flex flex-wrap items-center gap-1.5">
+        {scenario.linkedPatterns.map((pattern) => (
+          <span
+            key={pattern}
+            className="inline-flex items-center rounded-sm border border-border bg-background px-1.5 py-0.5 font-mono text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
+          >
+            {pattern}
+          </span>
+        ))}
+      </div>
     </>
   );
 
