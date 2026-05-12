@@ -1,86 +1,12 @@
 import type { Metadata } from "next";
-import { Asterisk } from "lucide-react";
-import { ReferencesList } from "@/components/References";
-import { ALL_CATEGORIES } from "@/lib/refs/all";
+import { ReferencesContent } from "@/components/ReferencesContent";
 
 export const metadata: Metadata = {
   title: "References",
   description:
-    "Every primary source the platform cites — Miller 1968, Card et al. 1991, Doherty & Thadani 1982, Nielsen 1993, Anstis 2001/2003/2004, Myers 1985, Harrison et al. 2007/2010, latency JND research, time-perception literature — plus labelled industry primary sources (Fitch, Eizenberg, Mishunov).",
+    "Every primary source the platform cites — Miller 1968, Card et al. 1991, Doherty & Thadani 1982, Nielsen 1993, Anstis 2001/2003/2004, Myers 1985, Harrison et al. 2007/2010, latency JND research, time-perception literature, recent AI-UX research — plus labelled industry primary sources (Fitch, Eizenberg, Mishunov, Wroblewski).",
 };
 
 export default function ReferencesPage() {
-  return (
-    <article className="mx-auto max-w-4xl px-8 py-12 lg:px-12 xl:px-16">
-      <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        Bibliography · {totalRefs()} sources
-      </p>
-      <h1 className="mt-2 text-4xl font-medium leading-tight tracking-tight">
-        References
-      </h1>
-      <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-        Every claim on the platform anchors to a citable source. Peer-reviewed academic
-        work is grouped first by the kind of finding it supports; industry primary
-        sources (conference talks, case studies, blog posts) are listed separately and
-        carry the{" "}
-        <span className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
-          industry
-        </span>{" "}
-        label so you can tell them apart at a glance.
-      </p>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        Each entry is anchored — clicking the{" "}
-        <span className="font-mono text-xs font-medium text-primary">[Label]</span>{" "}
-        pill in any essay jumps you here. Use this page as the canonical source list
-        when arguing about a claim.
-      </p>
-
-      <div className="mt-12">
-        {ALL_CATEGORIES.map((category, i) => (
-          <section
-            key={category.id}
-            aria-labelledby={`section-${category.id}`}
-          >
-            {i > 0 ? <SectionDivider /> : null}
-            <h2
-              id={`section-${category.id}`}
-              className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground"
-            >
-              {category.title}
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {category.description}
-            </p>
-            <ReferencesList refs={category.refs} />
-          </section>
-        ))}
-      </div>
-    </article>
-  );
-}
-
-/**
- * Quiet centered separator between bibliography sections. Uppercase mono
- * asterisk in muted colour — the same register as the eyebrows. The 16
- * units of vertical margin on each side give the eye an unmistakable
- * "the section ends here" rest before the next category title.
- */
-function SectionDivider() {
-  // Asymmetric margins on purpose: the previous section ends with a `<li>`
-  // that carries `py-8` (32 px of padding-bottom), so a symmetric `my-16`
-  // would visually leave 96 px above the asterisk and 64 px below. Using
-  // `mt-8 mb-16` cancels the inherited padding-bottom and yields an
-  // equal 64 px of visible whitespace on both sides.
-  return (
-    <div
-      aria-hidden
-      className="mb-16 mt-8 flex justify-center text-muted-foreground"
-    >
-      <Asterisk className="size-4" />
-    </div>
-  );
-}
-
-function totalRefs(): number {
-  return ALL_CATEGORIES.reduce((sum, cat) => sum + cat.refs.length, 0);
+  return <ReferencesContent />;
 }
