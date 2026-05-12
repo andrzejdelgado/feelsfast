@@ -5,7 +5,6 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-page-load-cold";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Page load (cold)",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Page load (cold)
 
-<RelatedRail of="page-load-cold" kind="scenario" />
 
 A first-time visitor lands on the page. Nothing is cached. The server (or the route bundle, or the data fetch) takes 1.5 seconds to respond. During those 1.5 seconds the user is staring at *something* — and that something is the entire perception layer for this scenario.
 
@@ -37,12 +35,11 @@ The shimmer animation respects `prefers-reduced-motion` — for users who have a
 
 ## What to tune
 
-The patterns at work:
-
-1. [Skeleton screens](/patterns/skeleton-screens) — the foundational pattern for this scenario. Layout-matching placeholders that fill the prospective-empty wait.
-2. [Streaming SSR / Suspense](/patterns/streaming-ssr) — when paired with React 19's Suspense, the skeleton is the fallback. The shell ships first, the data fills in.
-3. [Image progressive loading](/patterns/image-progressive-loading) — for content with images (most pages do), LQIP / blur-up extends the skeleton principle to the visual layer.
-4. [Time-aware feedback](/patterns/time-aware-feedback) — at the 1–10 s band, skeleton over spinner. Below 1 s, no loader. Above 10 s, escalate to engagement.
+1. **First paint** — shell ships immediately; layout structure is in place before the data arrives.
+2. **First 1 s** — layout-matching skeleton fills the empty regions. Same row count, same column widths, same vertical rhythm as the resolved content.
+3. **1 – 10 s** — skeleton holds. LQIP / blur-up for image content. Streaming SSR with Suspense lets sections fill in independently.
+4. **Completion** — data swaps in over ~150 ms. Layout stable (no CLS); focus lands on the first heading for keyboard users who clicked through.
+5. **Past 10 s** — escalate to engagement copy. Below 1 s, no loader at all.
 
 ## When perceived performance hurts you here
 

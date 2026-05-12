@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Boxes, FlaskConical, Layers } from "lucide-react";
+import { ArrowRight, BookOpen, FlaskConical, Layers } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -40,7 +40,7 @@ const bands = [
   {
     label: "0–100 MS",
     title: "Instant input",
-    body: "The user has not started waiting yet. Patterns here give a head-start, not a status — pre-action feedback, optimistic flips, direct-manipulation latency budgets. Anything that announces a wait at this scale damages the experience.",
+    body: "The user has not started waiting yet. Techniques here give a head-start, not a status — pre-action feedback, optimistic flips, direct-manipulation latency budgets. Anything that announces a wait at this scale damages the experience.",
   },
   {
     label: "100 MS – 1 S",
@@ -55,7 +55,7 @@ const bands = [
   {
     label: "10 S+",
     title: "Past the wall",
-    body: "The user's attention is no longer reliably on the task. Patterns here are about giving them something to do or freeing them from the wait entirely — engagement copy, branded sequences, foreground-to-background hand-offs.",
+    body: "The user's attention is no longer reliably on the task. Techniques here are about giving them something to do or freeing them from the wait entirely — engagement copy, branded sequences, foreground-to-background hand-offs.",
   },
 ] as const;
 
@@ -64,15 +64,8 @@ const tour = [
     href: "/concepts",
     icon: BookOpen,
     label: "Concepts",
-    count: "7 essays",
-    body: "The science of perceived performance — from Miller's 17-transaction taxonomy to Harrison's perceptual progress-bar gain.",
-  },
-  {
-    href: "/patterns",
-    icon: Boxes,
-    label: "Patterns",
-    count: "24 techniques",
-    body: "Each pattern with code, citations, accessibility notes, and the band where it earns its keep.",
+    count: "10 essays",
+    body: "The science of perceived performance — from Miller's 17-transaction taxonomy to the decision rule for which loading affordance to show in which time band, and what changes when the wait is AI.",
   },
   {
     href: "/scenarios",
@@ -224,9 +217,9 @@ export default function HomePage() {
           Tour the platform
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-foreground">
-          Four sections, one canon. Concepts builds the vocabulary, Patterns is the
-          toolbox, Scenarios shows them in user flows, the Playground is every demo
-          in one place.
+          Three sections, one canon. Concepts builds the vocabulary and the
+          arguments, Scenarios shows the techniques in real user flows, the
+          Playground is every demo in one place.
         </p>
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
           {tour.map((entry) => (

@@ -5,7 +5,6 @@ import { NaiveSearchAsYouType } from "@/demos/search-as-you-type/naive";
 import { TunedSearchAsYouType } from "@/demos/search-as-you-type/tuned";
 import { config as demoConfig } from "@/demos/search-as-you-type/config";
 import { references } from "@/lib/refs/scenario-search-as-you-type";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Search as you type",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Search as you type
 
-<RelatedRail of="search-as-you-type" kind="scenario" />
 
 The user types into a search box. Each keystroke could either kick off an expensive filter that blocks the input, or trigger a deferred filter that runs as low-priority work while the input stays responsive. The difference between the two — same dataset, same filter logic, same artificial work per keystroke — is whether the user feels they are typing or fighting.
 
@@ -37,17 +35,17 @@ The total CPU work is identical. The user's experience is not.
 
 ## What to tune
 
-The patterns at work, in priority order:
-
-1. [Pre-action feedback](/patterns/pre-action-feedback) — the input echo is the first promise the system makes about responsiveness. Breaking it on the first keystroke loses the user's trust on every keystroke after.
-2. [Stale-while-revalidate](/patterns/stale-while-revalidate) — the dimmed previous results during the refresh are the same idea applied to the result panel: serve what we have, validate in the background, swap when ready.
-3. [Time-aware feedback](/patterns/time-aware-feedback) — at this scale of latency we are inside the 0–100 ms band. No spinner, no skeleton; the input itself is the affordance.
+1. **Keystroke echo** — character renders within ~50 ms. The input never blocks on the filter; deferred work runs at low priority via `useDeferredValue`.
+2. **Stale state** — previous results dim to 60 % opacity while the new filter runs. `aria-busy="true"` flips on the result list.
+3. **Catch-up** — fresh results swap in over ~150 ms. No spinner, no skeleton; the input itself is the affordance.
+4. **Empty result** — surface "No matches for `<query>`" inline. Never blank.
+5. **Keyboard parity** — Down-arrow into the list, Up-arrow back, Enter to commit, Escape to clear. Focus stays in the input during typing.
 
 ## When perceived performance hurts you here
 
 Search-as-you-type is a *production* surface in the [consumption-vs-production sense](/concepts/when-perceived-performance-hurts-you) — the user is reaching to act, not to read. Eizenberg's <Cite id="eizenberg" label="Eizenberg" /> argument applies directly: a polished placeholder over the result panel does not save the experience if the input itself lags. Every perception trick on this surface needs to *protect* input responsiveness, not paper over its absence.
 
-The most common failure mode in production: a debounce-only solution that *does* keep the input responsive but renders nothing during the debounce window. The user types, sees their characters echo instantly, then stares at a blank result panel for 300 ms while the debounce timer drains. That is half-tuned. Stale-while-revalidate fills the gap; the input echo alone does not.
+The most common failure mode in production: a debounce-only solution that *does* keep the input responsive but renders nothing during the debounce window. The user types, sees their characters echo instantly, then stares at a blank result panel for 300 ms while the debounce timer drains. That is half-tuned. *Stale-while-revalidate* fills the gap; the input echo alone does not.
 
 ## Accessibility
 

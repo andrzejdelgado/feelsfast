@@ -33,7 +33,13 @@ This is also the cheapest phase to make faster, because the system has absolute 
 Two free wins live here:
 
 1. **`mousedown` over `click`.** A click event fires when the mouse button is released, which is ~100–150 ms after it was pressed (Fitch's <Cite id="fitch" label="Fitch" /> Mechanical Turk study put the median in that range). If you start loading on `mousedown` instead, you have already done 100 ms of work by the time the user releases the button. The wait is shorter without the system having to be faster.
-2. **Predictive preloading on hover or mouse-deceleration.** If the cursor is decelerating toward a button, the user's intent is predictable before the click ever happens. Start loading on hover. The Future Link pattern documented in Fitch's talk <Cite id="fitch" label="Fitch" /> can buy 600 ms or more of head start in the right conditions.
+2. **Predictive preloading on hover or mouse-deceleration.** If the cursor is decelerating toward a button, the user's intent is predictable before the click ever happens. Start loading on hover. The Future Link pattern Fitch <Cite id="fitch" label="Fitch" /> documents can buy 600 ms or more of head start in the right conditions.
+
+A touch caveat sits underneath the `mousedown` win. On touch surfaces, `pointerdown` fires the same head-start, but it also fires when the user is *starting a scroll* — finger on screen, no click intended. The fix is a 6 px movement threshold: if the contact moves more than ~6 px before lift, cancel the preload. The threshold matches Fitch's own touch handling and is small enough to ignore for taps, large enough to catch every real scroll. The combined rule: start work on `pointerdown`, cancel on `pointermove` past 6 px, commit on `pointerup` only if the contact stayed inside the target.
+
+The Future Link pattern deepens with the cursor-deceleration signal. A plain hover trigger buys ~200 ms of head-start (the time between hover and click). Layering a cursor-velocity check on top — fire the preload only when the cursor is *decelerating* toward the target — buys closer to ~600 ms, because deceleration starts earlier than the hover does. The trade is a small increase in false positives (cursor decelerates, user veers away) against a meaningful gain in true-positive head-start. Below a ~10 % false-positive budget, the trade is almost always worth it.
+
+The predictive moves cascade. Route prefetching has a four-trigger ladder, from cheap to expensive: viewport entry (broadest, fires for every link on screen), hover (narrower, fires when the user has noticed a link), deceleration (narrower still, fires when the user is heading toward one), and `pointerdown` (narrowest, the head-start before `click`). A serious perception layer uses all four, with the trigger calibrated to how expensive the preload is. Static HTML and small JS bundles get viewport-level prefetch; bigger fetches with auth requirements get pinned to hover or later.
 
 The risk in this phase is acting on intent that does not pan out — preloading a route the user never navigates to, firing a side-effect on `mousedown` that should not happen if they slide off the button. The mitigation is to keep preloads idempotent and reversible. Loading a JavaScript bundle is fine even if unused; charging a credit card is not.
 
@@ -53,6 +59,10 @@ The response can be small. It does not need to be the actual operation — that 
 
 Fitch <Cite id="fitch" label="Fitch" /> measured a sweet spot of ~200 ms for the active-state animation duration — long enough to feel substantial, short enough not to feel sluggish. The user holds the button down ~50 ms longer when there is feedback to watch, which extends your free-budget window incidentally.
 
+The press-state needs enough contrast to register. WCAG 1.4.11 Non-Text Contrast requires a 3:1 ratio between the active-state colour and the surrounding interface. Below that, the change is technically there and perceptually absent — the user's eye does not register the flip, the wait stops feeling caused. It is one of the few accessibility rules that improves perception for non-disabled users too: the contrast that helps a low-vision user notice the button pressed is the same contrast that helps every user feel the click landed.
+
+There is no "when not to use" pre-action feedback. It costs essentially nothing, fires on every input regardless of what happens next, and prevents the failure mode below. Treat it as platform plumbing, not as a per-feature decision.
+
 The failure mode here is the "did the click work?" double-tap. Users who do not get response feedback within ~200 ms will press again. Sometimes their second click registers as a separate action. This is how forms get submitted twice and likes get unliked. The Response phase is where that gets prevented.
 
 ## Animation: from old state to new state
@@ -67,6 +77,8 @@ Two additional tools live here:
 
 1. **Skeleton screens.** The animation between "nothing" and "content" goes through a skeleton intermediate. The user's eye lands on roughly the right place by the time the real content arrives, so the perceived jump is smaller. This is a transition disguised as a loading state.
 2. **Progressive image loading (LQIP, blur-up).** A low-quality placeholder shows the rough shape and colour first, then sharpens to the full image. The perceptual transition is "seen this image gradually become itself" rather than "stared at a grey box, then the image popped in."
+
+A third tool lives at the framework level rather than the component level: **streaming server-rendered pages.** Instead of waiting for the full HTML response before painting, the browser receives the page in chunks as the server resolves them — layout shell first, above-the-fold content next, slower components last. The Animation phase here is the page assembling itself, not a single element morphing. React Suspense and the App Router's streaming primitives make this composable per-region. The perception payoff is large because the user sees the page shape before any individual fetch resolves.
 
 The failure mode in this phase is animation that competes with the user's next action. If a button is animating its press response while the user is already moving the cursor toward the next thing, the animation is in the way. Keep transitions non-blocking and never lock the UI for the duration of the animation.
 

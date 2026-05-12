@@ -1,6 +1,5 @@
 import {
   BookOpen,
-  Boxes,
   FlaskConical,
   Home,
   Layers,
@@ -14,7 +13,7 @@ export const siteConfig = {
   name: "feelsfast",
   domain: "feelsfast.fyi",
   description:
-    "Educational platform on perceived performance — concepts, interactive scenarios, research-backed patterns, and an installable AI skill, for Product Designers, Design Engineers, and Frontend Engineers.",
+    "Educational platform on perceived performance — concepts, interactive scenarios, and an installable AI skill, for Product Designers, Design Engineers, and Frontend Engineers.",
   url: "https://feelsfast.fyi",
   ogImage: "/og.png",
   github: "https://github.com/andrzejdelgado/feelsfast",
@@ -36,7 +35,6 @@ export const sidebarSections: SidebarItem[] = [
   { label: "Skill", href: "/skill", icon: Sparkles, badge: "New" },
   { label: "Concepts", href: "/concepts", icon: BookOpen },
   { label: "Scenarios", href: "/scenarios", icon: Layers },
-  { label: "Patterns", href: "/patterns", icon: Boxes },
   { label: "Playground", href: "/playground", icon: FlaskConical },
   { label: "Glossary", href: "/glossary", icon: Type },
   { label: "References", href: "/references", icon: Library },

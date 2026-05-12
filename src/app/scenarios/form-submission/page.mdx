@@ -5,7 +5,6 @@ import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
 import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
 import { config as demoConfig } from "@/demos/optimistic-actions/config";
 import { references } from "@/lib/refs/scenario-form-submission";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Form submission",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Form submission
 
-<RelatedRail of="form-submission" kind="scenario" />
 
 The user fills out a form and clicks Submit. What happens between the click and the success page determines whether the form feels responsive or laggy. There are three layers to tune — pre-action feedback, optimistic submission for low-rejection cases, and determinate progress for the long tail — and they stack to push the perceived submission time below Doherty 1982's <Cite id="doherty-1982" label="Doherty 1982" /> productivity-cliff.
 
@@ -31,18 +29,17 @@ The optimistic-actions demo stands in for the form submission: the naive side wa
 
 1. **Pre-action feedback within ~50 ms.** The submit button shows a `:active` state plus a 200 ms press animation as soon as the user clicks. Even if the actual submission takes 3 s, the press is acknowledged inside the perceptual frame.
 2. **Optimistic UI when rejection rates are low.** Render the success state immediately; reconcile with the server in the background. For a checkout submission with a 1 % rejection rate, this is a free win 99 % of the time and a recoverable error 1 % of the time.
-3. **Determinate progress when submission lasts past 1 s.** Past the active-to-passive transition, a determinate progress bar with backwards-decelerating ribs (per [animated progress](/patterns/animated-progress)) keeps the user oriented.
+3. **Determinate progress when submission lasts past 1 s.** Past the active-to-passive transition, a determinate progress bar with backwards-decelerating ribs keeps the user oriented.
 
 The decision tree: rejection rate above ~5 % → skip optimistic, use determinate progress; rejection rate below ~1 % → optimistic with honest visible failure path; in between, lean toward optimistic if the user can recover from the failure cheaply.
 
 ## What to tune
 
-The patterns at work, in priority order:
-
-1. [Pre-action feedback](/patterns/pre-action-feedback) — the press feedback always lands within ~50 ms, regardless of how long the submission takes.
-2. [Optimistic UI](/patterns/optimistic-ui) — for low-rejection-rate submissions; render-and-reconcile pattern.
-3. [Determinate progress](/patterns/determinate-progress) — for submissions longer than 1 s where progress can be measured.
-4. [Time-aware feedback](/patterns/time-aware-feedback) — the rule sheet that picks the right indicator per elapsed time.
+1. **Pre-action** — submit button echo within ~50 ms; 200 ms active-state animation (Fitch). Always.
+2. **First 1 s** — for low-rejection submissions, optimistic UI flips to the success state. For high-rejection submissions, hold the button in a loading state without committing.
+3. **1 – 10 s** — determinate progress bar with backwards-decelerating ribs (Harrison 2010, +11–12 %).
+4. **Rollback** — `role="alert"` message; focus moves to the failed field; the user's input is preserved across the rollback.
+5. **Completion** — focus lands on the next surface's main heading or success affordance, not a generic "Submitted" toast.
 
 ## When perceived performance hurts you here
 

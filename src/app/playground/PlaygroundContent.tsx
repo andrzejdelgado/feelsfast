@@ -333,13 +333,14 @@ function FilterPill({
 }
 
 /**
- * Cross-link strip that fixes the Playground-feels-orphaned problem.
- * Each demo card now declares which Scenario it lives inside and which
- * Pattern(s) it demonstrates, both as clickable chips.
+ * Cross-link strip that points each demo back into the scenarios it
+ * appears in. Pattern chips removed when the Patterns section was
+ * dismantled; the scenario chip is sufficient to back-pointer into the
+ * prose.
  */
 function AppearsInStrip({ demoKey }: { demoKey: string }) {
   const ctx = demoContext(demoKey);
-  if (ctx.scenarios.length === 0 && ctx.patterns.length === 0) return null;
+  if (ctx.scenarios.length === 0) return null;
 
   return (
     <div className="mt-2 flex flex-wrap items-center gap-2 px-1 text-xs">
@@ -356,18 +357,6 @@ function AppearsInStrip({ demoKey }: { demoKey: string }) {
             Scenario
           </span>
           <span>{s.title}</span>
-        </Link>
-      ))}
-      {ctx.patterns.map((p) => (
-        <Link
-          key={`p-${p.slug}`}
-          href={`/patterns/${p.slug}`}
-          className="inline-flex items-center rounded-md border border-border bg-card px-2 py-0.5 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-        >
-          <span className="mr-1 font-mono text-[0.6875rem] uppercase tracking-wider opacity-70">
-            Pattern
-          </span>
-          <span>{p.title}</span>
         </Link>
       ))}
     </div>

@@ -19,7 +19,7 @@ export const essayCategories: readonly EssayCategoryMeta[] = [
     id: "practice",
     label: "Practice",
     blurb:
-      "Applying the science — anatomy of a wait, illusions you can exploit, where the perception layer breaks down, and budgets that include perception.",
+      "Applying the science — anatomy of a wait, illusions you can exploit, where the perception layer breaks down, budgets that include perception, and the decision rule for which loading affordance to show in which time band.",
   },
   {
     id: "ai",
@@ -156,8 +156,27 @@ export const essays: readonly Essay[] = [
     status: "published",
   },
   {
-    slug: "ai-changes-the-shape-of-the-wait",
+    slug: "what-cue-to-show-when",
     number: "08",
+    title: "What cue to show, when",
+    category: "practice",
+    blurb:
+      "The decision rule: nothing under 1 s, spinner 1–2 s, skeleton or determinate progress 2–10 s, engagement past 10 s. Spinners rehabilitated, the 500 ms delay gate, the prospective–retrospective trade in engaging loading, and empty-state hygiene.",
+    citations: [
+      "Miller 1968",
+      "Nielsen 1993",
+      "Fitch",
+      "Myers 1985",
+      "Harrison et al. 2010",
+      "James 1890",
+      "Ornstein 1969",
+      "Block & Zakay 1997",
+    ],
+    status: "published",
+  },
+  {
+    slug: "ai-changes-the-shape-of-the-wait",
+    number: "09",
     title: "AI changes the shape of the wait",
     category: "ai",
     blurb:
@@ -175,7 +194,7 @@ export const essays: readonly Essay[] = [
   },
   {
     slug: "honesty-in-ai-ux",
-    number: "09",
+    number: "10",
     title: "Honesty in AI UX",
     category: "ai",
     blurb:

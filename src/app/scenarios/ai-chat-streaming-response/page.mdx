@@ -5,7 +5,6 @@ import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
 import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
 import { config as demoConfig } from "@/demos/ai-streaming/config";
 import { references } from "@/lib/refs/scenario-ai-chat-streaming-response";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "AI · Chat / streaming response",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # AI · Chat / streaming response
 
-<RelatedRail of="ai-chat-streaming-response" kind="scenario" />
 
 The user submits a prompt to an AI surface. The total time to last token is roughly the same on both sides — call it 5–6 seconds. The naive surface goes blank for those seconds, then drops the full response in at the end. The tuned surface fills the same wait with a brief thinking state and a token-by-token reveal pacing the response to a natural reading rhythm. Same clock, very different experience.
 
@@ -29,7 +27,7 @@ This scenario sits in the 1–10 S band. Card et al. 1991's <Cite id="card-1991"
 
 Both sides simulate the same total work — a 5,500 ms p50 wait drawn from a gamma distribution. The naive side waits the entire duration with an empty box, then renders the full response at once. The tuned side has two distinct phases.
 
-**Phase 1 — Thinking** (~600 ms with gamma jitter). Three pulsing dots in the muted-foreground colour. The model is doing the time-to-first-token work; the thinking state is the only honest signal that the input registered and processing has begun. Without it, the user wonders whether their submit even fired. Past 5 seconds without first token, this would escalate to [tool-call transparency](/patterns/ai-tool-call-transparency) or [engaging loading](/patterns/engaging-loading); for a typical chat response, the dots cover the gap.
+**Phase 1 — Thinking** (~600 ms with gamma jitter). Three pulsing dots in the muted-foreground colour. The model is doing the time-to-first-token work; the thinking state is the only honest signal that the input registered and processing has begun. Without it, the user wonders whether their submit even fired. Past 5 seconds without first token, this would escalate to [tool-call transparency](/glossary#tool-call-transparency) or [engaging loading](/glossary#engaging-loading); for a typical chat response, the dots cover the gap.
 
 **Phase 2 — Streaming.** Characters reveal in chunks of 1–2 at a time at ~30 ms intervals, with slight randomness so the cadence does not feel mechanical. A pulsing primary-color cursor sits at the tail and disappears on completion. ARIA live announcements fire on phase changes; `motion-safe:` gates the dots and cursor for users who have asked for less motion.
 
@@ -37,12 +35,11 @@ The total wall-clock time is identical. What changed is whether the user is read
 
 ## What to tune
 
-The patterns at work, in priority order:
-
-1. [Thinking state](/patterns/ai-thinking-state) — the time-to-first-token bridge. Indeterminate by design; replaced as soon as content begins.
-2. [Token-by-token streaming](/patterns/ai-token-streaming) — variable-chunk reveal cadence at ~30 ms intervals. Constant rate feels mechanical; instant per-token jitters the eye.
-3. [Cancellation affordance](/patterns/ai-cancellation-affordance) — the stop button (not in this minimal demo) needs to register within ~100 ms even if the underlying abort takes longer.
-4. [Pre-action feedback](/patterns/pre-action-feedback) — the submit button itself (also not in this demo) should flip to a loading state instantly on press.
+1. **Pre-action** — submit button echo within ~50 ms; nothing about the model state yet.
+2. **Thinking** — pulsing dots during time-to-first-token. Indeterminate by design; replaced the moment content begins.
+3. **Streaming** — variable-chunk reveal at ~30 ms cadence. Constant rate feels mechanical; instant per-token jitters the eye.
+4. **Cancellation** — stop button registers within ~100 ms even if the abort takes longer.
+5. **Settled** — cursor disappears on completion; semantics (code blocks, lists, headings) stay correct across the stream.
 
 ## When perceived performance hurts you here
 

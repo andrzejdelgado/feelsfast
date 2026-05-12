@@ -21,14 +21,22 @@ export const glossary: readonly GlossaryEntry[] = [
     term: "Animation timing for state changes",
     id: "animation-timing",
     definition:
-      "The duration and easing curve applied when a UI moves between states. Card et al. 1991's ~10 Hz / 100 ms-per-frame budget is the underlying recommendation; 150–250 ms ease-out is the modern default for state transitions.",
+      "The duration and easing curve applied when a UI moves between states. Card et al. 1991's ~10 Hz / 100 ms-per-frame budget is the underlying recommendation; the three-duration family (~100 / ~200 / ~400 ms) covers micro-feedback, state changes, and large layout shifts respectively.",
     seeAlso: { label: "Concepts §3", href: "/concepts/canonical-thresholds" },
+  },
+  {
+    term: "Background sync",
+    id: "background-sync",
+    definition:
+      "Cache-and-queue strategy that moves an operation off the user's perceived path: the action commits to a local queue immediately, the network request fires whenever connectivity allows. Doesn't shorten the wait — moves it. Failure mode: silent rollback when reconciliation fails, and unbounded queues that grow when sync repeatedly fails.",
+    seeAlso: { label: "Concepts §6", href: "/concepts/when-perceived-performance-hurts-you" },
   },
   {
     term: "Cancellation affordance",
     id: "cancellation",
     definition:
-      "A visible control to stop an in-progress operation. Especially important for AI streaming and long agentic workflows; the stop button itself must respond within ~100 ms to feel honest.",
+      "A visible control to stop an in-progress operation. Especially important for AI streaming and long agentic workflows. The ~100 ms perceptual-frame contract applies to the visible state flip on press (input re-activating, cancel disappearing), not to the underlying abort propagation — the two timelines must be designed separately. Partial state should be preserved; theatrical cancel that wipes the partial response is a second violation on top of the first.",
+    seeAlso: { label: "Concepts §10", href: "/concepts/honesty-in-ai-ux" },
   },
   {
     term: "CLS — Cumulative Layout Shift",
@@ -40,7 +48,15 @@ export const glossary: readonly GlossaryEntry[] = [
     term: "Determinate progress",
     id: "determinate-progress",
     definition:
-      "A progress indicator that reflects real, measurable progress through a known total. Strongly preferred over indeterminate spinners when the duration can be estimated (Myers 1985). Backwards-decelerating bands buy a further ~12 % perceived speed-up (Harrison et al. 2010).",
+      "A progress indicator that reflects real, measurable progress through a known total. Strongly preferred over indeterminate spinners when the duration can be estimated (Myers 1985, ~86 % preference). Backwards-decelerating bands buy a further ~11–12 % perceived speed-up (Harrison et al. 2010). The preference holds for might-be-inaccurate bars; not for deliberately-inaccurate ones.",
+    seeAlso: { label: "Concepts §8", href: "/concepts/what-cue-to-show-when" },
+  },
+  {
+    term: "Direct-manipulation latency",
+    id: "direct-manipulation-latency",
+    definition:
+      "Sub-100 ms latency budget required for drag, scrub, pan, zoom interactions — far tighter than the canonical 100 ms perceptual frame for content updates. Jota et al. 2013 measured ~33 ms JND for dragging and ~82 ms for tapping; Deber et al. 2015 confirmed; Ng et al. 2012 showed experienced users detect single-millisecond improvements. No perception layer fixes lag on these surfaces — real engineering is the only fix.",
+    seeAlso: { label: "Concepts §6", href: "/concepts/when-perceived-performance-hurts-you" },
   },
   {
     term: "Doherty threshold",
@@ -48,6 +64,20 @@ export const glossary: readonly GlossaryEntry[] = [
     definition:
       "The ~400 ms response-time boundary at which user productivity rises non-linearly. Established by Doherty & Thadani's 1982 IBM technical report. Underlies the modern INP target of 200 ms.",
     seeAlso: { label: "Concepts §3", href: "/concepts/canonical-thresholds" },
+  },
+  {
+    term: "Empty state",
+    id: "empty-state",
+    definition:
+      "A view rendered when a content collection has zero items. Loading-empty (data has not yet arrived) and settled-empty (data arrived, collection is genuinely zero) must look obviously different — if they don't, the user can't tell whether to wait or to act. The settled-empty state needs to say three things: the load completed, the area is empty, and what the user can do about it.",
+    seeAlso: { label: "Concepts §8", href: "/concepts/what-cue-to-show-when" },
+  },
+  {
+    term: "Engaging loading",
+    id: "engaging-loading",
+    definition:
+      "Loading affordance for the 10 s+ band that fills the wait with information (Slack-style boot, agent narration, FIFA-style mini-game) rather than a static spinner. Prospectively shortens via Block & Zakay's filled-duration; retrospectively can lengthen via Ornstein's storage-size theory. The trade should be conscious. Honest when the engagement is information about the system; deceptive when it is decoration around it.",
+    seeAlso: { label: "Concepts §8", href: "/concepts/what-cue-to-show-when" },
   },
   {
     term: "Filled vs. empty duration",
@@ -98,7 +128,8 @@ export const glossary: readonly GlossaryEntry[] = [
     term: "LQIP — Low-Quality Image Placeholder",
     id: "lqip",
     definition:
-      "A small, low-resolution version of an image displayed first; the full image swaps in once it has loaded. Often combined with a blur-up filter so the transition feels organic. Anstis-style edge contrast matters — sharp edges read as faster.",
+      "A small, low-resolution version of an image displayed first; the full image swaps in once it has loaded. Often combined with a blur-up filter so the transition feels organic. Anstis on edge contrast: a higher-contrast placeholder reads as faster than a soft ghostly one, even when both swap to the same final image at the same wall-clock moment.",
+    seeAlso: { label: "Concepts §5", href: "/concepts/time-perception-illusions" },
   },
   {
     term: "Miller's thresholds",
@@ -174,7 +205,15 @@ export const glossary: readonly GlossaryEntry[] = [
     term: "Skeleton screen",
     id: "skeleton-screen",
     definition:
-      "A placeholder layout that matches the shape of the final content. Fills empty time so the prospective wait registers as shorter. Generic shimmers do not work — the skeleton must match the layout the content is going to take.",
+      "A placeholder layout that matches the shape of the final content. Fills empty time so the prospective wait registers as shorter. Generic shimmers do not work — the skeleton must match the layout the content is going to take. The often-cited \"30 % faster than spinners\" figure is later folklore; the load-bearing research is the prospective/retrospective asymmetry (James 1890, Ornstein 1969, Block & Zakay 1997).",
+    seeAlso: { label: "Concepts §8", href: "/concepts/what-cue-to-show-when" },
+  },
+  {
+    term: "Spinner",
+    id: "spinner",
+    definition:
+      "Indeterminate-feedback animation for the narrow 1–2 s band with unknown duration. Below 1 s, no loader — tip-the-hand. Above 2 s, switch to a skeleton or determinate progress. The 500-ms-delayed pattern (gate every spinner behind a 500 ms timer) enforces the tip-the-hand rule cheaply: if the operation resolves before then, no spinner appears at all.",
+    seeAlso: { label: "Concepts §8", href: "/concepts/what-cue-to-show-when" },
   },
   {
     term: "Stale-while-revalidate",
@@ -204,7 +243,8 @@ export const glossary: readonly GlossaryEntry[] = [
     term: "Time-aware feedback",
     id: "time-aware-feedback",
     definition:
-      "The decision rule for which loading affordance to show: nothing under 1 s; spinner 1–2 s; skeleton 1–10 s; engagement 10 s+. Distilled from Miller and Eli Fitch.",
+      "The decision rule for which loading affordance to show: nothing under 1 s; spinner 1–2 s; skeleton or determinate progress 2–10 s; engagement 10 s+. Distilled from Miller 1968, Nielsen 1993, Fitch, and Myers 1985.",
+    seeAlso: { label: "Concepts §8", href: "/concepts/what-cue-to-show-when" },
   },
   {
     term: "Tip-the-hand rule",
@@ -236,7 +276,8 @@ export const glossary: readonly GlossaryEntry[] = [
     term: "View Transitions API",
     id: "view-transitions",
     definition:
-      "Web platform standard for cross-document and same-document animated transitions. Lets the browser handle morph-between-states animation with very little author code. Modern alternative to manually orchestrated route transitions.",
+      "Web platform standard for cross-document and same-document animated transitions. Lets the browser handle morph-between-states animation with very little author code. Modern alternative to manually orchestrated route transitions. Gotcha: the API does not respect `prefers-reduced-motion` automatically — the author must short-circuit `animation-duration: 0s` or skip the `startViewTransition` call entirely when the user has asked for less motion. Easy to miss; ships as a silent accessibility regression.",
+    seeAlso: { label: "Concepts §7", href: "/concepts/performance-budgets-with-perception" },
   },
   {
     term: "Weber–Fechner law",

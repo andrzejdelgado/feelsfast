@@ -5,7 +5,6 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-data-table-loading";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Data table loading",
@@ -17,11 +16,10 @@ export const metadata = {
 
 # Data table loading
 
-<RelatedRail of="data-table-loading" kind="scenario" />
 
 The user clicks a column header to sort, types into a filter box, or changes the page size. The table re-queries; the user waits for the new data. The naive answer is to blank the table during the query. The tuned answer is to keep the layout intact, render skeleton rows that match the column widths, and dim the previous data while the new query is in flight.
 
-This scenario sits in the 100 MS – 1 S band. Most data-table queries on cached data should land here; complex aggregations push into the 1–10 S band where [skeleton screens](/patterns/skeleton-screens) become the primary affordance. Myers 1985's <Cite id="myers-1985" label="Myers 1985" /> indeterminate-feedback principle is the underlying reason a skeleton beats a blank table; James 1890 <Cite id="james-1890" label="James 1890" /> is why the skeleton fills the prospective-empty wait; Doherty 1982 <Cite id="doherty-1982" label="Doherty 1982" /> explains why stale-while-revalidate on repeated queries pays off in measured productivity.
+This scenario sits in the 100 MS – 1 S band. Most data-table queries on cached data should land here; complex aggregations push into the 1–10 S band where [skeleton screens](/glossary#skeleton-screen) become the primary affordance. Myers 1985's <Cite id="myers-1985" label="Myers 1985" /> indeterminate-feedback principle is the underlying reason a skeleton beats a blank table; James 1890 <Cite id="james-1890" label="James 1890" /> is why the skeleton fills the prospective-empty wait; Doherty 1982 <Cite id="doherty-1982" label="Doherty 1982" /> explains why stale-while-revalidate on repeated queries pays off in measured productivity.
 
 <DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
 
@@ -31,16 +29,15 @@ The demo is the list-fetch demo in different framing. Imagine the rows are table
 
 For a real data table, the skeleton rows should match the *resolved* row count where possible. If the previous result had 12 rows, render 12 skeletons; if the user changed the page size to 50, render 50. The user's eye lands on the right vertical extent, not on a 5-row placeholder for what becomes a 50-row table.
 
-The full implementation also pairs with [stale-while-revalidate](/patterns/stale-while-revalidate). For repeated queries — re-sorting on the same data, paginating back to a page already visited — the cached result lands instantly; the background revalidation is invisible. The skeleton only ever appears on truly new queries.
+The full implementation also pairs with [stale-while-revalidate](/glossary#stale-while-revalidate). For repeated queries — re-sorting on the same data, paginating back to a page already visited — the cached result lands instantly; the background revalidation is invisible. The skeleton only ever appears on truly new queries.
 
 ## What to tune
 
-The patterns at work:
-
-1. [Skeleton screens](/patterns/skeleton-screens) — column-aligned, row-count-matching placeholders.
-2. [Stale-while-revalidate](/patterns/stale-while-revalidate) — repeat queries serve from cache, refresh in the background.
-3. [Time-aware feedback](/patterns/time-aware-feedback) — at the 100 MS – 1 S band, skeleton over spinner; no loader at all if the query resolves under 500 ms.
-4. [Animation timing](/patterns/animation-timing) — the dim-stale → fade-in-fresh transition at ~150 ms.
+1. **Click echo** — column header / filter input registers within ~50 ms; the previous data dims rather than blanks.
+2. **First 500 ms** — no loader. If the query resolves under 500 ms, the swap is the only signal.
+3. **500 ms – 1 s** — column-aligned, row-count-matching skeleton replaces the dimmed rows. Headers and column structure stay visible.
+4. **Repeat queries** — stale-while-revalidate. Cached result lands instantly; the background revalidation is invisible.
+5. **Completion** — fresh data fades in over ~150 ms. Row count announced politely ("Showing 12 of 247 results").
 
 ## When perceived performance hurts you here
 

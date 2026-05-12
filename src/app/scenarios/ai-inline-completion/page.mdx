@@ -5,7 +5,6 @@ import { NaiveInlineCompletion } from "@/demos/ai-inline-completion/naive";
 import { TunedInlineCompletion } from "@/demos/ai-inline-completion/tuned";
 import { config as demoConfig } from "@/demos/ai-inline-completion/config";
 import { references } from "@/lib/refs/scenario-ai-inline-completion";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Inline completion / suggestion",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Inline completion / suggestion
 
-<RelatedRail of="ai-inline-completion" kind="scenario" />
 
 Inline completion is the perception case where the AI runs while the user is *still typing*. Cursor, Copilot, v0, and every other typing-time inference product lives in this scenario. The trick is not making the model fast — modelling latency is what it is. The trick is making the request system fire only when the user has actually stopped, cancel itself the moment the user starts again, and never display a suggestion that does not match the text the user can see.
 
@@ -39,11 +37,11 @@ Tab acceptance is optimistic. The suggestion is committed to the text immediatel
 
 ## What to tune
 
-1. [Stale-while-revalidate](/patterns/stale-while-revalidate) — the cancellation token is the SWR pattern shaped for typing-time work.
-2. [Pre-action feedback](/patterns/pre-action-feedback) — the "Thinking…" cue is a 200 ms pre-action signal that a suggestion is coming.
-3. [Optimistic UI](/patterns/optimistic-ui) — Tab acceptance commits the suggestion immediately; the request for the next suggestion runs in the background.
-4. [AI cancellation affordance](/patterns/ai-cancellation-affordance) — the cancellation here is *implicit* (next keystroke aborts) rather than user-invoked, but the principle is the same.
-5. [Time-aware feedback](/patterns/time-aware-feedback) — the "Thinking…" cue shows up only past the perceptual frame; below it, the user has not noticed the wait yet.
+1. **Keystroke echo** — input renders the character within ~50 ms; nothing about the suggestion yet.
+2. **Debounce window** — 150–200 ms quiet before a request fires. Shorter feels frantic; longer feels late.
+3. **In-flight cue** — past the perceptual frame, a subtle "Thinking…" appears. Below it, the user has not noticed the wait.
+4. **Stale-cancel** — every keystroke aborts the in-flight request via cancellation token (stale-while-revalidate shaped for typing-time work).
+5. **Accept** — Tab commits the suggestion optimistically; the next request fires from the new prefix without waiting for the model to confirm.
 
 ## When perceived performance hurts you here
 

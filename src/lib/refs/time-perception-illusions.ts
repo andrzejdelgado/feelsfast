@@ -43,4 +43,10 @@ export const references: readonly Reference[] = [
     citation:
       "Mishunov, D. (2015). *Why Performance Matters, Part 1: The Perception Of Time*. Smashing Magazine. Surfaces the Weber–Fechner law and the geometric-mean indifference threshold for the UX community.",
   },
+  {
+    id: "ornstein-1969",
+    label: "Ornstein 1969",
+    citation:
+      "Ornstein, R. E. (1969). *On the Experience of Time*. Penguin Books. Storage-size account of remembered duration — used here to explain why engaging loading sequences shorten the wait prospectively but can lengthen it retrospectively.",
+  },
 ] as const;

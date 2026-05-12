@@ -5,7 +5,6 @@ import { NaiveFileUpload } from "@/demos/file-upload/naive";
 import { TunedFileUpload } from "@/demos/file-upload/tuned";
 import { config as demoConfig } from "@/demos/file-upload/config";
 import { references } from "@/lib/refs/scenario-file-upload-batch";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "File upload (batch)",
@@ -17,11 +16,10 @@ export const metadata = {
 
 # File upload (batch)
 
-<RelatedRail of="file-upload-batch" kind="scenario" />
 
 The user picks twelve files and clicks Upload. The wall-clock time crosses ten seconds easily — past the unit-task boundary, the user is going to disengage if the perception layer does not earn its keep. The pattern stack is bigger than the single-file case, but the principles are the same.
 
-This scenario sits in the 10 S+ band. The perception layer carries it through the [time-aware feedback](/patterns/time-aware-feedback) progression: per-file determinate progress, aggregate progress at the top, engagement cue past the 10 s boundary, background sync option for the long tail. Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> covers the per-file determinate signal; Block & Zakay 1997 <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> covers the engagement trade past 10 s; Doherty 1982 <Cite id="doherty-1982" label="Doherty 1982" /> is the background-sync rationale.
+This scenario sits in the 10 S+ band. The perception layer carries it through the [time-aware feedback](/glossary#time-aware-feedback) progression: per-file determinate progress, aggregate progress at the top, engagement cue past the 10 s boundary, background sync option for the long tail. Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> covers the per-file determinate signal; Block & Zakay 1997 <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> covers the engagement trade past 10 s; Doherty 1982 <Cite id="doherty-1982" label="Doherty 1982" /> is the background-sync rationale.
 
 <DemoRunner config={demoConfig} Naive={NaiveFileUpload} Tuned={TunedFileUpload} />
 
@@ -32,20 +30,20 @@ The single-file demo stands in. For a real batch, the tuned UI stacks:
 1. **Per-file rows** — name, size, individual progress bar. The user sees the entire queue at once.
 2. **Aggregate progress at the top** — total bytes transferred over total bytes queued. Determinate.
 3. **Engaging affordance** past 10 s — the active queue, the upload speed, the estimated time remaining. The user has something to read while they wait.
-4. **"Do this in the background and notify me"** option for very long batches — defer off the user's perceived path entirely via [background sync](/patterns/background-sync).
+4. **"Do this in the background and notify me"** option for very long batches — defer off the user's perceived path entirely via [background sync](/glossary#background-sync).
 5. **Cancellation per file and per batch** — the user can drop individual transfers without aborting the whole queue.
 
 ## What to tune
 
-1. [Determinate progress](/patterns/determinate-progress) — per file and aggregate.
-2. [Engaging loading states](/patterns/engaging-loading) — past the 10 s mark, an active-queue display.
-3. [Background sync](/patterns/background-sync) — defer the wait when the user wants to move on.
-4. [Cancellation affordance](/patterns/ai-cancellation-affordance) — per file plus per batch.
-5. [Optimistic UI](/patterns/optimistic-ui) — render the file rows immediately, before any bytes transfer.
+1. **Pre-action** — file rows render immediately (name, size, queued state) before any bytes transfer.
+2. **First 1 s** — per-file progress bars start filling. Aggregate bar at the top tracks total bytes transferred / queued.
+3. **1 – 10 s** — bars run in parallel (4–8 concurrent transfers). Cancellation visible per file and per batch.
+4. **Past 10 s** — active-queue display: upload speed, estimated time remaining, files in flight. "Notify me when done" appears.
+5. **Completion** — each file flips to a checkmark + metadata. Final summary row; never silent.
 
 ## When perceived performance hurts you here
 
-Batch uploads have the same trap [engaging-loading](/patterns/engaging-loading) does — a 60-second batch with rich engagement feels short while it runs and long in retrospect. For users who upload batches multiple times per session, the retrospective cost compounds.
+Batch uploads have the same trap *engaging loading* does — a 60-second batch with rich engagement feels short while it runs and long in retrospect. For users who upload batches multiple times per session, the retrospective cost compounds.
 
 The cleaner answer: lean on per-file determinate progress (the user *learns* what's happening), aggregate progress for orientation, and background sync past the 30 s mark so the user can leave the surface. Skip the motivational quotes — the queue itself is engaging enough.
 

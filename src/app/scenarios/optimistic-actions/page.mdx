@@ -5,7 +5,6 @@ import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
 import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
 import { config as demoConfig } from "@/demos/optimistic-actions/config";
 import { references } from "@/lib/refs/scenario-optimistic-actions";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Optimistic actions (like, save, undo)",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Optimistic actions (like, save, undo)
 
-<RelatedRail of="optimistic-actions" kind="scenario" />
 
 The user clicks "Like." The naive answer is to wait for the server before the heart fills in — a small button with a small wait, but a wait the user feels every time. The tuned answer is to flip the heart immediately, send the request in the background, and roll back visibly if the rare failure case fires. At 99 % success the user's experience is sub-perceptible feedback; at 1 % they get an honest, recoverable error.
 
@@ -31,16 +29,15 @@ Click the heart on either side. Both run the same simulated server round-trip �
 
 The tuned side has a 10 % simulated failure rate. When the failure fires (try clicking 5–10 times), the heart rolls back, the count corrects, and an error message appears in `role="alert"`. The user is *told* the action failed — silently rolling back would be the polished-lie failure mode covered in [Concepts §6](/concepts/when-perceived-performance-hurts-you).
 
-The visual flip uses an `active:scale-[0.97]` press feedback in addition to the optimistic state change — the [pre-action feedback](/patterns/pre-action-feedback) layer is still doing its work on every press, even when the optimistic state change is the visible result.
+The visual flip uses an `active:scale-[0.97]` press feedback in addition to the optimistic state change — the [pre-action feedback](/glossary#pre-action-feedback) layer is still doing its work on every press, even when the optimistic state change is the visible result.
 
 ## What to tune
 
-The patterns at work:
-
-1. [Optimistic UI](/patterns/optimistic-ui) — the foundational pattern for this scenario. Render the action as if it succeeded, reconcile in the background.
-2. [Pre-action feedback](/patterns/pre-action-feedback) — the press animation under 50 ms. Even when the optimistic flip is the visible state change, the press itself needs a separate cue.
-3. [Animation timing](/patterns/animation-timing) — the heart fill / unfill transition at ~200 ms. Short enough to feel responsive; long enough to register as a state change.
-4. [Mousedown / pointerdown vs. click](/patterns/mousedown-vs-click) — for actions where you can begin the network request early, buy the additional ~100–150 ms head-start.
+1. **Pre-action signal** — start the request on `mousedown`, not `click`. ~100–150 ms head-start.
+2. **Press feedback** — `active:scale-[0.97]` (or equivalent) within ~50 ms. Always, even when the optimistic flip is the visible change.
+3. **Optimistic flip** — heart fills / count increments inside the perceptual frame. ~200 ms state-change transition.
+4. **Background commit** — request runs while the optimistic state is visible. On failure, roll back the heart and surface `role="alert"`.
+5. **Failure path** — visible rollback; never silent. For irreversible actions, skip optimistic UI entirely and run a real progress indicator.
 
 ## When perceived performance hurts you here
 

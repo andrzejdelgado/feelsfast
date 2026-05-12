@@ -5,7 +5,6 @@ import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
 import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
 import { config as demoConfig } from "@/demos/ai-streaming/config";
 import { references } from "@/lib/refs/scenario-ai-long-compute-inference";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "AI · Long compute / Inference",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # AI · Long compute / Inference
 
-<RelatedRail of="ai-long-compute-inference" kind="scenario" />
 
 The user submits a request that is going to take 30 seconds or more. Image generation. A complex analytical query. A long-context reasoning task. The user has crossed the unit-task boundary; static skeletons no longer carry their weight; engagement is the last move before they leave.
 
@@ -38,18 +36,17 @@ The ai-streaming demo stands in. For a real long inference, the tuned flow stack
 
 ## What to tune
 
-1. [Engaging loading states](/patterns/engaging-loading) — Slack-style sequencing or AI-narration variant.
-2. [Tool-call transparency](/patterns/ai-tool-call-transparency) — narrate the agent's work where applicable.
-3. [Token-by-token streaming](/patterns/ai-token-streaming) — paced reveal of any text output.
-4. [Cancellation affordance](/patterns/ai-cancellation-affordance) — instant stop.
-5. [Determinate progress](/patterns/determinate-progress) — for inference with reportable phases.
-6. [Background sync](/patterns/background-sync) — for inference past ~60 s; defer off the user's perceived path.
+1. **Pre-action** — submit button echo within ~50 ms; thinking dots cover the time-to-first-token gap.
+2. **First 1 s** — thinking state in place. No spinner, no skeleton over content the model will produce.
+3. **1 – 10 s** — token streaming where text is the output. Tool-call transparency where the work is visible.
+4. **Past 10 s** — engaging copy where applicable; determinate progress where the inference reports phases. Cancellation always visible.
+5. **Past 30–60 s** — hand-off to background sync with notification. The foreground is no longer the right surface.
 
 ## When perceived performance hurts you here
 
 The engagement-vs-retrospective-duration trade is the central trap. A 30-second inference with rich engagement feels short while it runs and long in retrospect — the user remembers it as taking forever even when their session went smoothly. Slack and FIFA accept this; for inference where the user repeats the action many times in a session, the retrospective cost compounds.
 
-The cleaner answer for repeat-use AI inference: ship determinate progress where measurable, [tool-call transparency](/patterns/ai-tool-call-transparency) where applicable (the user is *learning* during the wait), and background sync past 60 s. Generic engaging content (motivational quotes, mini-games) belongs only on rare or one-off inferences.
+The cleaner answer for repeat-use AI inference: ship determinate progress where measurable, [tool-call transparency](/glossary#tool-call-transparency) where applicable (the user is *learning* during the wait), and background sync past 60 s. Generic engaging content (motivational quotes, mini-games) belongs only on rare or one-off inferences.
 
 ## Accessibility
 

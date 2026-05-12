@@ -5,7 +5,6 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-route-navigation";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Route navigation",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Route navigation
 
-<RelatedRail of="route-navigation" kind="scenario" />
 
 The user clicks a link. A new page should appear. The naive answer is to wait for the click, fetch the route bundle and data, render the new page. The tuned answer is to have already done most of that work — the route bundle was prefetched on hover, the data was prefetched on mouse-deceleration, and the click triggers a near-instant View Transitions handoff between the cached previous page and the cached new page.
 
@@ -38,13 +36,11 @@ The combined effect on a fast network is a navigation that lands inside the perc
 
 ## What to tune
 
-The patterns at work, in priority order:
-
-1. [Route prefetching](/patterns/route-prefetching) — viewport, hover, deceleration, pointerdown. Stack them.
-2. [View Transitions API](/patterns/view-transitions) — the cross-fade between captured snapshots.
-3. [mousedown / pointerdown vs. click](/patterns/mousedown-vs-click) — the additional ~100–150 ms head-start at click time.
-4. [Skeleton screens](/patterns/skeleton-screens) — fallback for the cache-miss case.
-5. [Optimistic UI](/patterns/optimistic-ui) — for navigations triggered by an action that the user will see results from elsewhere (e.g. clicking "Send" then navigating to inbox), render the optimistic state on the destination immediately.
+1. **Prefetch stack** — viewport, hover, mouse-deceleration, pointerdown. Layer them; each one shaves more time off the click.
+2. **Click** — fire on `mousedown`, not `click`. ~100–150 ms head-start before pointer release.
+3. **Transition** — View Transitions API cross-fades between captured snapshots. The wait is invisible most of the time.
+4. **Fallback** — skeleton screen for the cache-miss case. Never show an empty layout through the transition.
+5. **Completion** — focus lands on the main heading or a stable landmark. No screen-reader announcement until the user has actually committed.
 
 ## When perceived performance hurts you here
 

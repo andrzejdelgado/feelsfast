@@ -30,7 +30,7 @@ The UX consequence is direct. A high-contrast loading shimmer looks faster than 
 Two practical applications:
 
 1. **Skeleton screens should default to higher contrast than designers usually pick.** The instinct is to keep them subtle; the perception research says subtlety reads as slowness.
-2. **Progressive image loading (LQIP, blur-up) benefits from sharpening the edges first.** A low-quality placeholder that establishes high-contrast outlines lets the user "see" the image arriving, even before the textures resolve.
+2. **Progressive image loading (LQIP, blur-up) benefits from sharpening the edges first.** A low-quality placeholder that establishes high-contrast outlines lets the user "see" the image arriving, even before the textures resolve. LQIP is the canonical application of the Anstis effect — a soft ghostly placeholder reads as slower than a crisp one, even when both swap to the same final image at the same wall-clock moment. The instinct is to make the LQIP barely visible so the swap is gentle; the perception research argues the opposite.
 
 The illusion is honest because it exploits a property of vision, not a misrepresentation of the system. The skeleton is doing what it claims to be doing — placeholding for content. It is just doing so in a way that respects how perception actually works.
 
@@ -76,6 +76,8 @@ The deceptive side of the line includes:
 2. **Skeleton screens for primarily-interactive surfaces** (search inputs, sliders) where the user wants to *act*, not read.
 3. **"Engaging loading" sequences** that are deliberately padded to make the wait feel like a feature.
 4. **Optimistic UI without a visible failure path** — the rare-but-real failure case rolls back silently and the user never knows why their action did not stick.
+
+Engaging loading deserves a footnote because the trade is non-obvious. Ornstein's <Cite id="ornstein-1969" label="Ornstein 1969" /> storage-size theory predicts that an elaborate engagement sequence shortens the wait prospectively (you have more to look at while passing) but *lengthens* it retrospectively (you have more to remember afterwards). Slack's multi-step boot and FIFA's loading-screen mini-game are the canonical cases — both shipped with the trade made consciously. Engaging loading is honest when the team accepts the retrospective cost; it is deceptive when the wait is padded to look like progress that did not exist. The line is not whether the engagement is fun; the line is whether the user would be upset if they knew exactly what the wait was paying for.
 
 The difference is whether the user's mental model of the system matches reality. Anstis-driven contrast tuning, Harrison-driven progress pacing, and the geometric-mean threshold all preserve the user's mental model. They do not lie. They do not misrepresent. They just respect how perception works and use that to spend the same wait better.
 

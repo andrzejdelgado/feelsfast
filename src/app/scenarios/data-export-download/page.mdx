@@ -5,7 +5,6 @@ import { NaiveDataExport } from "@/demos/data-export/naive";
 import { TunedDataExport } from "@/demos/data-export/tuned";
 import { config as demoConfig } from "@/demos/data-export/config";
 import { references } from "@/lib/refs/scenario-data-export-download";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Data export / download generation",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Data export / download generation
 
-<RelatedRail of="data-export-download" kind="scenario" />
 
 Generating a download is one of the few perception scenarios where the work is genuinely long — sometimes minutes — and there is nothing the perception layer can do to compress it. What it can do is keep the user oriented while the work runs, and offer a hand-off when the wait crosses the threshold past which they will leave the tab. A spinner does neither. A determinate progress bar with row-count milestones, contextual engagement copy, and an email-when-ready escape hatch does both.
 
@@ -37,11 +35,11 @@ The engagement copy is doing the same job here that engaging-loading copy does o
 
 ## What to tune
 
-1. [Determinate progress](/patterns/determinate-progress) — the headline pattern. Row count is the natural unit; bytes is the next-best.
-2. [Engaging loading](/patterns/engaging-loading) — context-aware messaging that interleaves the wait. Better than "Loading…" forever.
-3. [Animated progress](/patterns/animated-progress) — backwards-decelerating ribs for the additional perceptual gain.
-4. [Background sync](/patterns/background-sync) — for the email-when-ready hand-off. The job continues server-side; the user gets notified when the file is up.
-5. [Time-aware feedback](/patterns/time-aware-feedback) — at 10 S+ a spinner is the wrong register. Determinate progress, then engagement, then hand-off.
+1. **Pre-action** — Generate button echo within ~50 ms; no spinner over the whole surface.
+2. **First 1 s** — determinate progress bar appears, fed by server-side row count or byte count.
+3. **1 – 10 s** — bar fills with backwards-decelerating ribs (Harrison 2010, +11–12 %). Engagement copy below the bar rotates through stages ("Compiling rows", "Applying filters", "Compressing the export").
+4. **Past 10 s** — "Email me when it's ready" hand-off appears. Foreground progress continues; the email is an escape, not the default.
+5. **Completion** — explicit success affordance: checkmark, link to the file, total row count. Never silent.
 
 ## When perceived performance hurts you here
 

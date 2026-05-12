@@ -5,7 +5,6 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-long-list-pagination";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Long list / pagination",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Long list / pagination
 
-<RelatedRail of="long-list-pagination" kind="scenario" />
 
 The user scrolls through a 200-item list, or clicks "Next" on a paginated table. The naive answer is to wait for the next page's data, then drop it in. The tuned answer is to render skeleton rows for the next page immediately and to predictively preload before the user reaches the boundary — most of the time, the data is already there when the skeleton renders.
 
@@ -31,20 +29,19 @@ The demo is the same list-fetch you saw in [page-load-cold](/scenarios/page-load
 
 The skeleton rows are honest — they reflect the layout the data will take. A different number of rows, or rows of different heights, would create a layout shift the user sees. Layout-matching is the only configuration that earns the perception gain.
 
-The full implementation also includes the [predictive preloading on scroll](/patterns/predictive-preloading-hover) trick: as the user scrolls into the last 30 % of the visible list, kick off the next-page fetch in the background. By the time the user reaches the boundary, the data is often already there — the skeleton appears and disappears in the same frame, or never appears at all.
+The full implementation also includes the [predictive preloading on scroll](/glossary#predictive-preloading) trick: as the user scrolls into the last 30 % of the visible list, kick off the next-page fetch in the background. By the time the user reaches the boundary, the data is often already there — the skeleton appears and disappears in the same frame, or never appears at all.
 
 ## What to tune
 
-The patterns at work, in priority order:
-
-1. [Skeleton screens](/patterns/skeleton-screens) — layout-matching placeholders for the next page's rows.
-2. [Predictive preloading](/patterns/predictive-preloading-hover) — start the next-page fetch when the user is within ~70 % of the current page's bottom.
-3. [Stale-while-revalidate](/patterns/stale-while-revalidate) — for repeated visits, serve cached pages while validating in the background.
-4. [Time-aware feedback](/patterns/time-aware-feedback) — at the 100 MS – 1 S band, no spinner under 1 s; skeleton rows are the right affordance.
+1. **Scroll signal** — as the user scrolls into the last 30 % of the visible list, fire the next-page fetch in the background. Predictive preloading on a high-confidence intent.
+2. **Click on "Next"** — pre-action button echo within ~50 ms; the page change should not wait for the data.
+3. **First 500 ms** — layout-matching skeleton rows replace the previous page's content. Same row count, same column widths.
+4. **Hit case** — prefetched data lands before the user reads past the skeleton. The skeleton may never appear at all.
+5. **Repeat visits** — stale-while-revalidate. Cached page lands instantly; background refresh is invisible.
 
 ## When perceived performance hurts you here
 
-Predictive preloading on scroll has the same trap as the broader [predictive-preloading-on-hover](/patterns/predictive-preloading-hover) pattern: false positives. A user who scrolls down and then back up costs you a wasted page fetch. With infinite scroll the cost is small (the next page would have loaded eventually); with paginated rows that the user might never visit, the cost is wasted bandwidth.
+Predictive preloading on scroll has the same trap as the broader [predictive-preloading-on-hover](/glossary#predictive-preloading) pattern: false positives. A user who scrolls down and then back up costs you a wasted page fetch. With infinite scroll the cost is small (the next page would have loaded eventually); with paginated rows that the user might never visit, the cost is wasted bandwidth.
 
 Tune the trigger threshold against your real user behaviour. 70 % is a starting point. If your false-positive rate is high, push to 80 % or 85 %; if your hit rate is high, drop to 60 % to extend the head-start.
 

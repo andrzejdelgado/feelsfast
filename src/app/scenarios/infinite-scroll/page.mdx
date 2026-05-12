@@ -5,7 +5,6 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-infinite-scroll";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Infinite scroll",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Infinite scroll
 
-<RelatedRail of="infinite-scroll" kind="scenario" />
 
 The user keeps scrolling. The list keeps growing. The naive answer is to wait for the bottom of the visible content, then fetch the next batch. The tuned answer is to anticipate — fetch before the user reaches the boundary, render skeleton rows for the next batch immediately, and keep the layout stable as the new content lands.
 
@@ -33,9 +31,11 @@ Fitch's <Cite id="fitch" label="Fitch" /> predictive-preloading framing applies:
 
 ## What to tune
 
-1. [Predictive preloading](/patterns/predictive-preloading-hover) — intersection observer at ~70 % of viewport.
-2. [Skeleton screens](/patterns/skeleton-screens) — layout-matching rows for the incoming batch.
-3. [Stale-while-revalidate](/patterns/stale-while-revalidate) — cache previously-loaded batches so backwards scroll is instant.
+1. **Scroll signal** — intersection observer at ~70 % of viewport fires the next-batch fetch. Predictive preloading on a high-confidence intent.
+2. **In-flight** — layout-matching skeleton rows for the incoming batch. The user reaches the boundary and the skeleton is already there.
+3. **Hit case** — data arrives before the user reads past the skeleton. Swap is invisible most of the time.
+4. **Miss case** — skeleton holds the layout until the data lands. No spinner, no scroll jump.
+5. **Backwards scroll** — cached batches via stale-while-revalidate; previously-loaded sections are instant.
 
 ## When perceived performance hurts you here
 

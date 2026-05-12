@@ -1,0 +1,159 @@
+import { RegisterReferences } from "@/components/RegisterReferences";
+import { ReferencesList } from "@/components/References";
+import { EssayNav } from "@/components/EssayNav";
+import { references } from "@/lib/refs/what-cue-to-show-when";
+
+export const metadata = {
+  title: "What cue to show, when",
+  description:
+    "The decision rule for which loading affordance to show: nothing under 1 s, spinner 1–2 s, skeleton or progress 2–10 s, engagement past 10 s. Cites Miller 1968, Nielsen 1993, Fitch, Myers 1985, James 1890, Ornstein 1969, Block & Zakay 1997, Harrison 2010.",
+};
+
+<RegisterReferences refs={references} />
+
+# What cue to show, when
+
+Most UIs ship the wrong loading affordance for the wait they actually have. A spinner at 600 ms. A skeleton at 12 seconds. A progress bar at 200 ms. A blank screen at 8 seconds. Each one is a category error — the affordance is fine, the band is wrong, and the perception layer breaks in a predictable way.
+
+The previous four essays gave you the parts. The anatomy of a wait split every wait into four phases. The illusions essay surveyed what you can exploit when the wait is honest. The break-down essay showed where the perception layer crosses into deception. The budgets essay anchored all of it to engineering reality. This essay does something narrower but more useful: it gives you a decision rule.
+
+I'd argue this is the single most operational rule the platform teaches — narrow enough to apply on one screen, general enough to apply on every screen. Once you have it, the question "should I show a loader here?" stops being an aesthetic decision and starts being an engineering one.
+
+## The rule, in one table
+
+Four bands. Four affordances. Memorise the table, apply the rule, audit your UI against it.
+
+<div className="not-prose my-6 overflow-x-auto rounded-md border border-border">
+  <table className="w-full border-collapse text-sm">
+    <thead>
+      <tr className="border-b border-border bg-card">
+        <th className="w-[14%] whitespace-nowrap px-3 py-2 text-left font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">Wait</th>
+        <th className="px-3 py-2 text-left font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">What the user is feeling</th>
+        <th className="px-3 py-2 text-left font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">Show</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="border-b border-border last:border-0 align-top">
+        <td className="whitespace-nowrap px-3 py-3 font-mono text-xs text-foreground">0 – 1 s</td>
+        <td className="px-3 py-3 text-foreground">Active mode; barely notices</td>
+        <td className="px-3 py-3 text-foreground"><strong className="font-semibold text-primary">Nothing.</strong> Pre-action feedback is enough.</td>
+      </tr>
+      <tr className="border-b border-border last:border-0 align-top">
+        <td className="whitespace-nowrap px-3 py-3 font-mono text-xs text-foreground">1 – 2 s</td>
+        <td className="px-3 py-3 text-foreground">Crossing into passive; suspects something happened</td>
+        <td className="px-3 py-3 text-foreground"><strong className="font-semibold text-primary">Spinner</strong>, only if duration is unknown</td>
+      </tr>
+      <tr className="border-b border-border last:border-0 align-top">
+        <td className="whitespace-nowrap px-3 py-3 font-mono text-xs text-foreground">2 – 10 s</td>
+        <td className="px-3 py-3 text-foreground">Passive; willing to wait if oriented</td>
+        <td className="px-3 py-3 text-foreground"><strong className="font-semibold text-primary">Determinate progress</strong> (real data) or <strong className="font-semibold text-primary">skeleton</strong> (stable layout)</td>
+      </tr>
+      <tr className="last:border-0 align-top">
+        <td className="whitespace-nowrap px-3 py-3 font-mono text-xs text-foreground">10 s+</td>
+        <td className="px-3 py-3 text-foreground">Disengaging; about to leave</td>
+        <td className="px-3 py-3 text-foreground"><strong className="font-semibold text-primary">Engagement</strong> — narrate the work, push to background, notify on complete</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+The bands come from three sources layered on top of each other. Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> ran the original empirical study — 17 transaction types, response-time bounds for each. The clean trichotomy most modern UX writing quotes (0.1 / 1 / 10 s) is actually Nielsen's <Cite id="nielsen-1993" label="Nielsen 1993" /> distillation from 1993; Miller's own taxonomy is finer-grained. Fitch <Cite id="fitch" label="Fitch" /> sharpens the boundary around the 1-second mark — the active-to-passive transition where the user's relationship to the wait changes character.
+
+Each band corresponds to a cognitive shift; the affordance you show should match that shift. That is the entire content of the rule. Everything below is a corollary.
+
+## The tip-the-hand corollary
+
+Showing a loader under one second creates the wait you were trying to mask. This is the rule's most-violated corollary, and the cheapest to fix.
+
+The mechanics are simple. A sub-1-second wait sits inside the user's active-mode budget — they have not yet noticed it. A loader appearing pulls them out of active mode and confirms a wait is happening; the loader dismissing announces the wait ended; the content appearing is the third visual event in a sequence that would have been one. You have multiplied the visible duration without changing the actual one.
+
+This is why a button that submits in 600 ms with a tiny press animation feels faster than the same button with a spinner that appears at 200 ms and dismisses at 600 ms. The first is one event. The second is four.
+
+There is a cheap way to enforce the rule: gate every loader behind a 500 ms delay. If the operation resolves under that, no loader appears. If it does not, the loader shows on the second half of a sub-2-second wait, or persists into the 1–10 s band where it earns its keep. The 500 ms gate is one of the few set-it-and-forget-it perception moves that almost never has a downside. Adopt it as the default in your loading primitives and most of your "should I show a spinner?" decisions resolve themselves.
+
+## Spinners, rehabilitated
+
+Spinners get a bad rap. Half the perceived-performance literature uses *spinner* as a synonym for *bad loading affordance*, and most of the time the criticism is justified. But the spinner is not always wrong — it has a narrow, defensible band.
+
+The defensible window is 1–2 s with unknown duration. Above 2 s, the spinner becomes a "the system might be hung" signal; below 1 s, it violates the tip-the-hand rule. Inside that 1-second window, the spinner is doing what no other affordance can: acknowledging a wait without making promises about its duration.
+
+The four failure modes are worth naming, because they are easy to spot once you have the labels:
+
+1. **The sub-1-second spinner.** Appears at 200 ms, dismisses at 700 ms, content arrives. Three visual events for what would have been one.
+2. **The eternal spinner.** Runs for 30 s with no narrative. Stops communicating "something is happening" and starts communicating "the system has hung." Past 2 s you need a skeleton, a progress bar, or engagement.
+3. **The spinner over interactive content.** A search input with a spinner overlaid on it tells the user they cannot search. The result panel can spin; the input must stay live.
+4. **The spinner without a label.** "Loading" alone is not enough; "Loading search results" is. A spinner with no accessible description is dead air for screen-reader users.
+
+What spinners are *for*: the button submitting and waiting for a 1.5-second round-trip; the thinking state on an AI surface before the first token arrives (covered in §9); the first ~500 ms of a longer wait, before you know enough about progress to render a more useful affordance. In other words — spinners are not always bad. Spinners that ignore the bands are.
+
+## Skeletons that match the layout
+
+Skeletons live in the 1–10 s band. The principle behind them is older than the modern UX-folklore figure most teams quote.
+
+The folklore is "skeletons feel 30 % faster than spinners." It comes from a 2013 blog post and has been propagating ever since. The 30 % number has no controlled-study backing. It is a vibes-based estimate that became a citation because it was repeated often enough.
+
+The actual research is the prospective-vs-retrospective asymmetry. James 1890 <Cite id="james-1890" label="James 1890" />, Ornstein 1969 <Cite id="ornstein-1969" label="Ornstein 1969" />, and Block & Zakay 1997 <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> are the source of record. Empty time feels long while passing — prospectively — because the mind has nothing to track. A skeleton fills the prospective wait with structure the eye can land on; the perceived duration shortens. The mechanism is real, the effect on *layout-matching* skeletons is meaningful, but the precise 30 % figure is not supported by anything you would want to cite.
+
+The other thing the literature is clear about: the skeleton has to match the layout. A generic shimmer at the top of an empty page is still empty in the relevant sense — the user's eye has nothing to anchor on. A skeleton with the right number of cards, the right column widths, the right vertical rhythm gives the eye a real layout to land on. When the data arrives the transition is a swap, not a jump.
+
+So — skeletons work, but only if they are laid out like the content they replace. Generic shimmer at the top of a blank panel is folklore wearing a thin disguise.
+
+## Determinate progress when you have signal
+
+If the wait is in the 1–10 s band and you have real progress data — bytes transferred, files processed, items rendered — show a determinate progress bar. This is the highest-leverage perception move when the signal is available.
+
+Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> ran a small but careful CHI study and found ~86 % of participants preferred a percent-done bar over a blank wait. Two things matter about that result.
+
+The first is the magnitude. ~86 % is unambiguous; this is not a noisy preference. Users genuinely want to know how much of the wait remains, and they reward you for telling them.
+
+The second is the caveat that gets dropped in most modern citations. *The preference held even when the bar was inaccurate.* That sounds like a license to ship fake progress bars. It is not. Myers's preference holds for indicators that *might be* inaccurate — bars that try to reflect reality but are subject to network jitter, server load, or measurement noise. It does not extend to indicators that are *deliberately* inaccurate — bars that animate to completion against a fixed CSS duration regardless of actual progress.
+
+The distinction matters because the failure mode is asymmetric. A might-be-inaccurate bar that occasionally desyncs costs the user a few seconds of confusion. A deliberately-inaccurate bar trains the user to distrust *every* progress bar that follows. The first is a small bug. The second poisons the well for the rest of your UI.
+
+Harrison et al. 2010 <Cite id="harrison-2010" label="Harrison et al. 2010" /> showed you can buy an additional ~11–12 % perceived speed-up with backwards-decelerating band animation inside the bar — covered in §5. That gain compounds with Myers's preference, but only if the underlying bar reflects reality. Cheating on the foundation does not earn you the polish on top.
+
+## Engaging loading past 10 s
+
+Past ten seconds the user is leaving. They have crossed Miller's unit-task boundary, their attention is wandering, and a static skeleton is no longer enough — there is too much empty time for the prospective fill to compress. Engaging loading is the last move before the user simply abandons the wait.
+
+The pattern has a complicated relationship with the perception literature. Prospectively, engagement is a clear win — Block & Zakay <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> confirms that filled intervals feel shorter while passing. Retrospectively, the relationship inverts. Ornstein's <Cite id="ornstein-1969" label="Ornstein 1969" /> storage-size theory predicts that elaborate engagement actually *expands* remembered duration — the user comes away thinking the wait was longer because they remember more of it.
+
+This is the trade Slack made and FIFA made. Fitch <Cite id="fitch" label="Fitch" /> uses both as canonical examples. Slack's multi-step boot sequence (animated branded spinner → motivational quote → skeleton channel list → message reveal) makes the cold-boot wait *feel* faster than the equivalent blank. It also trains users to remember that "Slack takes a while to boot." FIFA goes further — they let the user kick a virtual ball during the loading screen; the wait is genuinely entertaining, the retrospective duration explicitly traded.
+
+Both teams shipped these consciously. Slack accepts the retrospective cost because their cold-boot is rare and the prospective experience is what matters during the active session. FIFA accepts it because their loads are unavoidably long and entertainment is preferable to anxiety. The decision is product-specific. The pattern is honest only if you have made the trade deliberately.
+
+Three requirements separate honest engagement from theatre:
+
+1. **The engagement should be information about the system, not decoration around it.** A motivational quote is decoration. An agent narrating "Reading file X… Running tests… Comparing diff…" is information. Information ages better than decoration both prospectively and retrospectively — users remember learning something, not waiting prettily.
+
+2. **There must always be a way out.** Past ten seconds, even an engaged user wants to know they *can* leave. Pair engaging loading with a cancellation affordance, a "do this in the background and notify me" option, or both. Engagement without an exit is engagement that has crossed into hostage-taking.
+
+3. **The pattern should be rare.** A 10-second engaging loader on every form submit becomes friction, not delight. Reserve it for waits that are genuinely unavoidable — cold boots, long inferences, multi-stage pipelines. The rest of the time, the right answer is to make the wait shorter.
+
+## Empty-state hygiene
+
+One last failure mode the band-based rule misses: the wait ends and the content area is genuinely empty. The page renders, shows nothing, and the user cannot tell whether the load is still happening or whether it finished with zero items. Both states are blank. Both states look identical. The user waits, then guesses.
+
+Three things a settled-empty state must say:
+
+1. **The load completed successfully.** Not "we are still working" — *we are done.*
+2. **The area is empty.** Not in error, not stuck, simply zero items.
+3. **What the user can do about it.** Add the first item, change the filters, try a different query.
+
+The loading-empty state and the settled-empty state should look obviously different. A skeleton is loading-empty. An illustration with a heading and a primary-action button is settled-empty. They should never share a look.
+
+This sounds obvious. It is not. Most teams skip it because the loading state and the settled-empty state get hooked up at different times, often by different developers, and nobody steps back to compare them side by side. The result is a UI that *looks* finished but reads as broken to anyone who lands on it without context.
+
+## What to do with this
+
+Three takeaways before the next essay:
+
+1. **Audit your UI against the band table.** Walk through one common interaction, time the wait, and compare the affordance you ship to the row the wait falls into. Most teams have one or two wrong rows per feature.
+2. **Gate every loader behind a 500 ms delay.** Single highest-leverage move you can make to clean up loading affordance across an entire product. The waits that resolve fast stop generating loaders; the waits that resolve slow still get them.
+3. **Treat empty-state hygiene as a release blocker.** It is the kind of bug that ships unnoticed because everyone on the team has the data in their fixtures. The user does not. Catch it in QA, not in production.
+
+The next essay moves from web waits to AI waits, where the cleaner the decision rule, the more clearly you can see the parts of it that survive the move. Most of the rule transfers. The framing around *known versus unknown duration* gets harder, because AI waits routinely have orders-of-magnitude variance — and that is where the affordance choice stops being mechanical and starts being a UX argument.
+
+<EssayNav />
+
+<ReferencesList refs={references} />

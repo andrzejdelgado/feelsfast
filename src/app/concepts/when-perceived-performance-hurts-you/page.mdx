@@ -35,6 +35,8 @@ This is where Eizenberg's argument lands hardest. A surface where the user's int
 
 Optimistic UI — render the user's action as if it succeeded, then reconcile with the server when the response arrives — is one of the strongest perception-layer tricks. When 99 % of attempts succeed, the user's experience is sub-perceptible feedback, near-zero latency, no spinner. It is the difference between social-feed apps feeling instant and feeling like a 1990s message board.
 
+Worth saying out loud: there is no peer-reviewed study called "optimistic UI." The term comes from web-app practice, not from the academic literature, and most of the load-bearing claims about it are arguments from engineering experience rather than psychology. That is not a problem — the pattern works — but it shifts where the burden of proof sits. With Miller, Card, or Fitch I can point to a paper. With optimistic UI I have to point to product behaviour: Twitter likes, Linear updates, Gmail send-and-undo. The pattern is real; the citation is empirical not academic.
+
 The trap is the failing 1 %. If a like, a save, or a delete fails after the optimistic render, the rollback path needs to exist *and* be visible to the user. Three failure modes worth flagging:
 
 1. **Silent rollback.** The action visibly succeeded, then quietly reverted three seconds later when the server rejected it. The user does not realise the action did not stick. They notice an hour later. Their trust evaporates.
@@ -43,7 +45,9 @@ The trap is the failing 1 %. If a like, a save, or a delete fails after the opti
 
 The mitigation is not "use optimistic UI carefully." The mitigation is to design the failure path explicitly: visible error states tied to specific actions, retries that preserve user context, undo windows for irreversible operations. Optimistic UI without an honest failure path is a polished lie. The user will eventually catch it.
 
-There is also a simpler trap: pessimistic actions misrepresented as optimistic. If the server-side operation has a 30 % chance of rejection — because it crosses a permission boundary, competes with another user's edit, or hits a rate limit — rendering it as optimistic means three out of every ten interactions roll back visibly. The pattern works at 1 % rejection. It does not work at 30 %. Know your distribution.
+There is also a simpler trap: pessimistic actions misrepresented as optimistic. If the server-side operation has a 30 % chance of rejection — because it crosses a permission boundary, competes with another user's edit, or hits a rate limit — rendering it as optimistic means three out of every ten interactions roll back visibly. The pattern works at ~1 % rejection. It is shaky at ~5 %. It does not work at ~30 %. Know your distribution before you commit to the pattern.
+
+The legitimate alternative when optimistic UI does not fit is *background sync*: the action commits to a local queue immediately, the request fires whenever connectivity allows, and the UI shows a small "syncing…" state until the server confirms. The wait is not shortened — it is moved off the user's perceived path. Background sync trades visible latency for visible state-out-of-sync, which is the right trade for higher-rejection or higher-latency operations the user cannot afford to have silently roll back. The failure mode to plan for is the unbounded queue: a sync that fails repeatedly and grows the local backlog until the surface gives up. Cap the queue, expose a clear failure state, and make sure the user can see what is pending versus what is settled.
 
 ## "Looks fast" without "is fast"
 
