@@ -73,6 +73,13 @@ export function ReferencesPanel() {
                   : isActive
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border bg-background text-muted-foreground hover:border-primary hover:text-primary",
+                // Open + active: the user has opened this reference AND
+                // the matching <Cite> is currently in viewport. Add a
+                // ring so the open chip reads as "this is also where
+                // you are reading right now."
+                isOpen && isActive
+                  ? "ring-2 ring-primary ring-offset-2 ring-offset-sidebar"
+                  : null,
               )}
             >
               {ref.label}

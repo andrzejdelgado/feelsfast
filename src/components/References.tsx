@@ -26,8 +26,8 @@ export function ReferencesList({ refs }: { refs: readonly Reference[] }) {
             id={`ref-${ref.id}`}
             className={`scroll-mt-24 py-8 ${i > 0 ? "border-t border-border" : ""}`}
           >
-            <span className="inline-flex w-fit items-center whitespace-nowrap rounded-sm bg-secondary px-1.5 py-0.5 font-mono text-[0.75rem] font-medium text-primary">
-              [{ref.label}]
+            <span className="inline-flex w-fit items-center whitespace-nowrap rounded-sm border border-border bg-card px-1.5 py-0.5 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
+              {ref.label}
             </span>
             <p className="mt-3 text-sm leading-relaxed text-foreground">
               {typeof ref.citation === "string" ? (
