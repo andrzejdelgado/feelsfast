@@ -83,6 +83,8 @@ This one happens. It is rare in chat surfaces but common in agentic workflows wh
 
 I'd argue this is the most severe failure mode of the five because it weaponises the most trust-load-bearing cue in the entire AI UX surface. Cancellation is what makes every wait an opt-in instead of a sentence. Without it, the user is committed to whatever the model decided to do; with it, they have an escape hatch. A fake escape hatch is worse than no escape hatch — the user thinks they got out when they did not.
 
+Two engineering requirements separate honest cancellation from theatre. The first is the *100 ms perceptual-frame contract*: the visible state flip on press — input re-activating, the cancel button disappearing, the stream indicator clearing — must happen within ~100 ms of click, even if the underlying abort propagation takes longer. Inside that frame the cancel feels caused by the user; past it the user reaches for the button again. The contract is on the *visible state*, not on the server-side teardown. The two timelines must be designed separately and the UI must commit to the user-facing one. The second is *partial-state preservation*: when cancellation lands mid-stream, the partial response stays in the conversation transcript instead of being wiped. The user paid for the tokens that already arrived, they were already reading them, and erasing them is a separate violation on top of the cancel itself. Honest cancel says "stop here, keep what we have"; theatrical cancel says "stop here, never mind what we have, you cannot have it."
+
 The fix is engineering, not design: real cancellation needs to propagate through the inference layer and the tool layer. Where it cannot, the UI should not claim it can. A button that says "Cancel after current step" is honest about its limits. A button that says "Cancel" but does not actually cancel is fraud.
 
 ## The principle
@@ -101,7 +103,7 @@ Three takeaways. These are also the final ones in this set of essays.
 2. **Render uncertainty where the model is uncertain.** Lower-contrast typography for low-confidence content, explicit confidence badges where the model exposes them, citation requests for claims the model cannot ground. The cost is a slightly busier surface. The benefit is calibrated user trust — users start trusting the high-confidence outputs precisely because the low-confidence ones are visibly different.
 3. **Make cancel actually cancel.** If the engineering does not support real cancellation, the button should not exist — and the wait should be designed to be cancellable from the next conversation turn instead. A fake cancel button is the AI equivalent of a placeholder over a non-interactive page, and it costs more trust than the local convenience is worth.
 
-The eight essays before this one were about *how* to make a wait feel faster. This last one is about where the line is. Perception engineering is one of the strongest tools in the catalogue. It is also the tool with the largest range — from "the product feels alive" to "the product is lying to me." The line is not always obvious. It is always worth marking.
+The nine essays before this one were about *how* to make a wait feel faster. This last one is about where the line is. Perception engineering is one of the strongest tools in the catalogue. It is also the tool with the largest range — from "the product feels alive" to "the product is lying to me." The line is not always obvious. It is always worth marking.
 
 <EssayNav />
 

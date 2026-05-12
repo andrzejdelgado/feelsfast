@@ -45,6 +45,14 @@ The same Card, with Robertson and Mackinlay, returned to this in their 1991 CHI 
 
 If somebody cites "the 100-ms rule for transitions," this is the paper to cite back.
 
+The 100 ms frame also implies a small but useful three-tier family of animation durations that modern motion systems converge on without quite saying why:
+
+1. **~100 ms** — the perceptual-frame floor. Reserved for micro-feedback: hover-state transitions, focus-ring moves, button-press acknowledgements. Any shorter and the user does not register the change; any longer and the response stops feeling caused.
+2. **~200 ms** — the comfortable default for state changes. View transitions, fades, slides, scale-on-hover, opening menus. Long enough to read as motion, short enough to stay out of the user's way. Tailwind defaults to ~150 ms; the View Transitions spec lands at ~200 ms; both are inside this band.
+3. **~400 ms** — the upper edge for non-blocking transitions. Page-level fades, large layout shifts, choreographed multi-element entrances. Above ~400 ms the transition starts competing with the user's next action and the perceived performance cost outweighs the visual benefit.
+
+The durations are not magic numbers. They are the 100 ms frame and its first two harmonics — what you would expect from a system whose underlying clock is the perceptual frame itself.
+
 ## Doherty & Thadani 1982: the 400 ms productivity cliff
 
 The most empirical of the four. Walter Doherty and Ahrvind Thadani's <Cite id="doherty-1982" label="Doherty 1982" /> IBM technical report measured *actual productivity* for terminal users at varying response times. They found a non-linear curve: as response times dropped under one second, productivity rose disproportionately, and the curve broke sharply at around 400 ms.

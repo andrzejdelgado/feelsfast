@@ -13,7 +13,7 @@ export const metadata = {
 
 # AI changes the shape of the wait
 
-The previous seven essays assumed something nobody bothered to state out loud: the wait has a known shape. A page load takes 800 ms to 4 seconds. A form submit takes 200 ms to a few seconds. A search query is bounded above by a timeout you control. You can measure the p50 and the p90, you know roughly where the wait is going to land, and you can put a skeleton screen at the right place because you know what "the right place" means.
+The previous eight essays assumed something nobody bothered to state out loud: the wait has a known shape. A page load takes 800 ms to 4 seconds. A form submit takes 200 ms to a few seconds. A search query is bounded above by a timeout you control. You can measure the p50 and the p90, you know roughly where the wait is going to land, and you can put a skeleton screen at the right place because you know what "the right place" means.
 
 AI breaks all three.
 
@@ -42,7 +42,11 @@ Two things to point out about this anatomy.
 
 First, the user is doing something different in each phase. In *thinking*, they are waiting passively. In *streaming*, they are reading actively. In *settled*, they are deciding what to do next. The perception cues required for each are different — and conflating them is the source of most bad AI UX. A spinner that lives across all four phases is not a perception treatment; it is the absence of one.
 
+The thinking phase has its own design vocabulary because no web pattern fits the case. The two conventions that have settled into practice are the *three-dot bounce* (small, calm, sits inline next to the input — reads as "the system is composing a reply") and the *pulsing orb* (larger, slower, centred — reads as "the model is doing extended work"). I'd argue the choice is about implied effort: dots for sub-3 s expected thinking, orb for anything past that. Conflating them is harmless visually but degrades the cue's information content — when both surfaces show dots the user cannot tell whether to wait a beat or a minute. Both variants must be gated by `motion-safe:` so they collapse to a static shape under `prefers-reduced-motion`; a thinking state that animates against the system preference is the kind of accessibility regression that ships unnoticed because every developer on the team has motion enabled.
+
 Second, the streaming phase blurs the line between "the wait" and "the result." There is no clean "the wait ended, here is the answer" event. The answer was the wait. The user's experience of "how long did I wait" anchors heavily on the reading-cadence of the streamed tokens, not on the wall-clock duration. This is why AI UX teams are obsessive about token cadence — and why the products that get it right feel categorically better than the ones that do not.
+
+Deliberate cadence deserves a paragraph of its own. The naive implementation pushes one token to the DOM as soon as it arrives — fast tokens cluster, slow tokens stutter, and the reading rhythm jerks. The thoughtful implementation buffers and reveals at variable chunk sizes calibrated to reading speed: short chunks (a few characters) at the start of a sentence when the eye is locking on, longer chunks (a phrase) mid-sentence when the reader is moving with momentum, a brief pause at punctuation. The cost is one client-side timer and a small reveal queue. The benefit is that the same wall-clock latency reads as *prose being written* instead of *characters being dribbled* — and the perception cost of the wait drops noticeably. The principle: cadence matters more than latency on conversational AI surfaces, because cadence is what the user actually measures.
 
 ## Which classical thresholds still hold
 
@@ -72,6 +76,8 @@ A few minutes with Claude, ChatGPT, Gemini, Cursor, and v0 reveals that they hav
 3. A visible cancel button at every point in the stream.
 4. Tool-call surfaces that expand inline to show mid-stream agent work.
 5. A clear settled state — input re-activates, cancel disappears, focus returns to the composer.
+
+Tool-call transparency deserves a footnote because it is the *headline distinction* between AI products that converged in the last two years and the ones still using a generic spinner across long compute. The surface looks small — an inline strip listing "Reading file… Running tests…" — but it is what makes a multi-minute agent run feel like work rather than a stall. Two failure modes worth flagging. The first is over-sharing: tool-call labels can leak sensitive content (file paths, query strings, prompt fragments) that the user did not expect to be visible — redact aggressively, especially on shared screens. The second is flicker: tool calls that resolve in under ~300 ms produce a rapid-fire strip of strings appearing and disappearing, which reads as broken rather than transparent. Below ~300 ms, batch the label updates or skip them entirely; transparency is information about the agent's work, not a per-keystroke debug log.
 
 Convergence usually means the perception research is right. Block & Zakay's <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> filled-vs-empty framing predicted that streaming would beat batching; Nielsen's <Cite id="nielsen-1993" label="Nielsen 1993" /> 1-second wall predicted that thinking-state cues would be required; the 100 ms perceptual frame predicted that the send button needs to acknowledge within a frame. The shape we see across products is the shape the canon predicts when you re-apply it to a different wait.
 

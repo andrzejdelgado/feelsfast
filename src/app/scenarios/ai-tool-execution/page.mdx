@@ -5,7 +5,6 @@ import { NaiveAiToolExecution } from "@/demos/ai-tool-execution/naive";
 import { TunedAiToolExecution } from "@/demos/ai-tool-execution/tuned";
 import { config as demoConfig } from "@/demos/ai-tool-execution/config";
 import { references } from "@/lib/refs/scenario-ai-tool-execution";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Tool execution / agentic step",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Tool execution / agentic step
 
-<RelatedRail of="ai-tool-execution" kind="scenario" />
 
 When an agent does something — reads a file, runs a search, edits code, executes a query — there is a 1 – 10 S window of real wall-clock time the perception layer has to manage. The work is not waiting on a model token stream; it is waiting on the tool itself. A spinner that says "Working…" for six seconds gives the user nothing. A streaming list of the actual tool calls — "Read package.json. Searched for useState. Edited SearchBox.tsx. Ran typecheck." — is the same wait, but the user reads the trajectory in real time and learns to trust the agent.
 
@@ -39,11 +37,11 @@ The visual register here is the same as a long-running command's terminal output
 
 ## What to tune
 
-1. [AI tool-call transparency](/patterns/ai-tool-call-transparency) — the headline pattern. Every tool call surfaces; every status update is in real time.
-2. [AI cancellation affordance](/patterns/ai-cancellation-affordance) — cancellation must be visible while the agent runs, and the cancellation point should be the *next* tool call boundary, not an immediate hard stop.
-3. [Engaging loading](/patterns/engaging-loading) — the streaming list is intrinsically engaging because it carries information. No filler copy needed.
-4. [AI thinking state](/patterns/ai-thinking-state) — for the brief gap before the first tool call, a "Thinking…" state covers the model's reasoning step.
-5. [Time-aware feedback](/patterns/time-aware-feedback) — at 1 – 10 S the tool-call list is the right register; below that, the spinner is fine; above that, see the [agentic workflow](/scenarios/ai-agentic-workflow) scenario.
+1. **Pre-action** — submit button echo within ~50 ms; thinking dots cover the model's reasoning step before the first tool call.
+2. **First 1 s** — first tool-call row appears. The list is the affordance; no spinner over the whole agent.
+3. **1 – 10 s** — each tool call streams in as it runs. Status icon, label, result snippet (not just a count).
+4. **Cancellation** — visible while the agent runs. Boundary is the *next* tool call, not an immediate hard stop. "Stopping after current step…" is the honest message.
+5. **Completion** — explicit summary row. For multi-call work past 10 s, hand off to background sync; see the [agentic workflow](/scenarios/ai-agentic-workflow) scenario.
 
 ## When perceived performance hurts you here
 

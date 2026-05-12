@@ -5,7 +5,6 @@ import { NaiveAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/naive";
 import { TunedAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/tuned";
 import { config as demoConfig } from "@/demos/ai-agentic-workflow/config";
 import { references } from "@/lib/refs/scenario-ai-agentic-workflow";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Agentic workflow",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Agentic workflow
 
-<RelatedRail of="ai-agentic-workflow" kind="scenario" />
 
 Long-running agents — Deep Research, Devin, Cursor agent runs, browse-and-summarise tools, multi-step refactors — push past the 10-second wall Nielsen 1993 <Cite id="nielsen-1993" label="Nielsen 1993" /> placed at the edge of attention. By minute two the user is in another tab, has switched contexts, has half-forgotten what they asked for. The perception layer's job is no longer to compress the wait — the wait is the work — but to keep the agent legible *to a user who is no longer looking*.
 
@@ -39,12 +37,11 @@ The unit-counts on the determinate phases turn the wait into understood work. "R
 
 ## What to tune
 
-1. [AI tool-call transparency](/patterns/ai-tool-call-transparency) — the headline pattern, scaled up. Each phase is a coarse-grained tool call; sub-steps within a phase are fine-grained.
-2. [AI cancellation affordance](/patterns/ai-cancellation-affordance) — cancellation must always be available *and* honest about partial-work disposition.
-3. [Determinate progress](/patterns/determinate-progress) — wherever the phase has measurable units, the bar shows them. "20-second wait" is opaque; "7 of 12 sources" is understood work.
-4. [Engaging loading](/patterns/engaging-loading) — at 10 S+ engagement copy is mandatory, but the phase labels themselves carry it. No filler messages.
-5. [Background sync](/patterns/background-sync) — for genuine multi-minute agents, pair the foreground timeline with a notification on completion so the user can leave the tab.
-6. [Time-aware feedback](/patterns/time-aware-feedback) — at 10 S+ a spinner is the wrong register. The timeline + per-phase progress + cancellation is the only acceptable level of detail.
+1. **Pre-action** — submit button echo within ~50 ms; thinking state covers the gap to the first phase row.
+2. **First 1 s** — the plan or first phase row appears. No spinner; the timeline is the affordance.
+3. **1 – 10 s** — each phase row streams in as it activates. Determinate sub-step counter where units exist ("7 of 12 sources").
+4. **Past 10 s** — phase labels carry the engagement; no filler copy. Cancellation always visible with honest partial-work disposition.
+5. **Completion / hand-off** — explicit "Report ready" affordance. For multi-minute agents, pair with background sync + notification so the user can leave the tab.
 
 ## When perceived performance hurts you here
 

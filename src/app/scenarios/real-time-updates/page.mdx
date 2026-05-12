@@ -5,7 +5,6 @@ import { NaiveRealTimeUpdates } from "@/demos/real-time-updates/naive";
 import { TunedRealTimeUpdates } from "@/demos/real-time-updates/tuned";
 import { config as demoConfig } from "@/demos/real-time-updates/config";
 import { references } from "@/lib/refs/scenario-real-time-updates";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Real-time updates / live data",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Real-time updates / live data
 
-<RelatedRail of="real-time-updates" kind="scenario" />
 
 Live feeds — Slack threads, Linear activity, GitHub PR queues, build dashboards — share a perception failure mode that is easy to overlook because nothing is *broken*: when a new event arrives, the list reorders silently. The user, whose eyes were elsewhere, has to re-scan the entire list to find what changed. The new entry is delivered, but the user does not perceive it as new.
 
@@ -39,11 +37,11 @@ The 200 ms motion-onset duration is not arbitrary. Below ~100 ms the slide is to
 
 ## What to tune
 
-1. [Animation timing](/patterns/animation-timing) — the headline pattern. The 200 ms onset and 700 ms colour decay are both products of the perceptual frame, not arbitrary aesthetic choices.
-2. [Pre-action feedback](/patterns/pre-action-feedback) — the highlight is post-action feedback for the system's own action, but the perceptual mechanic is identical.
-3. [Stale-while-revalidate](/patterns/stale-while-revalidate) — for sockets that drop, fall back to the last known-good state and revalidate in the background. The user should not see "Disconnected" unless the disconnection persists.
-4. [Skeleton screens](/patterns/skeleton-screens) — for the initial load before the first event lands, a content-true skeleton beats a spinner.
-5. [Time-aware feedback](/patterns/time-aware-feedback) — at 0–100 MS the affordance is subliminal; pushing it past 200 ms turns the live feed into an attention-stealing strobe.
+1. **Initial load** — content-true skeleton before the first event lands; spinner is the wrong register on a live feed.
+2. **Event arrival** — slide-in over 200 ms (`translate-y(-6px)` → 0, opacity 0 → 1). Below 100 ms reads as render glitch; above 300 ms reads as ornamental.
+3. **Active feedback** — primary-colour background tint on the new row.
+4. **Decay** — tint fades to neutral over 700 ms. The colour grabs peripheral attention; the decay extinguishes it as the user reads.
+5. **Disconnection** — stale-while-revalidate the last known-good state. Don't show "Disconnected" unless the disconnection persists.
 
 ## When perceived performance hurts you here
 

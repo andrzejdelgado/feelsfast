@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { BackToSection } from "./BackToSection";
 
-const WIDE_SECTIONS = new Set(["scenarios", "patterns"]);
+const WIDE_SECTIONS = new Set(["scenarios"]);
 
 /**
  * Wrapper for MDX article pages.
@@ -11,7 +11,6 @@ const WIDE_SECTIONS = new Set(["scenarios", "patterns"]);
  * Section-aware width:
  * - /concepts/*    — max-w-3xl (essay measure, ~75 ch for prose readability)
  * - /scenarios/*   — max-w-4xl (matches /scenarios index for visual parity)
- * - /patterns/*    — max-w-4xl (matches /patterns index for visual parity)
  *
  * The back-link → H1 gap is tight (`mb-2`) so individual pages feel like
  * the index pages they came from, not like a different layout family.

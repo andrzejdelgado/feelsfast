@@ -2,7 +2,6 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { MapInteractionsCard } from "@/components/MapInteractionsCard";
 import { references } from "@/lib/refs/scenario-map-interactions";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Map interactions",
@@ -14,7 +13,6 @@ export const metadata = {
 
 # Map interactions
 
-<RelatedRail of="map-interactions" kind="scenario" />
 
 Maps are the canonical case for direct-manipulation perception failure. The user drags the canvas; tiles need to load; if the tile load *blocks* the drag, the manipulation stops feeling direct and starts feeling stop-and-go. The perceptual ceiling here is brutal — Jota et al. 2013 <Cite id="jota-2013" label="Jota et al. 2013" /> puts the just-noticeable-difference for direct-touch dragging at ~33 ms; Ng et al. 2012 <Cite id="ng-2012" label="Ng et al. 2012" /> resolved single-millisecond differences in trained users. There is no realistic budget for "pan, then wait for tiles, then update." The pan has to be free; the tiles have to catch up.
 
@@ -34,11 +32,11 @@ The cached-tile mechanic is the second perception lever: tiles only "load" once.
 
 ## What to tune
 
-1. [Animation timing](/patterns/animation-timing) — the headline pattern. The 300 ms tile fade matches the perceptual frame; the pan response is sub-frame.
-2. [Adaptive loading](/patterns/adaptive-loading) — under `Save-Data` or slow-network signals, ship lower-resolution tiles and skip the high-res step.
-3. [Stale-while-revalidate](/patterns/stale-while-revalidate) — the cached tiles are SWR shaped for spatial data: show the last known version, fetch a fresh version in the background.
-4. [Predictive preloading on hover](/patterns/predictive-preloading-hover) — for cursor-driven panning, prefetch the tiles in the direction the cursor is decelerating toward.
-5. [LQIP / blur-up](/patterns/image-progressive-loading) — the 60 %-opacity desaturated state is an LQIP without the actual low-resolution image. Production maps use real low-resolution tiles for the same effect.
+1. **Input echo** — pan responds sub-frame. The viewport shifts immediately on arrow press or drag; input never blocks on the network.
+2. **Placeholder tiles** — in-flight tiles render at 60 % opacity and 50 % saturation. The dominant colour holds the layout; the LQIP principle without a real low-res image.
+3. **Tile resolution** — each tile fades to full saturation over ~300 ms as it lands. Matches the perceptual frame.
+4. **Cache** — visited tiles are instant on revisit. Stale-while-revalidate shaped for spatial data.
+5. **Predictive prefetch** — tiles in the cursor's decelerating direction load ahead. Tune the radius against pan velocity.
 
 ## When perceived performance hurts you here
 

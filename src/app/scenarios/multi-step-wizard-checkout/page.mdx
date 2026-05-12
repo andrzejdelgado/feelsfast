@@ -5,7 +5,6 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-multi-step-wizard-checkout";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Multi-step wizard / checkout",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Multi-step wizard / checkout
 
-<RelatedRail of="multi-step-wizard-checkout" kind="scenario" />
 
 Multi-step flows — checkouts, onboarding, signup wizards — are the cleanest place to apply predictive preloading. The user's path through the steps is mostly linear; the next step is highly predictable from the current one. Fetching the next step's bundle and data while the user is filling the current one collapses the perceived transition time to near-zero.
 
@@ -29,18 +27,18 @@ This scenario sits in the 1 – 10 S band on each step, but the perception layer
 
 The list-fetch demo stands in for the step-to-step transition. For a real wizard, the tuned flow stacks several patterns:
 
-1. **Predictive preload** of the next step's bundle and data once the user is ~70 % through the current step (matches the [predictive-preloading](/patterns/predictive-preloading-hover) pattern).
+1. **Predictive preload** of the next step's bundle and data once the user is ~70 % through the current step (matches the [predictive-preloading](/glossary#predictive-preloading) pattern).
 2. **Optimistic step transition** on submit — render the next step's layout immediately, validate in the background.
 3. **Skeleton fallback** if the prefetch missed.
 4. **Preserved state on rollback** — if validation fails on the previous step, return to it with the user's input intact.
 
 ## What to tune
 
-1. [Predictive preloading](/patterns/predictive-preloading-hover) — anticipate the next step.
-2. [Optimistic UI](/patterns/optimistic-ui) — render the optimistic state on the destination step.
-3. [Skeleton screens](/patterns/skeleton-screens) — fallback for the cache-miss case.
-4. [Pre-action feedback](/patterns/pre-action-feedback) — press feedback on the next-step button always lands inside 50 ms.
-5. [Form submission](/scenarios/form-submission) — the step submission itself.
+1. **Pre-action** — Next button echo within ~50 ms. The button doesn't wait for validation to acknowledge the press.
+2. **Predictive preload** — once the user is ~70 % through the current step, the next step's bundle and data begin loading.
+3. **Step transition** — optimistic redirect to the next step's layout. Skeleton fallback if the prefetch missed.
+4. **Validation** — runs in the background. On failure, return to the previous step with all user input preserved.
+5. **Completion** — focus lands on the next step's first input or main heading; step indicator updates with `aria-current="step"`.
 
 ## When perceived performance hurts you here
 

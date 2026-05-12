@@ -132,16 +132,6 @@ function ScenarioCard({ scenario }: { scenario: Scenario }) {
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
         {scenario.blurb}
       </p>
-      <div className="mt-4 flex flex-wrap items-center gap-1.5">
-        {scenario.linkedPatterns.map((pattern) => (
-          <span
-            key={pattern}
-            className="inline-flex items-center rounded-sm border border-border bg-background px-1.5 py-0.5 font-mono text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
-          >
-            {pattern}
-          </span>
-        ))}
-      </div>
     </>
   );
 

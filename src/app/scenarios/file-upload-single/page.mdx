@@ -5,7 +5,6 @@ import { NaiveFileUpload } from "@/demos/file-upload/naive";
 import { TunedFileUpload } from "@/demos/file-upload/tuned";
 import { config as demoConfig } from "@/demos/file-upload/config";
 import { references } from "@/lib/refs/scenario-file-upload-single";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "File upload (single)",
@@ -17,11 +16,10 @@ export const metadata = {
 
 # File upload (single)
 
-<RelatedRail of="file-upload-single" kind="scenario" />
 
 The user picks a file and clicks Upload. The bytes have to transfer; there is real wall-clock time the perception layer cannot remove. What the perception layer *can* do is replace a generic spinner with a determinate progress bar that reflects actual progress, render the file's metadata optimistically, and finish with a clear success affordance.
 
-This scenario is the canonical use case for [determinate progress](/patterns/determinate-progress). Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> set the floor — ~86 % of participants preferred a percent-done bar over a blank wait. Harrison et al. 2010 <Cite id="harrison-2010" label="Harrison et al. 2010" /> raised it — backwards-decelerating ribs add another ~11–12 % of perceived speed-up. Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> covers the 1 – 10 S band most single-file uploads sit inside.
+This scenario is the canonical use case for [determinate progress](/glossary#determinate-progress). Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> set the floor — ~86 % of participants preferred a percent-done bar over a blank wait. Harrison et al. 2010 <Cite id="harrison-2010" label="Harrison et al. 2010" /> raised it — backwards-decelerating ribs add another ~11–12 % of perceived speed-up. Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> covers the 1 – 10 S band most single-file uploads sit inside.
 
 <DemoRunner config={demoConfig} Naive={NaiveFileUpload} Tuned={TunedFileUpload} />
 
@@ -33,15 +31,15 @@ The naive side disables the button, shows a generic `Loader2` spinner with "Uplo
 
 The tuned side does three things differently. First, the file's metadata (name, size in MB) appears immediately in optimistic form — the user sees what they are uploading without waiting for the server. Second, a determinate progress bar fills from 0 to 100 % in real time, polling every 50 ms — the user can see exactly how close to done they are. Third, on completion, the bar swaps to a checkmark + "Upload complete" affordance with primary-color emphasis.
 
-A production version would also add the [animated-progress](/patterns/animated-progress) backwards-decelerating ribs for the additional ~12 % perceptual gain, and a cancellation control for the long tail.
+A production version would also add the [animated progress](/glossary#determinate-progress) backwards-decelerating ribs for the additional ~12 % perceptual gain, and a cancellation control for the long tail.
 
 ## What to tune
 
-1. [Determinate progress](/patterns/determinate-progress) — the headline pattern.
-2. [Animated progress](/patterns/animated-progress) — backwards-decelerating ribs for the perceptual speed-up.
-3. [Optimistic UI](/patterns/optimistic-ui) — render the file metadata before the bytes arrive.
-4. [Pre-action feedback](/patterns/pre-action-feedback) — press feedback on the upload button.
-5. [Time-aware feedback](/patterns/time-aware-feedback) — at 1 – 10 S, determinate progress over spinner.
+1. **Pre-action signal** — start the upload on `mousedown`, not `click`. ~100 ms head-start (Fitch).
+2. **First 1 s** — pre-action button feedback within ~50 ms; no spinner yet.
+3. **1 – 10 s** — determinate progress bar with backwards-decelerating ribs (Harrison 2010, +11–12 %).
+4. **Past 10 s** — engagement strip or hand-off to background sync.
+5. **Completion** — confirmation toast with the uploaded file's metadata; never silent.
 
 ## When perceived performance hurts you here
 
@@ -54,7 +52,7 @@ The other failure: shipping the bar without the success affordance. A bar that h
 1. **`role="progressbar"` plus `aria-valuemin / valuemax / valuenow`** is mandatory. Screen readers cannot announce progress without it.
 2. **`aria-label`** describing what is uploading. "Uploading vacation-photo.jpg" beats "Uploading."
 3. **Polite live region announcement** at completion ("Upload complete") so screen-reader users register the success.
-4. **Visible cancellation** for the long tail. Pair with [cancellation affordance](/patterns/ai-cancellation-affordance) — the principle is the same.
+4. **Visible cancellation** for the long tail. Pair with [cancellation affordance](/glossary#cancellation) — the principle is the same.
 5. **`prefers-reduced-motion`** — strip the rib animation; the width transition is a property change and stays.
 
 ## References

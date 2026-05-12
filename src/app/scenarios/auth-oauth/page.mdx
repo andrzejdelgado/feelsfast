@@ -5,7 +5,6 @@ import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
 import { config as demoConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-auth-oauth";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Auth / OAuth flow",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Auth / OAuth flow
 
-<RelatedRail of="auth-oauth" kind="scenario" />
 
 Sign in. Or click "Continue with Google" and round-trip through a third-party. The wait is one to several seconds — most of it the network handshake the user can do nothing about. The perception layer cannot shorten the handshake; it can ensure the wait is filled with affordances rather than blank.
 
@@ -34,10 +32,11 @@ The list-fetch demo stands in for the OAuth round-trip. The naive side leaves th
 
 ## What to tune
 
-1. [Pre-action feedback](/patterns/pre-action-feedback) — press animation on the auth button.
-2. [Skeleton screens](/patterns/skeleton-screens) — pre-rendered destination layout while the handshake completes.
-3. [Optimistic UI](/patterns/optimistic-ui) — for the post-auth redirect; reconcile with the actual response.
-4. [Determinate progress](/patterns/determinate-progress) — for multi-step flows where stages are reportable.
+1. **Pre-action** — press feedback on the sign-in button within ~50 ms; 200 ms active-state animation (Fitch).
+2. **First 1 s** — optimistic redirect to the destination with a skeleton of the post-auth view in place.
+3. **1 – 10 s** — determinate progress where the handshake exposes stages; otherwise hold the destination skeleton.
+4. **Completion** — focus lands on the destination's main heading; the surface is ready for the user, not for the loader.
+5. **Failure path** — return to the sign-in surface with a clear, recoverable error. Never strand the user on a half-loaded destination.
 
 ## When perceived performance hurts you here
 

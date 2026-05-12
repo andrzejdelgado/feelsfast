@@ -5,7 +5,6 @@ import { NaiveImageGallery } from "@/demos/image-gallery/naive";
 import { TunedImageGallery } from "@/demos/image-gallery/tuned";
 import { config as demoConfig } from "@/demos/image-gallery/config";
 import { references } from "@/lib/refs/scenario-image-gallery";
-import { RelatedRail } from "@/components/RelatedRail";
 
 export const metadata = {
   title: "Image gallery",
@@ -17,7 +16,6 @@ export const metadata = {
 
 # Image gallery
 
-<RelatedRail of="image-gallery" kind="scenario" />
 
 Image-heavy layouts are the worst-case for naive loading. A grid of six photos at 250 KB each is a megabyte and a half on the wire — and the eye notices every tile that is missing. A user who sees six gray boxes backfilling in arbitrary order experiences six separate waits, one per tile, each registering as absence. The same six images backed by LQIP placeholders register as a single resolution event — the layout was already there, the detail is what is arriving.
 
@@ -37,17 +35,17 @@ The trick is that the LQIP itself does not need to be a real low-resolution vers
 
 ## What to tune
 
-1. [Image progressive loading (LQIP / blur-up)](/patterns/image-progressive-loading) — the headline pattern. Ship a tiny placeholder inline; resolve to the full file when it arrives.
-2. [Skeleton screens](/patterns/skeleton-screens) — the LQIP is a content-true skeleton, not a generic shape.
-3. [Time-aware feedback](/patterns/time-aware-feedback) — at 1 – 10 S, the LQIP is the right register. A spinner per tile would be worse than the placeholder.
-4. [Predictive preloading on hover](/patterns/predictive-preloading-hover) — for an interactive gallery, preload the full-resolution version on hover for the inevitable click-through to a detail view.
-5. [Adaptive loading](/patterns/adaptive-loading) — under `Save-Data` or slow-network signals, ship a smaller variant or skip the high-res step entirely.
+1. **First paint** — LQIP placeholder inline in the HTML. Dominant colour and rough composition land in the first frame; the layout reads as already there.
+2. **First 1 s** — full-resolution tiles begin resolving. Each tile transitions from blurred LQIP to sharp over ~350 ms.
+3. **1 – 10 s** — no spinner per tile. The LQIP carries the wait; a spinner would be worse than the placeholder.
+4. **Hover** — for interactive galleries, predictive preloading of the full-res detail view on hover.
+5. **Adaptive** — under `Save-Data` or slow-network signals, ship a smaller variant or skip the high-res step entirely.
 
 ## When perceived performance hurts you here
 
 The placeholder must reflect the dominant colour of the actual image. A generic gray skeleton at this scale is fine; an LQIP that resolves to a wildly different image is jarring — the user sees green resolve to red, and the trust budget the pattern paid into gets withdrawn. The image processor that generates the LQIPs at upload time is what guarantees this, and it is the part most teams skip.
 
-The other failure mode is trying to LQIP everything. Icons, logos, UI chrome — non-photographic content that is already small — does not benefit from blur-up. The placeholder adds cost without clarity. Reserve LQIP for content where the dominant colour is the perceptual signal: photos, illustrations, hero images. For UI chrome, use [skeleton screens](/patterns/skeleton-screens) shaped to match.
+The other failure mode is trying to LQIP everything. Icons, logos, UI chrome — non-photographic content that is already small — does not benefit from blur-up. The placeholder adds cost without clarity. Reserve LQIP for content where the dominant colour is the perceptual signal: photos, illustrations, hero images. For UI chrome, use [skeleton screens](/glossary#skeleton-screen) shaped to match.
 
 ## Accessibility
 
