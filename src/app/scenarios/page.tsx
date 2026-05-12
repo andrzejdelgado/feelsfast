@@ -32,7 +32,7 @@ export default function ScenariosPage() {
         Every async surface that ships in a modern product, grouped by where it lives. Pick the category that matches the problem you are trying to solve.
       </p>
 
-      <ScenariosCategorizedList groups={groups} total={scenarios.length} />
+      <ScenariosCategorizedList groups={groups} />
     </article>
   );
 }

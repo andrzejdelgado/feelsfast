@@ -12,24 +12,16 @@ type CategorizedGroup = {
 
 type FilterValue = "all" | ScenarioCategory;
 
-const statusLabel: Record<Scenario["status"], string> = {
-  published: "Read",
-  drafting: "Drafting",
-  planned: "Planned",
-};
-
 /**
  * Client-side category filter for the Scenarios index. Renders a row
  * of filter pills (All + one per category) plus the sectioned scenario
- * groups. Selecting a pill narrows the visible sections to that
- * category; "All" shows every section, in canonical order.
+ * groups. The pill row is sticky at the top of the viewport so the
+ * filter is reachable mid-scroll.
  */
 export function ScenariosCategorizedList({
   groups,
-  total,
 }: {
   groups: readonly CategorizedGroup[];
-  total: number;
 }) {
   const [filter, setFilter] = useState<FilterValue>("all");
 
@@ -44,25 +36,27 @@ export function ScenariosCategorizedList({
   return (
     <>
       <div
-        className="mt-10 flex flex-wrap items-center gap-2"
-        role="group"
-        aria-label="Filter scenarios by category"
+        className="sticky top-14 z-10 mt-10 -mx-8 border-b border-border bg-background/95 px-8 py-4 backdrop-blur md:top-0 lg:-mx-12 lg:px-12 xl:-mx-16 xl:px-16"
       >
-        <FilterPill
-          label="All"
-          count={total}
-          active={filter === "all"}
-          onClick={() => setFilter("all")}
-        />
-        {groups.map((group) => (
+        <div
+          className="flex flex-wrap items-center gap-2"
+          role="group"
+          aria-label="Filter scenarios by category"
+        >
           <FilterPill
-            key={group.category.id}
-            label={group.category.label}
-            count={group.items.length}
-            active={filter === group.category.id}
-            onClick={() => setFilter(group.category.id)}
+            label="All"
+            active={filter === "all"}
+            onClick={() => setFilter("all")}
           />
-        ))}
+          {groups.map((group) => (
+            <FilterPill
+              key={group.category.id}
+              label={group.category.label}
+              active={filter === group.category.id}
+              onClick={() => setFilter(group.category.id)}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="mt-12 space-y-12">
@@ -97,12 +91,10 @@ export function ScenariosCategorizedList({
 
 function FilterPill({
   label,
-  count,
   active,
   onClick,
 }: {
   label: string;
-  count: number;
   active: boolean;
   onClick: () => void;
 }) {
@@ -112,18 +104,13 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
+        "inline-flex items-center rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
         active
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border bg-card text-muted-foreground hover:border-primary hover:text-foreground",
       )}
     >
-      <span>{label}</span>
-      <span
-        className={cn("tabular-nums", active ? "opacity-80" : "opacity-60")}
-      >
-        {count}
-      </span>
+      {label}
     </button>
   );
 }
@@ -136,25 +123,15 @@ function ScenarioCard({ scenario }: { scenario: Scenario }) {
 
   const inner = (
     <>
-      <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
-          Scenario · {scenario.number}
-        </p>
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
-            {scenario.band}
-          </span>
-          <span className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
-            {statusLabel[scenario.status]}
-          </span>
-        </div>
-      </div>
-      <p className="mt-2 text-lg font-medium tracking-tight">{scenario.title}</p>
+      <p className="text-right font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
+        {scenario.band}
+      </p>
+      <p className="mt-1 text-lg font-medium tracking-tight">{scenario.title}</p>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
         {scenario.blurb}
       </p>
       <p className="mt-3 font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
-        Patterns · {scenario.linkedPatterns.join(" · ")}
+        Patterns: {scenario.linkedPatterns.join(" · ")}
       </p>
     </>
   );

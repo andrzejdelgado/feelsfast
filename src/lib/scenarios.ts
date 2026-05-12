@@ -41,7 +41,7 @@ export const categories: readonly CategoryMeta[] = [
   },
   {
     id: "direct-manipulation",
-    label: "Direct manipulation",
+    label: "Manipulation",
     blurb:
       "Pan, zoom, drag, drop. The user is operating the interface in real time — latency is felt directly in the hand.",
   },
