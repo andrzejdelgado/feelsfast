@@ -1,6 +1,12 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+// No `runtime = "edge"` — render on the Node runtime so the route
+// can be statically generated at build time. Combined with
+// `dynamic = "force-static"`, the PNG is built once and served from
+// Vercel's CDN, not regenerated per request (which was a ~2 s
+// per-request cost that some social-media scrapers timed out on).
+export const dynamic = "force-static";
+export const revalidate = false;
 export const alt = "feelsfast — perceived performance demos and loading patterns";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

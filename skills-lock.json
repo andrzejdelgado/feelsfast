@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "code-review-excellence": {
+      "source": "awesome-skills/code-review-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "59f639baeb7b31ba3e2f276b203eb0fbe03de9724fe2d9d5195d91c53fb21efe"
+    },
     "programmatic-seo": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",

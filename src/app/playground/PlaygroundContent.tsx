@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { DemoRunner, type DemoConfig } from "@/components/DemoRunner";
 import { SwipeableRow } from "@/components/SwipeableRow";
@@ -8,130 +9,130 @@ import { cn } from "@/lib/utils";
 import { demoContext } from "@/lib/relations";
 
 import { config as listFetchConfig } from "@/demos/list-fetch/config";
-import { NaiveListFetch } from "@/demos/list-fetch/naive";
-import { TunedListFetch } from "@/demos/list-fetch/tuned";
+const NaiveListFetch = dynamic(() => import("@/demos/list-fetch/naive").then((m) => m.NaiveListFetch));
+const TunedListFetch = dynamic(() => import("@/demos/list-fetch/tuned").then((m) => m.TunedListFetch));
 
 import { config as aiStreamingConfig } from "@/demos/ai-streaming/config";
-import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
-import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
+const NaiveAIStreaming = dynamic(() => import("@/demos/ai-streaming/naive").then((m) => m.NaiveAIStreaming));
+const TunedAIStreaming = dynamic(() => import("@/demos/ai-streaming/tuned").then((m) => m.TunedAIStreaming));
 
 import { config as fileUploadConfig } from "@/demos/file-upload/config";
-import { NaiveFileUpload } from "@/demos/file-upload/naive";
-import { TunedFileUpload } from "@/demos/file-upload/tuned";
+const NaiveFileUpload = dynamic(() => import("@/demos/file-upload/naive").then((m) => m.NaiveFileUpload));
+const TunedFileUpload = dynamic(() => import("@/demos/file-upload/tuned").then((m) => m.TunedFileUpload));
 
 import { config as optimisticActionsConfig } from "@/demos/optimistic-actions/config";
-import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
-import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
+const NaiveOptimisticActions = dynamic(() => import("@/demos/optimistic-actions/naive").then((m) => m.NaiveOptimisticActions));
+const TunedOptimisticActions = dynamic(() => import("@/demos/optimistic-actions/tuned").then((m) => m.TunedOptimisticActions));
 
 import { config as imageGalleryConfig } from "@/demos/image-gallery/config";
-import { NaiveImageGallery } from "@/demos/image-gallery/naive";
-import { TunedImageGallery } from "@/demos/image-gallery/tuned";
+const NaiveImageGallery = dynamic(() => import("@/demos/image-gallery/naive").then((m) => m.NaiveImageGallery));
+const TunedImageGallery = dynamic(() => import("@/demos/image-gallery/tuned").then((m) => m.TunedImageGallery));
 
 import { config as dataExportConfig } from "@/demos/data-export/config";
-import { NaiveDataExport } from "@/demos/data-export/naive";
-import { TunedDataExport } from "@/demos/data-export/tuned";
+const NaiveDataExport = dynamic(() => import("@/demos/data-export/naive").then((m) => m.NaiveDataExport));
+const TunedDataExport = dynamic(() => import("@/demos/data-export/tuned").then((m) => m.TunedDataExport));
 
 import { config as realTimeUpdatesConfig } from "@/demos/real-time-updates/config";
-import { NaiveRealTimeUpdates } from "@/demos/real-time-updates/naive";
-import { TunedRealTimeUpdates } from "@/demos/real-time-updates/tuned";
+const NaiveRealTimeUpdates = dynamic(() => import("@/demos/real-time-updates/naive").then((m) => m.NaiveRealTimeUpdates));
+const TunedRealTimeUpdates = dynamic(() => import("@/demos/real-time-updates/tuned").then((m) => m.TunedRealTimeUpdates));
 
 import { MapInteractionsCard } from "@/components/MapInteractionsCard";
 
 import { config as toolExecutionConfig } from "@/demos/ai-tool-execution/config";
-import { NaiveAiToolExecution } from "@/demos/ai-tool-execution/naive";
-import { TunedAiToolExecution } from "@/demos/ai-tool-execution/tuned";
+const NaiveAiToolExecution = dynamic(() => import("@/demos/ai-tool-execution/naive").then((m) => m.NaiveAiToolExecution));
+const TunedAiToolExecution = dynamic(() => import("@/demos/ai-tool-execution/tuned").then((m) => m.TunedAiToolExecution));
 
 import { config as agenticConfig } from "@/demos/ai-agentic-workflow/config";
-import { NaiveAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/naive";
-import { TunedAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/tuned";
+const NaiveAiAgenticWorkflow = dynamic(() => import("@/demos/ai-agentic-workflow/naive").then((m) => m.NaiveAiAgenticWorkflow));
+const TunedAiAgenticWorkflow = dynamic(() => import("@/demos/ai-agentic-workflow/tuned").then((m) => m.TunedAiAgenticWorkflow));
 
 import { config as topBarConfig } from "@/demos/technique-top-bar/config";
-import { NaiveTopBar } from "@/demos/technique-top-bar/naive";
-import { TunedTopBar } from "@/demos/technique-top-bar/tuned";
+const NaiveTopBar = dynamic(() => import("@/demos/technique-top-bar/naive").then((m) => m.NaiveTopBar));
+const TunedTopBar = dynamic(() => import("@/demos/technique-top-bar/tuned").then((m) => m.TunedTopBar));
 
 import { config as shimmerSkeletonConfig } from "@/demos/technique-shimmer-skeleton/config";
-import { NaiveShimmerSkeleton } from "@/demos/technique-shimmer-skeleton/naive";
-import { TunedShimmerSkeleton } from "@/demos/technique-shimmer-skeleton/tuned";
+const NaiveShimmerSkeleton = dynamic(() => import("@/demos/technique-shimmer-skeleton/naive").then((m) => m.NaiveShimmerSkeleton));
+const TunedShimmerSkeleton = dynamic(() => import("@/demos/technique-shimmer-skeleton/tuned").then((m) => m.TunedShimmerSkeleton));
 
 import { config as imageColorConfig } from "@/demos/technique-image-color/config";
-import { NaiveImageColor } from "@/demos/technique-image-color/naive";
-import { TunedImageColor } from "@/demos/technique-image-color/tuned";
+const NaiveImageColor = dynamic(() => import("@/demos/technique-image-color/naive").then((m) => m.NaiveImageColor));
+const TunedImageColor = dynamic(() => import("@/demos/technique-image-color/tuned").then((m) => m.TunedImageColor));
 
 import { config as thinkingGradientConfig } from "@/demos/technique-thinking-gradient/config";
-import { NaiveThinkingGradient } from "@/demos/technique-thinking-gradient/naive";
-import { TunedThinkingGradient } from "@/demos/technique-thinking-gradient/tuned";
+const NaiveThinkingGradient = dynamic(() => import("@/demos/technique-thinking-gradient/naive").then((m) => m.NaiveThinkingGradient));
+const TunedThinkingGradient = dynamic(() => import("@/demos/technique-thinking-gradient/tuned").then((m) => m.TunedThinkingGradient));
 
 import { config as mousedownConfig } from "@/demos/technique-mousedown/config";
-import { NaiveMousedown } from "@/demos/technique-mousedown/naive";
-import { TunedMousedown } from "@/demos/technique-mousedown/tuned";
+const NaiveMousedown = dynamic(() => import("@/demos/technique-mousedown/naive").then((m) => m.NaiveMousedown));
+const TunedMousedown = dynamic(() => import("@/demos/technique-mousedown/tuned").then((m) => m.TunedMousedown));
 
 import { config as iconFlipConfig } from "@/demos/technique-icon-flip/config";
-import { NaiveIconFlip } from "@/demos/technique-icon-flip/naive";
-import { TunedIconFlip } from "@/demos/technique-icon-flip/tuned";
+const NaiveIconFlip = dynamic(() => import("@/demos/technique-icon-flip/naive").then((m) => m.NaiveIconFlip));
+const TunedIconFlip = dynamic(() => import("@/demos/technique-icon-flip/tuned").then((m) => m.TunedIconFlip));
 
 import { config as trickleBarConfig } from "@/demos/technique-trickle-bar/config";
-import { NaiveTrickleBar } from "@/demos/technique-trickle-bar/naive";
-import { TunedTrickleBar } from "@/demos/technique-trickle-bar/tuned";
+const NaiveTrickleBar = dynamic(() => import("@/demos/technique-trickle-bar/naive").then((m) => m.NaiveTrickleBar));
+const TunedTrickleBar = dynamic(() => import("@/demos/technique-trickle-bar/tuned").then((m) => m.TunedTrickleBar));
 
 import { config as marqueeBarConfig } from "@/demos/technique-marquee-bar/config";
-import { NaiveMarqueeBar } from "@/demos/technique-marquee-bar/naive";
-import { TunedMarqueeBar } from "@/demos/technique-marquee-bar/tuned";
+const NaiveMarqueeBar = dynamic(() => import("@/demos/technique-marquee-bar/naive").then((m) => m.NaiveMarqueeBar));
+const TunedMarqueeBar = dynamic(() => import("@/demos/technique-marquee-bar/tuned").then((m) => m.TunedMarqueeBar));
 
 import { config as threeDotConfig } from "@/demos/technique-three-dot-bounce/config";
-import { NaiveThreeDotBounce } from "@/demos/technique-three-dot-bounce/naive";
-import { TunedThreeDotBounce } from "@/demos/technique-three-dot-bounce/tuned";
+const NaiveThreeDotBounce = dynamic(() => import("@/demos/technique-three-dot-bounce/naive").then((m) => m.NaiveThreeDotBounce));
+const TunedThreeDotBounce = dynamic(() => import("@/demos/technique-three-dot-bounce/tuned").then((m) => m.TunedThreeDotBounce));
 
 import { config as pulsingOrbConfig } from "@/demos/technique-pulsing-orb/config";
-import { NaivePulsingOrb } from "@/demos/technique-pulsing-orb/naive";
-import { TunedPulsingOrb } from "@/demos/technique-pulsing-orb/tuned";
+const NaivePulsingOrb = dynamic(() => import("@/demos/technique-pulsing-orb/naive").then((m) => m.NaivePulsingOrb));
+const TunedPulsingOrb = dynamic(() => import("@/demos/technique-pulsing-orb/tuned").then((m) => m.TunedPulsingOrb));
 
 import { config as rotatingTipsConfig } from "@/demos/technique-rotating-tips/config";
-import { NaiveRotatingTips } from "@/demos/technique-rotating-tips/naive";
-import { TunedRotatingTips } from "@/demos/technique-rotating-tips/tuned";
+const NaiveRotatingTips = dynamic(() => import("@/demos/technique-rotating-tips/naive").then((m) => m.NaiveRotatingTips));
+const TunedRotatingTips = dynamic(() => import("@/demos/technique-rotating-tips/tuned").then((m) => m.TunedRotatingTips));
 
 import { config as brandedStoryConfig } from "@/demos/technique-branded-story/config";
-import { NaiveBrandedStory } from "@/demos/technique-branded-story/naive";
-import { TunedBrandedStory } from "@/demos/technique-branded-story/tuned";
+const NaiveBrandedStory = dynamic(() => import("@/demos/technique-branded-story/naive").then((m) => m.NaiveBrandedStory));
+const TunedBrandedStory = dynamic(() => import("@/demos/technique-branded-story/tuned").then((m) => m.TunedBrandedStory));
 
 import { config as miniGameConfig } from "@/demos/technique-mini-game/config";
-import { NaiveMiniGame } from "@/demos/technique-mini-game/naive";
-import { TunedMiniGame } from "@/demos/technique-mini-game/tuned";
+const NaiveMiniGame = dynamic(() => import("@/demos/technique-mini-game/naive").then((m) => m.NaiveMiniGame));
+const TunedMiniGame = dynamic(() => import("@/demos/technique-mini-game/tuned").then((m) => m.TunedMiniGame));
 
 import { config as notifyCompleteConfig } from "@/demos/technique-notify-complete/config";
-import { NaiveNotifyComplete } from "@/demos/technique-notify-complete/naive";
-import { TunedNotifyComplete } from "@/demos/technique-notify-complete/tuned";
+const NaiveNotifyComplete = dynamic(() => import("@/demos/technique-notify-complete/naive").then((m) => m.NaiveNotifyComplete));
+const TunedNotifyComplete = dynamic(() => import("@/demos/technique-notify-complete/tuned").then((m) => m.TunedNotifyComplete));
 
 import { config as skeletonSimpleConfig } from "@/demos/technique-skeleton-simple/config";
-import { NaiveSkeletonSimple } from "@/demos/technique-skeleton-simple/naive";
-import { TunedSkeletonSimple } from "@/demos/technique-skeleton-simple/tuned";
+const NaiveSkeletonSimple = dynamic(() => import("@/demos/technique-skeleton-simple/naive").then((m) => m.NaiveSkeletonSimple));
+const TunedSkeletonSimple = dynamic(() => import("@/demos/technique-skeleton-simple/tuned").then((m) => m.TunedSkeletonSimple));
 
 import { config as skeletonTrueConfig } from "@/demos/technique-skeleton-true/config";
-import { NaiveSkeletonTrue } from "@/demos/technique-skeleton-true/naive";
-import { TunedSkeletonTrue } from "@/demos/technique-skeleton-true/tuned";
+const NaiveSkeletonTrue = dynamic(() => import("@/demos/technique-skeleton-true/naive").then((m) => m.NaiveSkeletonTrue));
+const TunedSkeletonTrue = dynamic(() => import("@/demos/technique-skeleton-true/tuned").then((m) => m.TunedSkeletonTrue));
 
 import { config as skeletonPulseConfig } from "@/demos/technique-skeleton-pulse/config";
-import { NaiveSkeletonPulse } from "@/demos/technique-skeleton-pulse/naive";
-import { TunedSkeletonPulse } from "@/demos/technique-skeleton-pulse/tuned";
+const NaiveSkeletonPulse = dynamic(() => import("@/demos/technique-skeleton-pulse/naive").then((m) => m.NaiveSkeletonPulse));
+const TunedSkeletonPulse = dynamic(() => import("@/demos/technique-skeleton-pulse/tuned").then((m) => m.TunedSkeletonPulse));
 
 import { config as imageBrandConfig } from "@/demos/technique-image-brand/config";
-import { NaiveImageBrand } from "@/demos/technique-image-brand/naive";
-import { TunedImageBrand } from "@/demos/technique-image-brand/tuned";
+const NaiveImageBrand = dynamic(() => import("@/demos/technique-image-brand/naive").then((m) => m.NaiveImageBrand));
+const TunedImageBrand = dynamic(() => import("@/demos/technique-image-brand/tuned").then((m) => m.TunedImageBrand));
 
 import { config as spinnerConfig } from "@/demos/technique-spinner/config";
-import { NaiveSpinner } from "@/demos/technique-spinner/naive";
-import { TunedSpinner } from "@/demos/technique-spinner/tuned";
+const NaiveSpinner = dynamic(() => import("@/demos/technique-spinner/naive").then((m) => m.NaiveSpinner));
+const TunedSpinner = dynamic(() => import("@/demos/technique-spinner/tuned").then((m) => m.TunedSpinner));
 
 import { config as decelBarConfig } from "@/demos/technique-decel-bar/config";
-import { NaiveDecelBar } from "@/demos/technique-decel-bar/naive";
-import { TunedDecelBar } from "@/demos/technique-decel-bar/tuned";
+const NaiveDecelBar = dynamic(() => import("@/demos/technique-decel-bar/naive").then((m) => m.NaiveDecelBar));
+const TunedDecelBar = dynamic(() => import("@/demos/technique-decel-bar/tuned").then((m) => m.TunedDecelBar));
 
 import { config as counterConfig } from "@/demos/technique-counter/config";
-import { NaiveCounter } from "@/demos/technique-counter/naive";
-import { TunedCounter } from "@/demos/technique-counter/tuned";
+const NaiveCounter = dynamic(() => import("@/demos/technique-counter/naive").then((m) => m.NaiveCounter));
+const TunedCounter = dynamic(() => import("@/demos/technique-counter/tuned").then((m) => m.TunedCounter));
 
 import { config as skeletonRevealConfig } from "@/demos/technique-skeleton-reveal/config";
-import { NaiveSkeletonReveal } from "@/demos/technique-skeleton-reveal/naive";
-import { TunedSkeletonReveal } from "@/demos/technique-skeleton-reveal/tuned";
+const NaiveSkeletonReveal = dynamic(() => import("@/demos/technique-skeleton-reveal/naive").then((m) => m.NaiveSkeletonReveal));
+const TunedSkeletonReveal = dynamic(() => import("@/demos/technique-skeleton-reveal/tuned").then((m) => m.TunedSkeletonReveal));
 
 type BandId = "instant" | "responsive" | "engaged" | "long";
 type FilterValue = "all" | BandId;

@@ -35,7 +35,7 @@ export function TunedPulsingOrb({ seed = 1 }: { seed?: number }) {
           Yes — that&apos;s exactly the right framing.
         </p>
       ) : (
-        <div className="flex items-center gap-2" aria-label="Working">
+        <div className="flex items-center gap-1" aria-label="Working">
           <MorphingOrb />
           <span className="text-sm text-muted-foreground">Working</span>
         </div>
@@ -62,13 +62,13 @@ function MorphingOrb() {
     <svg
       aria-hidden
       viewBox="0 0 24 24"
-      className="size-5 text-primary"
+      className="size-[25px] text-primary"
       fill="currentColor"
     >
       <path d={DOT}>
         <animate
           attributeName="d"
-          dur="2.8s"
+          dur="0.93s"
           repeatCount="indefinite"
           calcMode="spline"
           keyTimes="0;0.25;0.5;0.75;1"
