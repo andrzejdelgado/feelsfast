@@ -37,6 +37,8 @@ export type Essay = {
   blurb: string;
   citations: readonly string[];
   status: EssayStatus;
+  /** ISO date (YYYY-MM-DD) when the piece was published. */
+  publishedAt?: string;
 };
 
 /**
@@ -63,6 +65,7 @@ export const essays: readonly Essay[] = [
       "Weber–Fechner",
       "Eizenberg",
     ],
+    publishedAt: "2026-04-25",
     status: "published",
   },
   {
@@ -79,6 +82,7 @@ export const essays: readonly Essay[] = [
       "Fitch",
       "Myers 1985",
     ],
+    publishedAt: "2026-04-22",
     status: "published",
   },
   {
@@ -95,6 +99,7 @@ export const essays: readonly Essay[] = [
       "Doherty 1982",
       "Nielsen 1993",
     ],
+    publishedAt: "2026-04-19",
     status: "published",
   },
   {
@@ -110,6 +115,7 @@ export const essays: readonly Essay[] = [
       "Card, Moran & Newell 1983",
       "Miller 1968",
     ],
+    publishedAt: "2026-05-10",
     status: "published",
   },
   {
@@ -128,6 +134,7 @@ export const essays: readonly Essay[] = [
       "Church et al.",
       "Mishunov 2015",
     ],
+    publishedAt: "2026-04-18",
     status: "published",
   },
   {
@@ -143,6 +150,7 @@ export const essays: readonly Essay[] = [
       "Jota et al. 2013",
       "Deber et al. 2015",
     ],
+    publishedAt: "2026-04-28",
     status: "published",
   },
   {
@@ -153,6 +161,7 @@ export const essays: readonly Essay[] = [
     blurb:
       "INP and Web Vitals as a starting point. How to add perception to a quantitative budget. The role of adaptive loading and the performance scaler.",
     citations: ["Doherty 1982", "Card, Moran & Newell 1983", "Fitch"],
+    publishedAt: "2026-04-21",
     status: "published",
   },
   {
@@ -172,6 +181,7 @@ export const essays: readonly Essay[] = [
       "Ornstein 1969",
       "Block & Zakay 1997",
     ],
+    publishedAt: "2026-04-26",
     status: "published",
   },
   {
@@ -190,6 +200,7 @@ export const essays: readonly Essay[] = [
       "Doherty 1982",
       "Ziegler et al. 2022",
     ],
+    publishedAt: "2026-04-30",
     status: "published",
   },
   {
@@ -205,6 +216,7 @@ export const essays: readonly Essay[] = [
       "Anstis 2003",
       "Guo et al. 2017",
     ],
+    publishedAt: "2026-04-13",
     status: "published",
   },
 ];

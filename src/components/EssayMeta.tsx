@@ -31,6 +31,7 @@ export function EssayMeta({ slug }: { slug: string }) {
               title: essay.title,
               description: essay.blurb,
               url,
+              datePublished: essay.publishedAt,
             })}
           />
           <JsonLd

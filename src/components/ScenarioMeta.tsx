@@ -25,6 +25,7 @@ export function ScenarioMeta({ slug }: { slug: string }) {
               title: scenario.title,
               description: scenario.blurb,
               url,
+              datePublished: scenario.publishedAt,
             })}
           />
           <JsonLd

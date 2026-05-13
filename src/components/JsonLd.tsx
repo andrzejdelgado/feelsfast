@@ -40,6 +40,8 @@ export function articleSchema({
   datePublished?: string;
   dateModified?: string;
 }) {
+  // Omit datePublished entirely when not provided — Google prefers a
+  // missing field to a misleading one. Same for dateModified.
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -57,8 +59,8 @@ export function articleSchema({
       name: siteConfig.name,
       url: siteConfig.url,
     },
-    datePublished: datePublished ?? "2026-01-01",
-    dateModified: dateModified ?? new Date().toISOString().slice(0, 10),
+    ...(datePublished ? { datePublished } : {}),
+    ...(dateModified ? { dateModified } : {}),
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": url,
