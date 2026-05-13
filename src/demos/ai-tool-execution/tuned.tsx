@@ -4,7 +4,7 @@ import { Check, Loader2, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { seededGamma } from "@/lib/jitter";
-import { STEPS, type ToolStep } from "./config";
+import { STEPS, STEPS_MOBILE, type ToolStep } from "./config";
 
 type StepState = {
   step: ToolStep;
@@ -24,17 +24,31 @@ type StepState = {
  */
 export function TunedAiToolExecution({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"running" | "done">("running");
+  const [steps, setSteps] = useState<readonly ToolStep[]>(STEPS);
   const [states, setStates] = useState<StepState[]>(
     STEPS.map((s) => ({ step: s, status: "pending" })),
   );
   const cancelRef = useRef<{ cancelled: boolean } | null>(null);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => setSteps(mq.matches ? STEPS_MOBILE : STEPS);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    setStates(steps.map((s) => ({ step: s, status: "pending" })));
+  }, [steps]);
+
+  useEffect(() => {
     const token = { cancelled: false };
     cancelRef.current = token;
 
     const run = async () => {
-      for (let i = 0; i < STEPS.length; i++) {
+      for (let i = 0; i < steps.length; i++) {
         if (token.cancelled) return;
         setStates((prev) =>
           prev.map((s, idx) =>
@@ -44,7 +58,7 @@ export function TunedAiToolExecution({ seed = 1 }: { seed?: number }) {
         await new Promise<void>((resolve) =>
           setTimeout(
             resolve,
-            seededGamma(seed + i * 1009, STEPS[i].durationMs),
+            seededGamma(seed + i * 1009, steps[i].durationMs),
           ),
         );
         if (token.cancelled) return;
@@ -59,7 +73,7 @@ export function TunedAiToolExecution({ seed = 1 }: { seed?: number }) {
     return () => {
       token.cancelled = true;
     };
-  }, [seed]);
+  }, [seed, steps]);
 
   return (
     <div className="space-y-3">

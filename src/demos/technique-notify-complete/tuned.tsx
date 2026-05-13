@@ -102,7 +102,7 @@ function Toast() {
       role="status"
       aria-live="polite"
       className={cn(
-        "absolute bottom-2 left-1/2 inline-flex -translate-x-1/2 items-center gap-2 rounded-md border border-primary bg-primary/10 px-3 py-1.5 text-xs text-primary shadow-sm",
+        "absolute bottom-2 left-1/2 inline-flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-md border border-primary bg-primary/10 px-3 py-1.5 text-xs text-primary shadow-sm",
         "motion-safe:animate-[toast-rise_280ms_ease-out]",
       )}
     >

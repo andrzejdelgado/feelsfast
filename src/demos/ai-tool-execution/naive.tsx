@@ -3,7 +3,7 @@
 import { Loader2, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { seededGamma } from "@/lib/jitter";
-import { STEPS } from "./config";
+import { STEPS, STEPS_MOBILE, type ToolStep } from "./config";
 
 /**
  * Naive tool execution — a single "Working…" spinner runs for the full
@@ -13,10 +13,20 @@ import { STEPS } from "./config";
  */
 export function NaiveAiToolExecution({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"running" | "done">("running");
+  const [steps, setSteps] = useState<readonly ToolStep[]>(STEPS);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const totalMs = STEPS.reduce(
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => setSteps(mq.matches ? STEPS_MOBILE : STEPS);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    const totalMs = steps.reduce(
       (sum, s, i) => sum + seededGamma(seed + i * 1009, s.durationMs),
       0,
     );
@@ -26,7 +36,7 @@ export function NaiveAiToolExecution({ seed = 1 }: { seed?: number }) {
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
     };
-  }, [seed]);
+  }, [seed, steps]);
 
   return (
     <div className="space-y-3">

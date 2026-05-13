@@ -6,10 +6,10 @@ export const config: DemoConfig = {
     "An agent reads a file, searches the codebase, and runs a typecheck. Naive: opaque \"Working…\" spinner for the full duration. Tuned: each tool call streams in as the agent runs it, with its own running / done state.",
   timeBand: "1 – 10 S",
   runMode: "manual",
-  // Reserve the loaded-state height of the 3-step tuned list (each
-  // item with always-rendered title + detail) + the trailing "Done."
-  // so neither panel jumps as steps complete.
-  panelMinHeight: "min-h-[226px]",
+  // Reserves the tallest Tuned list height: 2 mobile rows + Done line
+  // (mobile), 3 md+ rows + Done line. With the items pre-rendered at
+  // constant row height, neither panel jumps as steps complete.
+  panelMinHeight: "min-h-[162px] md:min-h-[226px]",
 };
 
 export type ToolStep = {
@@ -20,6 +20,7 @@ export type ToolStep = {
   durationMs: number;
 };
 
+/** Full 3-step set used at md+. Mobile uses the first two. */
 export const STEPS: readonly ToolStep[] = [
   {
     id: "read",
@@ -40,3 +41,6 @@ export const STEPS: readonly ToolStep[] = [
     durationMs: 1800,
   },
 ];
+
+/** 2-step set used at mobile so the panel fits without stacking. */
+export const STEPS_MOBILE: readonly ToolStep[] = STEPS.slice(0, 2);

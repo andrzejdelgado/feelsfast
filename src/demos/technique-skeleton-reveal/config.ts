@@ -11,17 +11,22 @@ export const FETCH_DURATION_P50_MS = 1400;
 
 export type Article = { title: string; body: string };
 
+/**
+ * Two-word titles + 3-line bodies, kept tight so every article wraps
+ * to the same 3-line shape and the card height is identical for all
+ * three (no card-to-card jump as the reader clicks Next).
+ */
 export const ARTICLES: readonly Article[] = [
   {
-    title: "How perception bends time",
-    body: "The clock can say one thing; the experience can say another. Card-Moran-Newell's perceptual frame is the budget the rest of the platform is built on.",
+    title: "Perception time",
+    body: "The clock says one thing; experience says another. That gap is perceived performance.",
   },
   {
-    title: "Backwards-decelerating ribs",
-    body: "Harrison et al. measured a ~12 % perceived speed-up from progress bars that fill fast and slow as they approach the end. The trick costs nothing.",
+    title: "Decelerating ribs",
+    body: "Harrison 2010: bars that fill fast then slow near the end feel ~12 % faster than linear. Costs nothing.",
   },
   {
-    title: "The 10-second wall",
-    body: "Past 10 s the user's attention is no longer reliably on the task. The right pattern stops being progress and becomes engagement or hand-off.",
+    title: "Ten-second wall",
+    body: "Past 10 s the user's attention drifts. The right pattern stops being progress and becomes engagement.",
   },
 ];
