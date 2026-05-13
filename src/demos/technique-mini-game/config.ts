@@ -3,9 +3,12 @@ import type { DemoConfig } from "@/components/DemoRunner";
 export const config: DemoConfig = {
   title: "Mini interactive widget",
   description:
-    "T-Rex Run-style mini-game during a long wait. Naive: a spinner for the full duration. Tuned: a clickable runner game — press Jump to leap over incoming obstacles. The wait stops being time the user is paying and becomes time they are spending. Block & Zakay 1997: filled time has shorter retrospective duration than empty time.",
+    "T-Rex Run-style mini-game during a long wait. Naive: a spinner for the full duration. Tuned: a clickable runner game — press Jump to leap over incoming mushrooms. The wait stops being time the user is paying and becomes time they are spending. Block & Zakay 1997: filled time has shorter retrospective duration than empty time.",
   timeBand: "10 S+",
   runMode: "manual",
+  // Lock both panels at the Tuned playing height (header + game
+  // area + jump button) so idle → playing → done never resizes.
+  panelMinHeight: "min-h-[166px]",
 };
 
 /** Long enough that the user has many obstacles to jump. */

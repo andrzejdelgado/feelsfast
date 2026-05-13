@@ -8,8 +8,10 @@ export const config: DemoConfig = {
   runMode: "manual",
   // Reserve the loaded-response card height at every breakpoint so the
   // panel doesn't jump between idle → thinking → streaming → done.
-  // Mobile uses `RESPONSE_MOBILE`; md+ uses the longer `RESPONSE`.
-  panelMinHeight: "min-h-[136px] md:min-h-[200px]",
+  // Values match the inner card's natural height so the card sits snug
+  // to its content (no empty space below). Mobile uses
+  // `RESPONSE_MOBILE`; md+ uses the longer `RESPONSE`.
+  panelMinHeight: "min-h-[102px] md:min-h-[148px]",
 };
 
 /** Full-length answer for tablet and desktop (~200 characters). */

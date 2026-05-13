@@ -97,19 +97,23 @@ export function DemoRunner({
 
   /**
    * Center the demo in the viewport so Run + both panels are visible
-   * at once. Mobile UX win — without this, clicking Run from the top
-   * of the card leaves panel 2 below the fold and the animation
-   * starts before the user is looking at it.
+   * at once. Below `lg` (1024 px) the two panels stack vertically and
+   * the lower one can sit below the fold when Run is clicked from the
+   * top of the card — that's where the scroll earns its keep. At lg+
+   * the panels are side-by-side and already visible, so scrolling the
+   * page out from under the user is just noise. Skip it there.
    *
    * `setTimeout(0)` lets React render the new state before we scroll;
    * `prefers-reduced-motion` users get an instant jump instead of the
    * smooth glide.
    */
   const scrollIntoCenter = () => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(min-width: 1024px)").matches) return;
     setTimeout(() => {
-      const prefersReducedMotion =
-        typeof window !== "undefined" &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
       sectionRef.current?.scrollIntoView({
         behavior: prefersReducedMotion ? "instant" : "smooth",
         block: "center",

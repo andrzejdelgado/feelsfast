@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { seededGamma } from "@/lib/jitter";
 import {
@@ -13,29 +13,34 @@ import {
 
 type Obstacle = { id: number; spawnedAt: number; cleared: boolean };
 
+/** % of panel width where the runner sits (left edge). */
+const RUNNER_X_PCT = 20;
+/** Obstacle x-axis travel: spawns at 100% (just off right) → -10% (off left). */
+const OBSTACLE_START_PCT = 100;
+const OBSTACLE_END_PCT = -10;
+const OBSTACLE_TRAVEL_PCT = OBSTACLE_START_PCT - OBSTACLE_END_PCT;
+/**
+ * Ratio at which the obstacle's left edge crosses the runner's left
+ * edge — pure geometry, not a guess. (100 - 110·r) = 20  →  r = 80/110.
+ */
+const SCORE_RATIO = (OBSTACLE_START_PCT - RUNNER_X_PCT) / OBSTACLE_TRAVEL_PCT;
+const SCORE_WINDOW = 0.04;
+
 let nextId = 1;
 
 /**
- * Tuned — a Chrome-dino-style runner game. Press Jump (or hit the
- * Space bar) to leap over incoming obstacles. The wait fills with
- * gameplay: time the user is *spending*, not paying.
- *
- * Mechanics:
- *   - Obstacles spawn at random intervals from the right edge and
- *     travel to the left over `OBSTACLE_TRAVEL_MS`.
- *   - The runner has a fixed x position; pressing Jump fires a jump
- *     animation that lifts the runner for `JUMP_MS`.
- *   - An obstacle scores when its x crosses the runner's x while the
- *     runner is airborne; otherwise it counts as missed.
- *   - The game ends when the seeded total duration elapses.
+ * Tuned — Chrome-dino-style runner game during a long wait. Press
+ * Jump (or Space) to leap over incoming mushrooms. Time the user is
+ * *spending*, not paying (Block & Zakay 1997: filled time has shorter
+ * retrospective duration than empty time).
  */
 export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"playing" | "done">("playing");
   const [obstacles, setObstacles] = useState<Obstacle[]>([]);
   const [score, setScore] = useState(0);
-  const [missed, setMissed] = useState(0);
   const [isJumping, setIsJumping] = useState(false);
   const isJumpingRef = useRef(false);
+  const obstaclesRef = useRef<Obstacle[]>([]);
   const jumpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // End game.
@@ -45,7 +50,7 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
     return () => clearTimeout(id);
   }, [seed]);
 
-  // Spawn obstacles.
+  // Spawn obstacles at random intervals.
   useEffect(() => {
     if (phase !== "playing") return;
     let cancelled = false;
@@ -55,10 +60,13 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
         SPAWN_MIN_MS + Math.random() * (SPAWN_MAX_MS - SPAWN_MIN_MS);
       pending = setTimeout(() => {
         if (cancelled) return;
-        setObstacles((prev) => [
-          ...prev,
-          { id: nextId++, spawnedAt: performance.now(), cleared: false },
-        ]);
+        const fresh: Obstacle = {
+          id: nextId++,
+          spawnedAt: performance.now(),
+          cleared: false,
+        };
+        obstaclesRef.current = [...obstaclesRef.current, fresh];
+        setObstacles(obstaclesRef.current);
         schedule();
       }, delay);
     };
@@ -69,40 +77,38 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
     };
   }, [phase]);
 
-  // Score / miss when each obstacle passes the runner; reap exited.
+  // Tick: score obstacles that crossed the runner, reap exited ones.
+  // Score logic lives OUTSIDE any setState updater so React StrictMode's
+  // double-invocation of pure updaters cannot double-count.
   useEffect(() => {
     if (phase !== "playing") return;
     const tick = setInterval(() => {
       const now = performance.now();
-      setObstacles((prev) => {
-        let changed = false;
-        const next = prev.map((o) => {
-          if (o.cleared) return o;
-          const t = (now - o.spawnedAt) / OBSTACLE_TRAVEL_MS;
-          // The obstacle "crosses" the runner ~80 % of the travel
-          // (runner sits ~20 % from the left).
-          if (t >= 0.78 && t <= 0.86) {
-            changed = true;
-            if (isJumpingRef.current) {
-              setScore((s) => s + 1);
-            } else {
-              setMissed((m) => m + 1);
-            }
-            return { ...o, cleared: true };
-          }
-          return o;
-        });
-        const filtered = next.filter(
-          (o) => now - o.spawnedAt < OBSTACLE_TRAVEL_MS,
-        );
-        return changed || filtered.length !== prev.length ? filtered : prev;
-      });
+      let hits = 0;
+      const next: Obstacle[] = [];
+      for (const o of obstaclesRef.current) {
+        const ratio = (now - o.spawnedAt) / OBSTACLE_TRAVEL_MS;
+        if (ratio >= 1.1) continue; // off-screen → drop
+        if (
+          !o.cleared &&
+          ratio >= SCORE_RATIO - SCORE_WINDOW &&
+          ratio <= SCORE_RATIO + SCORE_WINDOW
+        ) {
+          if (isJumpingRef.current) hits++;
+          next.push({ ...o, cleared: true });
+        } else {
+          next.push(o);
+        }
+      }
+      obstaclesRef.current = next;
+      setObstacles(next);
+      if (hits > 0) setScore((s) => s + hits);
     }, 50);
     return () => clearInterval(tick);
   }, [phase]);
 
-  const jump = () => {
-    if (phase !== "playing" || isJumpingRef.current) return;
+  const jump = useCallback(() => {
+    if (isJumpingRef.current) return;
     isJumpingRef.current = true;
     setIsJumping(true);
     if (jumpTimerRef.current) clearTimeout(jumpTimerRef.current);
@@ -110,9 +116,9 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
       isJumpingRef.current = false;
       setIsJumping(false);
     }, JUMP_MS);
-  };
+  }, []);
 
-  // Space bar = jump.
+  // Space bar = jump while playing.
   useEffect(() => {
     if (phase !== "playing") return;
     const onKey = (e: KeyboardEvent) => {
@@ -123,17 +129,13 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase]);
+  }, [phase, jump]);
 
   if (phase === "done") {
     return (
-      <div className="grid min-h-[10rem] place-items-center rounded-md border border-border bg-background">
-        <p className="text-sm text-foreground">
-          Done.{" "}
-          <span className="text-muted-foreground">
-            Cleared {score} · missed {missed}
-          </span>
+      <div className="grid h-full min-h-[10rem] place-items-center rounded-md border border-border bg-background">
+        <p className="font-mono text-xs font-medium uppercase tracking-wider text-primary tabular-nums">
+          Score: {score}
         </p>
       </div>
     );
@@ -141,12 +143,12 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-baseline justify-between">
+      <div className="flex items-baseline justify-between gap-2">
         <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
-          Jump the obstacles while you wait
+          Jump the mushrooms
         </p>
         <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary tabular-nums">
-          Cleared · {score}
+          Score: {score}
         </p>
       </div>
 
@@ -158,26 +160,18 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
         <div
           aria-hidden
           className={cn(
-            "absolute bottom-3 size-6 origin-bottom rounded-sm bg-primary transition-transform duration-300 ease-out motion-reduce:transition-none",
+            "absolute bottom-3 size-6 origin-bottom rounded-full bg-primary transition-transform duration-300 ease-out motion-reduce:transition-none",
             isJumping ? "-translate-y-12" : "translate-y-0",
           )}
-          style={{ left: "20%" }}
+          style={{ left: `${RUNNER_X_PCT}%` }}
         />
         {obstacles.map((o) => (
-          <div
-            key={o.id}
-            aria-hidden
-            className="absolute bottom-3 size-4 rounded-sm bg-muted-foreground motion-reduce:animate-none"
-            style={{
-              right: 0,
-              animation: `dino-roll ${OBSTACLE_TRAVEL_MS}ms linear`,
-            }}
-          />
+          <Mushroom key={o.id} spawnedAt={o.spawnedAt} />
         ))}
         <style>{`
-          @keyframes dino-roll {
-            from { transform: translateX(2rem); }
-            to   { transform: translateX(-100vw); }
+          @keyframes mushroom-roll {
+            from { left: ${OBSTACLE_START_PCT}%; }
+            to   { left: ${OBSTACLE_END_PCT}%; }
           }
         `}</style>
       </div>
@@ -185,10 +179,55 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
       <button
         type="button"
         onClick={jump}
-        className="w-full rounded-md border border-primary bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97]"
+        className="flex w-full items-center justify-center gap-1.5 rounded-md border border-primary bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97]"
       >
-        Jump (or press Space)
+        Jump
+        <kbd className="inline-flex items-center rounded-sm border border-primary-foreground/30 bg-primary-foreground/15 px-1 py-px font-mono text-[0.625rem] font-medium uppercase tracking-wider">
+          Space
+        </kbd>
       </button>
     </div>
+  );
+}
+
+/**
+ * Mushroom obstacle. Position animated via CSS keyframes on `left`
+ * (panel-relative %), so the geometry matches `SCORE_RATIO` exactly
+ * at every viewport — no dependency on viewport width.
+ *
+ * `animation-delay` is captured at mount via `useMemo([])` so the
+ * animation phase is fixed for the lifetime of the obstacle; without
+ * this the per-render `performance.now()` call would reset the CSS
+ * animation on every state change.
+ */
+function Mushroom({ spawnedAt }: { spawnedAt: number }) {
+  const animationDelay = useMemo(
+    () => `-${(performance.now() - spawnedAt) / 1000}s`,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 16 20"
+      className="absolute bottom-3 size-5 motion-reduce:animate-none"
+      style={{
+        left: `${OBSTACLE_START_PCT}%`,
+        animation: `mushroom-roll ${OBSTACLE_TRAVEL_MS}ms linear forwards`,
+        animationDelay,
+      }}
+    >
+      {/* Stem — cream/secondary, flat top, rounded base. */}
+      <path
+        d="M5 11 H11 V17 Q11 19 8 19 Q5 19 5 17 Z"
+        fill="var(--secondary)"
+      />
+      {/* Cap — primary, dome shape. */}
+      <path d="M1 12 A7 8 0 0 1 15 12 Z" fill="var(--primary)" />
+      {/* Spots on the cap. */}
+      <circle cx="4.2" cy="9.5" r="1.3" fill="var(--secondary)" />
+      <circle cx="10.5" cy="6.5" r="1.6" fill="var(--secondary)" />
+      <circle cx="12.5" cy="10" r="0.9" fill="var(--secondary)" />
+    </svg>
   );
 }

@@ -1,11 +1,15 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Predominant-colour image",
+  title: "Predominant-color image",
   description:
-    "A 6-image gallery loading at varying rates. Naive: blank tiles until each image arrives. Tuned: each tile's dominant colour fills the slot from frame zero (cheap to inline as a 1-pixel data-uri at upload time), then crossfades into the real image. The eye reads the colour as the image arriving.",
+    "A 6-image gallery loading at varying rates. Naive: blank tiles until each image arrives. Tuned: each tile's dominant color fills the slot from frame zero (cheap to inline as a 1-pixel data-uri at upload time), then crossfades into the real image. The eye reads the colour as the image arriving.",
   timeBand: "1 – 10 S",
   runMode: "manual",
+  // Reserve exactly the 3×2 aspect-square grid height at each
+  // breakpoint so the panel doesn't jump between idle and running
+  // and sits snug to the loaded tiles (no empty space below).
+  panelMinHeight: "min-h-[149px] md:min-h-[214px] lg:min-h-[219px]",
 };
 
 /** Per-tile median load time (gamma-jittered, seeded). */
@@ -13,7 +17,7 @@ export const TILE_P50_MS = 2200;
 
 /**
  * Six "photographs" rendered as CSS gradients. Each one carries the
- * single dominant colour we'd inline as a 1×1 base64 LQIP at upload
+ * single dominant color we'd inline as a 1×1 base64 LQIP at upload
  * time — the Tuned side fills the slot with that colour from frame
  * zero, then crossfades to the gradient.
  */

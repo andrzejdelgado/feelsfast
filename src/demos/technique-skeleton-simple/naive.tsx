@@ -29,7 +29,7 @@ function Empty() {
 
 function Card() {
   return (
-    <div className="min-h-[6rem] rounded-md border border-border bg-background p-3 text-sm">
+    <div className="flex min-h-[6rem] flex-col justify-center rounded-md border border-border bg-background p-3 text-sm">
       <p className="font-medium">Q3 sprint goals</p>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
         Ship perceived-performance demos. Migrate staging.

@@ -6,6 +6,9 @@ export const config: DemoConfig = {
     "Slack-style cold-boot pattern. Naive: a single \"Loading…\" line for the full ~12 s. Tuned: a paced sequence of branded frames — wordmark, tagline, skeleton, near-ready — each fading to the next over the wait. The user reads the wait as the app composing itself, not as absence.",
   timeBand: "10 S+",
   runMode: "manual",
+  // Reserve the 10 rem stage height so the panel sits at the same
+  // size from idle through every frame to done — no jump on Run.
+  panelMinHeight: "min-h-[10rem]",
 };
 
 export const TOTAL_DURATION_P50_MS = 12000;

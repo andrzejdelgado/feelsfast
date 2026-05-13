@@ -3,63 +3,73 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { seededGamma } from "@/lib/jitter";
-import { HERO, TOTAL_DURATION_P50_MS } from "./config";
+import { TILES, TILE_P50_MS } from "./config";
 
 /**
- * Tuned — the image slot ships with the full feelsfast wordmark
- * centred from frame zero, sitting on a neutral surface. When the
- * actual image lands it crossfades over 350 ms on top, replacing
- * the wordmark.
+ * Tuned — every tile ships with the brand monogram centred on a
+ * neutral surface from frame zero. When the image arrives, it
+ * crossfades over the monogram in 350 ms, replacing it.
  *
- * Use when you have no per-image dominant-colour data — cold cache,
+ * Use when you have no per-image dominant-color data — cold cache,
  * fresh content, third-party images. The brand mark says "this
- * surface is alive and ours" without claiming to know what the
+ * surface is alive and ours" without claiming to know what each
  * image is.
  */
 export function TunedImageBrand({ seed = 1 }: { seed?: number }) {
-  const [loaded, setLoaded] = useState(false);
-  const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [loaded, setLoaded] = useState<Set<string>>(new Set());
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
   useEffect(() => {
-    ref.current = setTimeout(
-      () => setLoaded(true),
-      seededGamma(seed, TOTAL_DURATION_P50_MS),
+    timeoutsRef.current = TILES.map((tile, i) =>
+      setTimeout(() => {
+        setLoaded((prev) => {
+          const next = new Set(prev);
+          next.add(tile.id);
+          return next;
+        });
+      }, seededGamma(seed + i * 1009, TILE_P50_MS)),
     );
     return () => {
-      if (ref.current !== null) clearTimeout(ref.current);
+      timeoutsRef.current.forEach((id) => clearTimeout(id));
     };
-  }, []);
+  }, [seed]);
 
   return (
-    <div className="overflow-hidden rounded-md border border-border bg-background">
-      <div
-        aria-label={HERO.alt}
-        aria-busy={!loaded}
-        className="relative grid aspect-video w-full place-items-center bg-secondary"
-      >
-        <span
-          aria-hidden
-          className={cn(
-            "flex items-baseline gap-1 transition-opacity duration-[350ms] ease-out",
-            loaded ? "opacity-0" : "opacity-100",
-          )}
-        >
-          <span className="text-2xl font-medium tracking-tight text-foreground">
-            feelsfast
-          </span>
-          <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
-            .fyi
-          </span>
-        </span>
-        <div
-          aria-hidden
-          className={cn(
-            "absolute inset-0 transition-opacity duration-[350ms] ease-out motion-reduce:duration-[150ms]",
-            loaded ? "opacity-100" : "opacity-0",
-          )}
-          style={{ backgroundImage: HERO.gradient }}
-        />
-      </div>
-      <div className="px-3 py-2 text-xs text-muted-foreground">{HERO.alt}</div>
+    <div className="grid grid-cols-3 gap-2">
+      {TILES.map((tile) => {
+        const isLoaded = loaded.has(tile.id);
+        return (
+          <div
+            key={tile.id}
+            aria-label={tile.label}
+            aria-busy={!isLoaded}
+            className="relative grid aspect-square w-full place-items-center overflow-hidden rounded bg-secondary"
+          >
+            <span
+              aria-hidden
+              className={cn(
+                "flex items-baseline gap-0.5 transition-opacity duration-[350ms] ease-out",
+                isLoaded ? "opacity-0" : "opacity-100",
+              )}
+            >
+              <span className="text-xs font-medium tracking-tight text-foreground">
+                ff
+              </span>
+              <span className="font-mono text-[0.5rem] uppercase tracking-wider text-muted-foreground">
+                .fyi
+              </span>
+            </span>
+            <div
+              aria-hidden
+              className={cn(
+                "absolute inset-0 transition-opacity duration-[350ms] ease-out motion-reduce:duration-[150ms]",
+                isLoaded ? "opacity-100" : "opacity-0",
+              )}
+              style={{ backgroundImage: tile.gradient }}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

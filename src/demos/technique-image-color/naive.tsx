@@ -6,7 +6,7 @@ import { TILES, TILE_P50_MS } from "./config";
 
 /**
  * Naive — blank muted boxes until each tile's gradient lands. No
- * dominant-colour cue, no progressive reveal.
+ * dominant-color cue, no progressive reveal.
  */
 export function NaiveImageColor({ seed = 1 }: { seed?: number }) {
   const [loaded, setLoaded] = useState<Set<string>>(new Set());

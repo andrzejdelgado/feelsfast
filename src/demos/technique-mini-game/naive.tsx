@@ -24,7 +24,7 @@ export function NaiveMiniGame({ seed = 1 }: { seed?: number }) {
   }, []);
 
   return (
-    <div className="grid min-h-[10rem] place-items-center rounded-md border border-border bg-background">
+    <div className="grid h-full min-h-[10rem] place-items-center rounded-md border border-border bg-background">
       {phase === "loading" ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2

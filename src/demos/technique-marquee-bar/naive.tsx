@@ -5,9 +5,9 @@ import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
 /**
- * Naive — an empty horizontal track. Communicates exactly nothing
- * about whether work is happening; the user wonders if the page is
- * stuck.
+ * Naive — just the status line, no visual progress affordance. The
+ * user reads "Working…" and wonders if the page is stuck — there's
+ * no motion to confirm anything is actually happening.
  */
 export function NaiveMarqueeBar({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"loading" | "done">("loading");
@@ -24,11 +24,8 @@ export function NaiveMarqueeBar({ seed = 1 }: { seed?: number }) {
   }, []);
 
   return (
-    <div className="space-y-3">
-      <div className="h-1.5 w-full rounded-full bg-muted/60" />
-      <p className="text-xs text-muted-foreground">
-        {phase === "loading" ? "Working…" : "Done."}
-      </p>
-    </div>
+    <p className="text-xs text-muted-foreground">
+      {phase === "loading" ? "Working…" : "Done."}
+    </p>
   );
 }

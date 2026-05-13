@@ -37,8 +37,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <div
         className={
           showReferences
-            ? "grid min-h-screen w-full grid-cols-1 md:grid-cols-[280px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)_280px]"
-            : "grid min-h-screen w-full grid-cols-1 md:grid-cols-[280px_minmax(0,1fr)]"
+            ? "grid min-h-screen w-full grid-cols-1 md:grid-cols-[210px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)_280px]"
+            : "grid min-h-screen w-full grid-cols-1 md:grid-cols-[210px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)]"
         }
       >
         <aside

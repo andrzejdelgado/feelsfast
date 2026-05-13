@@ -1,14 +1,15 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Image gallery",
+  title: "Blurred image",
   description:
     "Six images load at varying rates. Naive: blank tiles until each finishes. Tuned: blurred LQIP placeholders resolve into the full image as it streams in.",
   timeBand: "1 – 10 S",
   runMode: "manual",
-  // Reserve exactly the 3×2 aspect-square grid height so the panel
-  // doesn't jump between idle and running.
-  panelMinHeight: "min-h-[184px] md:min-h-[204px]",
+  // Reserve exactly the 3×2 aspect-square grid height at each
+  // breakpoint so the panel doesn't jump between idle and running
+  // and sits snug to the loaded tiles (no empty space below).
+  panelMinHeight: "min-h-[149px] md:min-h-[214px] lg:min-h-[219px]",
 };
 
 export const TILE_COUNT = 6;

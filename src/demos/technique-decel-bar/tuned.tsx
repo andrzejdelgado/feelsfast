@@ -65,7 +65,7 @@ export function TunedDecelBar({ seed = 1 }: { seed?: number }) {
         />
       </div>
       <p className="font-mono text-[0.6875rem] tabular-nums text-muted-foreground">
-        {pct}% · eased + backward ribs (Harrison 2010, ~12% perceived gain)
+        {pct}% · eased + backward ribs (~12% perceived gain)
       </p>
       <style>{`
         @keyframes decel-rib {

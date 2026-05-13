@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Loader2, Sparkles } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { seededGamma } from "@/lib/jitter";
 import { PHASES } from "./config";
@@ -13,11 +13,17 @@ type PhaseState = {
 };
 
 /**
- * Tuned agentic workflow — every phase surfaces as its own row. The
- * currently-running phase shows a progress bar based on its declared
- * unit count (Research sources: 7 / 12, Verify citations: 4 / 8) where
- * applicable, and a soft pulse where it does not. Phases already done
- * collapse to a check + final unit count. Auto-starts on mount.
+ * Tuned agentic workflow — every phase surfaces as its own row, all
+ * rendered at the same row height so the panel never shifts.
+ *
+ *   - Pending: dim circle outline + label.
+ *   - Running: a radial progress ring (for phases with declared units)
+ *     or a spinning loader (for phases without). Unit count appears on
+ *     the right (`n / 12`).
+ *   - Done: a check mark replaces the indicator + final unit count.
+ *
+ * The radial ring replaces the linear bar used in earlier revisions
+ * so the row content never gains an extra line.
  */
 export function TunedAiAgenticWorkflow({ seed = 1 }: { seed?: number }) {
   const [phase, setPhase] = useState<"running" | "done">("running");
@@ -72,7 +78,6 @@ export function TunedAiAgenticWorkflow({ seed = 1 }: { seed?: number }) {
       <ol className="space-y-1.5">
         {PHASES.map((p, i) => {
           const s = states[i];
-          const showBar = s.status === "running" && p.units;
           const unitsDone = p.units
             ? Math.round(s.ratio * p.units.total)
             : 0;
@@ -89,49 +94,105 @@ export function TunedAiAgenticWorkflow({ seed = 1 }: { seed?: number }) {
               )}
             >
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <StatusIcon status={s.status} />
-                  <span className="font-medium">{p.label}</span>
+                <div className="flex min-w-0 items-center gap-2">
+                  <StatusIcon
+                    status={s.status}
+                    ratio={s.ratio}
+                    hasUnits={Boolean(p.units)}
+                  />
+                  <span className="truncate font-medium">{p.label}</span>
                 </div>
                 {p.units && s.status !== "pending" ? (
-                  <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
+                  <span className="shrink-0 font-mono text-[0.6875rem] uppercase tracking-wider tabular-nums text-muted-foreground">
                     {s.status === "done"
-                      ? `${p.units.total} / ${p.units.total} ${p.units.label}`
-                      : `${unitsDone} / ${p.units.total} ${p.units.label}`}
+                      ? `${p.units.total} / ${p.units.total}`
+                      : `${unitsDone} / ${p.units.total}`}
                   </span>
                 ) : null}
               </div>
-              {showBar ? (
-                <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full bg-primary transition-[width] duration-100 ease-out"
-                    style={{ width: `${Math.round(s.ratio * 100)}%` }}
-                  />
-                </div>
-              ) : null}
             </li>
           );
         })}
       </ol>
 
-      {phase === "done" ? (
-        <div className="flex items-center gap-2 text-sm text-primary">
-          <Sparkles className="size-4" aria-hidden />
-          <span className="font-medium">Report ready.</span>
-        </div>
-      ) : null}
+      <div
+        className={cn(
+          "flex items-center gap-2 text-sm text-primary",
+          phase === "done" ? undefined : "invisible",
+        )}
+        aria-hidden={phase !== "done"}
+      >
+        <Sparkles className="size-4" aria-hidden />
+        <span className="font-medium">Report ready.</span>
+      </div>
     </div>
   );
 }
 
-function StatusIcon({ status }: { status: PhaseState["status"] }) {
-  if (status === "done") return <Check aria-hidden className="size-4 text-primary" />;
-  if (status === "running")
+/**
+ * Per-row indicator. Done = check. Running with units = radial ring
+ * filling with `ratio`. Running without units = spinning loader.
+ * Pending = dim outlined circle. All variants render at `size-4` so
+ * the row height is identical across every state.
+ */
+function StatusIcon({
+  status,
+  ratio,
+  hasUnits,
+}: {
+  status: PhaseState["status"];
+  ratio: number;
+  hasUnits: boolean;
+}) {
+  if (status === "done") {
+    return <Check aria-hidden className="size-4 text-primary" />;
+  }
+  if (status === "running") {
+    if (hasUnits) return <RadialProgress ratio={ratio} />;
     return (
       <Loader2
         aria-hidden
         className="size-4 animate-spin text-primary motion-reduce:animate-none"
       />
     );
-  return <span aria-hidden className="size-4 rounded-full border border-border" />;
+  }
+  return (
+    <span
+      aria-hidden
+      className="size-4 rounded-full border border-border"
+    />
+  );
+}
+
+function RadialProgress({ ratio }: { ratio: number }) {
+  const r = 6;
+  const circumference = 2 * Math.PI * r;
+  const dash = Math.max(0.001, ratio) * circumference;
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 16 16"
+      className="size-4 -rotate-90"
+    >
+      <circle
+        cx="8"
+        cy="8"
+        r={r}
+        fill="none"
+        stroke="var(--muted)"
+        strokeWidth="2"
+      />
+      <circle
+        cx="8"
+        cy="8"
+        r={r}
+        fill="none"
+        stroke="var(--primary)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeDasharray={`${dash} ${circumference}`}
+        style={{ transition: "stroke-dasharray 100ms linear" }}
+      />
+    </svg>
+  );
 }
