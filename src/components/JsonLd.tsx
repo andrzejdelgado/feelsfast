@@ -2,14 +2,23 @@ import { siteConfig } from "@/lib/site-config";
 
 /**
  * Inline `<script type="application/ld+json">` for structured data.
- * Pass a typed Schema.org object; serialised via `JSON.stringify` and
- * injected as raw HTML. Safe because we control the input.
+ * Pass a typed Schema.org object; serialised via `JSON.stringify`.
+ *
+ * Defensive escape: `<` → `<` and `>` → `>` in the JSON
+ * payload so that any field value containing `</script>` (or HTML
+ * comment patterns) can't break out of the script tag. Today all
+ * inputs are static and trusted, but the cost is one regex per render
+ * — cheaper than retrofitting the day user-generated content enters
+ * the schema.
  */
 export function JsonLd({ data }: { data: Record<string, unknown> }) {
+  const payload = JSON.stringify(data)
+    .replace(/</g, "\\u003C")
+    .replace(/>/g, "\\u003E");
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: payload }}
     />
   );
 }
