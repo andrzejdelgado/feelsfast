@@ -26,20 +26,25 @@ export function CollapsibleDescription({ text }: { text: string }) {
     const el = ref.current;
     if (!el) return;
     const check = () => {
-      // `scrollHeight` reflects the full content height even when the
-      // paragraph is clamped via `line-clamp-2` (webkit-line-clamp), so
-      // comparing it against clientHeight detects overflow regardless
-      // of expansion state. When expanded, clientHeight === scrollHeight.
-      const isOverflowing = el.scrollHeight > el.clientHeight + 1;
-      setOverflows(
-        (prev) => (prev || isOverflowing) && (expanded || isOverflowing),
-      );
+      // Only measure when the paragraph is actually clamped — that is
+      // the only state where `scrollHeight > clientHeight` is a
+      // meaningful "would this overflow if collapsed?" signal. When
+      // expanded, the clamp isn't active so the measurement is always
+      // "fits". We skip the update in that case and let the previously
+      // measured value carry through; on collapse the effect re-runs
+      // (deps include `expanded`) and re-measures at the current width.
+      if (expanded) return;
+      setOverflows(el.scrollHeight > el.clientHeight + 1);
     };
     check();
     const observer = new ResizeObserver(check);
     observer.observe(el);
     return () => observer.disconnect();
   }, [expanded]);
+
+  // Show the toggle when the description currently overflows OR when
+  // the user has expanded it (so the "Less" button can take them back).
+  const showToggle = overflows || expanded;
 
   return (
     <>
@@ -52,7 +57,7 @@ export function CollapsibleDescription({ text }: { text: string }) {
       >
         {text}
       </p>
-      {overflows ? (
+      {showToggle ? (
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}

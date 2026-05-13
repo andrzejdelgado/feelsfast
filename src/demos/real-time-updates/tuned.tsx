@@ -28,7 +28,11 @@ export function TunedRealTimeUpdates({ seed = 1 }: { seed?: number }) {
   const [events, setEvents] = useState<Event[]>([]);
   const [now, setNow] = useState(0);
   const [maxItems, setMaxItems] = useState(5);
-  const startedAt = useRef(performance.now());
+  // Lazy-init: `useRef(performance.now())` would call performance.now()
+  // on every render and discard the result. This pattern (recommended
+  // in the React docs) computes once on first read.
+  const startedAt = useRef<number | null>(null);
+  if (startedAt.current === null) startedAt.current = performance.now();
 
   // 3 items on mobile, 5 at md+. Avoids overflowing the panel on
   // narrow viewports where the timestamp would push the actor/verb
@@ -49,7 +53,7 @@ export function TunedRealTimeUpdates({ seed = 1 }: { seed?: number }) {
       }, at),
     );
     const tick = setInterval(() => {
-      setNow(performance.now() - startedAt.current);
+      setNow(performance.now() - startedAt.current!);
     }, 250);
     return () => {
       timers.forEach(clearTimeout);

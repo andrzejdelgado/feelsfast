@@ -112,8 +112,14 @@ export function HeroPerceptionDemo() {
   }, []);
 
   return (
-    <div aria-hidden className="mt-12 max-w-md">
-      <div className="grid grid-cols-2 gap-3">
+    <section
+      aria-label="Demonstration: two panels load the same content in the same 2.7 seconds. The left panel stays blank until the moment everything snaps in. The right panel shows a skeleton from frame zero, then resolves into the content. Same wall-clock time, very different perceived speed."
+      className="mt-12 max-w-md"
+    >
+      {/* Animated panels are decorative for AT — the load-bearing
+          message is the caption below, which the section's aria-label
+          summarises and a sighted user reads directly. */}
+      <div aria-hidden className="grid grid-cols-2 gap-3">
         <Panel label="Off">
           <Card
             avatarShown={state.offShown}
@@ -136,7 +142,7 @@ export function HeroPerceptionDemo() {
           The right one feels much faster, right?
         </span>
       </p>
-    </div>
+    </section>
   );
 }
 

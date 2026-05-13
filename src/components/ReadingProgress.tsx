@@ -18,39 +18,61 @@ export function ReadingProgress() {
   const [percent, setPercent] = useState(0);
 
   useEffect(() => {
-    const article = document.querySelector("article");
-    if (!article) return;
+    // The MDX article subtree may not be in the DOM on first paint —
+    // it's wrapped in <ArticleWrapper> and can hydrate later than this
+    // component. Wait for the first <article> to appear (or hit it on
+    // mount if it's already there).
+    let cleanup: (() => void) | undefined;
 
-    let ticking = false;
-    const compute = () => {
-      const rect = article.getBoundingClientRect();
-      const viewport = window.innerHeight;
-      const distance = rect.height - viewport;
-      if (distance <= 0) {
-        setPercent(100);
-        return;
-      }
-      const scrolled = -rect.top;
-      const next = Math.max(0, Math.min(100, (scrolled / distance) * 100));
-      setPercent(next);
+    const attach = (article: HTMLElement) => {
+      let ticking = false;
+      const compute = () => {
+        const rect = article.getBoundingClientRect();
+        const viewport = window.innerHeight;
+        const distance = rect.height - viewport;
+        if (distance <= 0) {
+          setPercent(100);
+          return;
+        }
+        const scrolled = -rect.top;
+        const next = Math.max(0, Math.min(100, (scrolled / distance) * 100));
+        setPercent(next);
+      };
+
+      const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          compute();
+          ticking = false;
+        });
+      };
+
+      compute();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+      return () => {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+      };
     };
 
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        compute();
-        ticking = false;
+    const existing = document.querySelector("article");
+    if (existing instanceof HTMLElement) {
+      cleanup = attach(existing);
+    } else {
+      const observer = new MutationObserver(() => {
+        const found = document.querySelector("article");
+        if (found instanceof HTMLElement) {
+          observer.disconnect();
+          cleanup = attach(found);
+        }
       });
-    };
+      observer.observe(document.body, { childList: true, subtree: true });
+      cleanup = () => observer.disconnect();
+    }
 
-    compute();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
+    return () => cleanup?.();
   }, []);
 
   // On mobile the 56 px MobileNav header sits at `top-0`, so the bar
