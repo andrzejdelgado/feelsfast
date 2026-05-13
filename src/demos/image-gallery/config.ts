@@ -6,6 +6,9 @@ export const config: DemoConfig = {
     "Six images load at varying rates. Naive: blank tiles until each finishes. Tuned: blurred LQIP placeholders resolve into the full image as it streams in.",
   timeBand: "1 – 10 S",
   runMode: "manual",
+  // Reserve exactly the 3×2 aspect-square grid height so the panel
+  // doesn't jump between idle and running.
+  panelMinHeight: "min-h-[184px] md:min-h-[204px]",
 };
 
 export const TILE_COUNT = 6;

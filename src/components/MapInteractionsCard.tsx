@@ -7,10 +7,18 @@ import {
   ChevronUp,
   RefreshCw,
 } from "lucide-react";
-import { useId, useState } from "react";
-import { config, PAN_STEP } from "@/demos/map-interactions/config";
+import { useEffect, useId, useState } from "react";
+import {
+  config,
+  COLS_DESKTOP,
+  COLS_MOBILE,
+  PAN_STEP,
+  ROWS_DESKTOP,
+  ROWS_MOBILE,
+} from "@/demos/map-interactions/config";
 import { NaiveMapInteractions } from "@/demos/map-interactions/naive";
 import { TunedMapInteractions } from "@/demos/map-interactions/tuned";
+import { CollapsibleDescription } from "@/components/CollapsibleDescription";
 import { cn } from "@/lib/utils";
 
 const newSeed = () => Math.floor(Math.random() * 0xffffffff);
@@ -23,11 +31,39 @@ const newSeed = () => Math.floor(Math.random() * 0xffffffff);
  * between the panels. One press, both panels react. The perception
  * comparison stays apples-to-apples.
  */
-export function MapInteractionsCard() {
+export function MapInteractionsCard({
+  footer,
+}: {
+  /** Optional footer content (e.g. "Appears in" strip) rendered inside
+   *  the card below the pan controls, separated by an edge-to-edge divider. */
+  footer?: React.ReactNode;
+} = {}) {
   const [centerX, setCenterX] = useState(0);
   const [centerY, setCenterY] = useState(0);
   const [seed, setSeed] = useState(newSeed);
+  const [grid, setGrid] = useState<{ cols: number; rows: number }>({
+    cols: COLS_DESKTOP,
+    rows: ROWS_DESKTOP,
+  });
   const headingId = useId();
+
+  // Track viewport-driven grid dimensions: 8×6 on mobile (<md), 8×8
+  // at md and above. Starts as the desktop default so the SSR HTML
+  // matches; the effect downsizes after mount on mobile to avoid
+  // hydration mismatch.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () =>
+      setGrid(
+        mq.matches
+          ? { cols: COLS_MOBILE, rows: ROWS_MOBILE }
+          : { cols: COLS_DESKTOP, rows: ROWS_DESKTOP },
+      );
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   const reset = () => {
     setSeed(newSeed());
@@ -51,9 +87,7 @@ export function MapInteractionsCard() {
             {config.title}
           </h3>
           {config.description ? (
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              {config.description}
-            </p>
+            <CollapsibleDescription text={config.description} />
           ) : null}
         </div>
         {config.timeBand ? (
@@ -67,6 +101,12 @@ export function MapInteractionsCard() {
       </header>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
+        <span
+          className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground"
+          aria-label="Interactive demo — activate it inside the cards"
+        >
+          Interactive
+        </span>
         <button
           type="button"
           onClick={reset}
@@ -83,6 +123,8 @@ export function MapInteractionsCard() {
             centerX={centerX}
             centerY={centerY}
             seed={seed}
+            cols={grid.cols}
+            rows={grid.rows}
           />
         </Panel>
         <Panel label="On" highlighted>
@@ -90,11 +132,19 @@ export function MapInteractionsCard() {
             centerX={centerX}
             centerY={centerY}
             seed={seed}
+            cols={grid.cols}
+            rows={grid.rows}
           />
         </Panel>
       </div>
 
       <SharedPanControls pan={pan} />
+
+      {footer ? (
+        <div className="-mx-6 mt-6 border-t border-border px-6 pt-4">
+          {footer}
+        </div>
+      ) : null}
     </section>
   );
 }

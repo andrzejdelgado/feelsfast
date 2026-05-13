@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { SwipeableRow } from "@/components/SwipeableRow";
 import { cn } from "@/lib/utils";
 import type { CategoryMeta, Scenario, ScenarioCategory } from "@/lib/scenarios";
 
@@ -36,12 +37,17 @@ export function ScenariosCategorizedList({
   return (
     <>
       {/* Sticky filter bar — spans the full main-column width so the
-          border reaches the article edges, not just max-w-4xl. */}
+          border reaches the article edges, not just max-w-4xl.
+          On mobile the pill row swipes horizontally (with edge-fade
+          gradients) so the sticky bar stays one row tall instead of
+          stacking to three. At md and above it falls back to a wrapped
+          flex row with the fades disabled. */}
       <div className="sticky top-14 z-10 mt-6 border-b border-border bg-background/95 backdrop-blur md:top-0">
-        <div
-          className="mx-auto flex max-w-4xl flex-wrap items-center gap-2 px-8 py-4 lg:px-12 xl:px-16"
+        <SwipeableRow
+          wrapAt="md"
           role="group"
-          aria-label="Filter scenarios by category"
+          ariaLabel="Filter scenarios by category"
+          className="mx-auto max-w-4xl px-8 py-4 lg:px-12 xl:px-16"
         >
           <FilterPill
             label="All"
@@ -56,7 +62,7 @@ export function ScenariosCategorizedList({
               onClick={() => setFilter(group.category.id)}
             />
           ))}
-        </div>
+        </SwipeableRow>
       </div>
 
       <div className="mx-auto mt-12 max-w-4xl space-y-12 px-8 lg:px-12 xl:px-16">
@@ -104,7 +110,7 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "inline-flex items-center rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
+        "inline-flex shrink-0 items-center rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
         active
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border bg-card text-muted-foreground hover:border-primary hover:text-foreground",
@@ -123,14 +129,12 @@ function ScenarioCard({ scenario }: { scenario: Scenario }) {
 
   const inner = (
     <>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <p className="text-lg font-medium tracking-tight">{scenario.title}</p>
-        <span className="shrink-0 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
-          {scenario.band}
-        </span>
-      </div>
+      <p className="text-lg font-medium tracking-tight">{scenario.title}</p>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
         {scenario.blurb}
+      </p>
+      <p className="mt-4 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
+        {scenario.band}
       </p>
     </>
   );

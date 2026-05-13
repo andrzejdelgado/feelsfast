@@ -78,23 +78,33 @@ export function TunedAiToolExecution({ seed = 1 }: { seed?: number }) {
           >
             <div className="flex items-center gap-2">
               <StatusIcon status={s.status} />
-              <span className="font-medium">{s.step.label}</span>
+              <span className="truncate font-medium">{s.step.label}</span>
             </div>
-            {s.status === "done" ? (
-              <p className="mt-1 pl-6 text-xs text-muted-foreground">
-                {s.step.detail}
-              </p>
-            ) : null}
+            {/* Always render the detail line so each row's height stays
+                constant from pending → running → done. Invisible until
+                the step finishes — reserves space without showing. */}
+            <p
+              className={cn(
+                "mt-1 truncate pl-6 text-xs text-muted-foreground",
+                s.status !== "done" && "invisible",
+              )}
+            >
+              {s.step.detail}
+            </p>
           </li>
         ))}
       </ol>
 
-      {phase === "done" ? (
-        <div className="flex items-center gap-2 text-sm text-primary">
-          <Sparkles className="size-4" aria-hidden />
-          <span className="font-medium">Done.</span>
-        </div>
-      ) : null}
+      {/* Same trick for the trailing "Done." indicator. */}
+      <div
+        className={cn(
+          "flex items-center gap-2 text-sm text-primary",
+          phase !== "done" && "invisible",
+        )}
+      >
+        <Sparkles className="size-4" aria-hidden />
+        <span className="font-medium">Done.</span>
+      </div>
     </div>
   );
 }

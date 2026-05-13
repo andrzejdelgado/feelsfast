@@ -27,12 +27,25 @@ export function TunedRealTimeUpdates({ seed = 1 }: { seed?: number }) {
   const stream = useMemo(() => rollEventStream(seed), [seed]);
   const [events, setEvents] = useState<Event[]>([]);
   const [now, setNow] = useState(0);
+  const [maxItems, setMaxItems] = useState(5);
   const startedAt = useRef(performance.now());
+
+  // 3 items on mobile, 5 at md+. Avoids overflowing the panel on
+  // narrow viewports where the timestamp would push the actor/verb
+  // off the right edge.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => setMaxItems(mq.matches ? 3 : 5);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   useEffect(() => {
     const timers = stream.map(({ event, at }) =>
       setTimeout(() => {
-        setEvents((prev) => [event, ...prev].slice(0, 5));
+        setEvents((prev) => [event, ...prev].slice(0, maxItems));
       }, at),
     );
     const tick = setInterval(() => {
@@ -42,7 +55,7 @@ export function TunedRealTimeUpdates({ seed = 1 }: { seed?: number }) {
       timers.forEach(clearTimeout);
       clearInterval(tick);
     };
-  }, [stream]);
+  }, [stream, maxItems]);
 
   return (
     <ul className="space-y-2 text-sm">
@@ -53,17 +66,17 @@ export function TunedRealTimeUpdates({ seed = 1 }: { seed?: number }) {
           <li
             key={event.id}
             className={cn(
-              "flex items-baseline justify-between gap-2 rounded-md border px-3 py-2 transition-[background-color,border-color] duration-700 ease-out motion-reduce:duration-200",
+              "flex items-baseline gap-2 rounded-md border px-3 py-2 transition-[background-color,border-color] duration-700 ease-out motion-reduce:duration-200",
               isFresh
                 ? "animate-[slide-down_200ms_ease-out] border-primary bg-primary/5 motion-reduce:animate-none"
                 : "border-border bg-background",
             )}
           >
-            <span>
+            <span className="min-w-0 flex-1 truncate">
               <strong className="font-medium">{event.actor}</strong>{" "}
               <span className="text-muted-foreground">{event.verb}</span>
             </span>
-            <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
+            <span className="shrink-0 font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
               {formatRelative(event.at, now)}
             </span>
           </li>

@@ -17,11 +17,14 @@ export function NaiveOptimisticActions() {
     await new Promise((resolve) =>
       setTimeout(resolve, gammaJitter(COMMIT_LATENCY_P50_MS)),
     );
-    setLiked((prev) => {
-      const next = !prev;
-      setCount((c) => c + (next ? 1 : -1));
-      return next;
-    });
+    // Compute the next state outside the functional updaters — React
+    // StrictMode invokes those twice in dev as a purity check, and any
+    // side-effects (like calling another setState) inside the updater
+    // would run twice too. The `pending` guard above keeps handleClick
+    // serial so capturing `liked` from the closure is safe here.
+    const next = !liked;
+    setLiked(next);
+    setCount((c) => c + (next ? 1 : -1));
     setPending(false);
   };
 

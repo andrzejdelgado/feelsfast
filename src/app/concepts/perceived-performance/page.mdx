@@ -13,6 +13,8 @@ export const metadata = {
 
 # What perceived performance actually is
 
+<EssayMeta slug="perceived-performance" />
+
 Perceived performance is the gap between the actual time a user has to wait while a piece of software loads and what the user feels about that wait. Two products can render the same data in the same number of milliseconds; one feels snappy, the other feels slow. The gap between those two feelings is the entire field.
 
 ## The gap is the product
@@ -31,7 +33,7 @@ How does it translate to software? If you shave 100 ms off a 1-second wait, almo
 
 The annoying, almost logarithmic relationship between cost and success is what this rule does to engineering effort. The first 20 % of a wait is the cheapest to remove; the second 20 % requires real architectural work; the third 20 % requires rewriting the data layer; the fourth 20 % requires not just backend support but a real wunder-team. Each tier costs more, each tier is increasingly visible, and the user only gives credit for the visible improvements.
 
-This is exactly why perceived performance deserves first-class treatment. A tuned skeleton screen, a route prefetch, a `mousedown` listener instead of a `click` listener — these can produce perceptible improvements at one team's cost. The math is brutal: it is simply cheaper to shave time off the perception layer than off the actual clock.
+This is exactly why perceived performance deserves first-class treatment. A tuned [skeleton screen](/scenarios/data-table-loading), a [route prefetch](/scenarios/route-navigation), a `mousedown` listener instead of a `click` listener — these can produce perceptible improvements at one team's cost. The math is brutal: it is simply cheaper to shave time off the perception layer than off the actual clock.
 
 ## The counter-argument, and why it is partly right
 
@@ -39,7 +41,7 @@ If the perception layer is so cheap and so effective, why does anyone still grin
 
 Eizenberg makes the cleanest version of this argument <Cite id="eizenberg" label="Eizenberg" />: a placeholder is not a substitute for an interactive surface. If your search box draws a skeleton at 80 ms but the actual debounced query takes 4 s to come back, the user is staring at a useless skeleton for most of their session. Same for an editor that shows its layout instantly but cannot accept keystrokes for 3 seconds — a polished perception layer becomes a polished lie. Eizenberg's preferred metric, Time to Interactive, is the right one for the kind of UI we are talking about.
 
-The reconciliation, if you want one, is this: time perception wins for consumption surfaces; objective speed wins for production surfaces. A pricing page, a marketing site, a documentation reader, a dashboard that shows numbers — these are consumption. Skeleton screens, predictive preloading, optimistic UI, and other techniques carry their weight here. An IDE, a CRM, a search-as-you-type interface, a chat composer — these are production. The user is reaching to act, and any wait that delays the action will cost real engagement, no matter how elegantly the skeleton shimmers.
+The reconciliation, if you want one, is this: time perception wins for consumption surfaces; objective speed wins for production surfaces. A pricing page, a marketing site, a documentation reader, a dashboard that shows numbers — these are consumption. Skeleton screens, predictive preloading, [optimistic UI](/scenarios/optimistic-actions), and other techniques carry their weight here. An IDE, a CRM, a [search-as-you-type](/scenarios/search-as-you-type) interface, a chat composer — these are production. The user is reaching to act, and any wait that delays the action will cost real engagement, no matter how elegantly the skeleton shimmers.
 
 ## What this platform does differently
 

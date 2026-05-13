@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveAiToolExecution } from "@/demos/ai-tool-execution/naive";
 import { TunedAiToolExecution } from "@/demos/ai-tool-execution/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Tool execution / agentic step
+
+<ScenarioMeta slug="ai-tool-execution" />
 
 
 When an agent does something — reads a file, runs a search, edits code, executes a query — there is a 1 – 10 S window of real wall-clock time the perception layer has to manage. The work is not waiting on a model token stream; it is waiting on the tool itself. A spinner that says "Working…" for six seconds gives the user nothing. A streaming list of the actual tool calls — "Read package.json. Searched for useState. Edited SearchBox.tsx. Ran typecheck." — is the same wait, but the user reads the trajectory in real time and learns to trust the agent.
@@ -61,6 +64,6 @@ Cancellation needs a graceful path. Hard-killing an agent mid-tool-call can leav
 4. **Focus management** — when the user clicks Cancel, focus stays on the cancel button (now showing the cancellation in progress) until the agent confirms the stop.
 5. **`prefers-reduced-motion`** — the spinner reduces to a static dot indicator; the appearance / disappearance of rows is instantaneous instead of animated.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

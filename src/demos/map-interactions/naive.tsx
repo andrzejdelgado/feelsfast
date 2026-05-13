@@ -4,8 +4,9 @@ import { useEffect, useRef } from "react";
 import { useState } from "react";
 import { seededGamma } from "@/lib/jitter";
 import {
+  COLS_DESKTOP,
+  ROWS_DESKTOP,
   TILE_LOAD_P50_MS,
-  VIEWPORT,
   tileColor,
   tileKey,
 } from "./config";
@@ -15,6 +16,10 @@ type Props = {
   centerY: number;
   /** Bumped on every Replay so the demo state resets in lock-step with On. */
   seed?: number;
+  /** Grid column count. Defaults to the desktop value. */
+  cols?: number;
+  /** Grid row count. Defaults to the desktop value. */
+  rows?: number;
 };
 
 /**
@@ -26,7 +31,13 @@ type Props = {
  * that gates the visible shift until the simulated tile load finishes.
  * The viewport feels stop-and-go.
  */
-export function NaiveMapInteractions({ centerX, centerY, seed = 1 }: Props) {
+export function NaiveMapInteractions({
+  centerX,
+  centerY,
+  seed = 1,
+  cols = COLS_DESKTOP,
+  rows = ROWS_DESKTOP,
+}: Props) {
   const [pending, setPending] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -46,9 +57,10 @@ export function NaiveMapInteractions({ centerX, centerY, seed = 1 }: Props) {
   }, [centerX, centerY, seed]);
 
   const tiles: { x: number; y: number; key: string }[] = [];
-  const half = Math.floor(VIEWPORT / 2);
-  for (let dy = -half; dy < VIEWPORT - half; dy++) {
-    for (let dx = -half; dx < VIEWPORT - half; dx++) {
+  const halfX = Math.floor(cols / 2);
+  const halfY = Math.floor(rows / 2);
+  for (let dy = -halfY; dy < rows - halfY; dy++) {
+    for (let dx = -halfX; dx < cols - halfX; dx++) {
       const x = centerX + dx;
       const y = centerY + dy;
       tiles.push({ x, y, key: tileKey(x, y) });
@@ -58,7 +70,7 @@ export function NaiveMapInteractions({ centerX, centerY, seed = 1 }: Props) {
   return (
     <div
       className="relative grid w-full overflow-hidden rounded-md border border-border bg-muted"
-      style={{ gridTemplateColumns: `repeat(${VIEWPORT}, 1fr)` }}
+      style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
     >
       {tiles.map((t) => (
         <div

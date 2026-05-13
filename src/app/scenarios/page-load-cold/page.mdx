@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Page load (cold)
+
+<ScenarioMeta slug="page-load-cold" />
 
 
 A first-time visitor lands on the page. Nothing is cached. The server (or the route bundle, or the data fetch) takes 1.5 seconds to respond. During those 1.5 seconds the user is staring at *something* — and that something is the entire perception layer for this scenario.
@@ -57,6 +60,6 @@ The other failure: a skeleton that does *not* match the final layout. A generic 
 4. **Manage focus across the swap.** If the user triggered the load (clicked through to this page), move focus to the new content's first heading, or to a stable landmark, so keyboard users do not lose their place.
 5. **Layout stability.** The skeleton's dimensions must match the resolved content's dimensions — otherwise the swap creates a Cumulative Layout Shift (CLS) that hurts both perception and Web Vitals.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

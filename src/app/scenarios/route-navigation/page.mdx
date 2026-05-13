@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Route navigation
+
+<ScenarioMeta slug="route-navigation" />
 
 
 The user clicks a link. A new page should appear. The naive answer is to wait for the click, fetch the route bundle and data, render the new page. The tuned answer is to have already done most of that work — the route bundle was prefetched on hover, the data was prefetched on mouse-deceleration, and the click triggers a near-instant View Transitions handoff between the cached previous page and the cached new page.
@@ -58,6 +61,6 @@ The other failure: applying View Transitions across routes that are visually unr
 4. **Focus management on transition** — when the new route renders, focus the main heading or a stable landmark so keyboard users land where the action is.
 5. **Don't fire screen-reader announcements on prefetch.** The user has not yet committed; an announcement before they release is premature.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

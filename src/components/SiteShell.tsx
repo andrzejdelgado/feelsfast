@@ -4,6 +4,9 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { ReferencesPanel } from "./ReferencesPanel";
 import { MobileNav } from "./MobileNav";
+import { NavigationHistoryProvider } from "./NavigationHistoryProvider";
+import { PageGradientBackdrop } from "./PageGradientBackdrop";
+import { ReadingProgress } from "./ReadingProgress";
 import { ReferencesProvider } from "./ReferencesProvider";
 
 /**
@@ -28,7 +31,9 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/concepts/") && pathname !== "/concepts";
 
   return (
+    <NavigationHistoryProvider>
     <ReferencesProvider>
+      {showReferences ? <ReadingProgress /> : null}
       <div
         className={
           showReferences
@@ -45,7 +50,12 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           </div>
         </aside>
 
-        <div className="min-w-0">
+        <div className="relative min-w-0 overflow-x-clip">
+          {/* Gradient backdrop lives in the shell so it stays mounted
+              across route changes — pathname drives its opacity, so
+              navigating between gradient pages (`/`, `/ai`) and other
+              routes fades in/out instead of popping. */}
+          <PageGradientBackdrop />
           <MobileNav />
           {children}
         </div>
@@ -62,5 +72,6 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         ) : null}
       </div>
     </ReferencesProvider>
+    </NavigationHistoryProvider>
   );
 }

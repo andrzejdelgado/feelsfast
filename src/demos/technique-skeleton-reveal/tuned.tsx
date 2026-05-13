@@ -49,7 +49,7 @@ export function TunedSkeletonReveal({ seed = 1 }: { seed?: number }) {
         Next article
         <ChevronRight aria-hidden className="size-3" />
       </button>
-      <div className="min-h-[6rem] overflow-hidden rounded-md border border-border bg-background p-3">
+      <div className="min-h-[148px] overflow-hidden rounded-md border border-border bg-background p-3 md:min-h-[110px]">
         {loading ? <ArticleSkeleton /> : <ArticleView article={article} />}
       </div>
     </div>

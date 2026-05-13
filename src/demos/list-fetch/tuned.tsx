@@ -37,8 +37,18 @@ function ListSkeleton({ count }: { count: number }) {
           key={i}
           className="rounded border border-border bg-card px-3 py-2"
         >
-          <div className="h-3.5 w-32 animate-pulse rounded bg-muted motion-reduce:animate-none" />
-          <div className="mt-1.5 h-3 w-48 animate-pulse rounded bg-muted/60 motion-reduce:animate-none" />
+          {/* Each row matches the loaded item's two-paragraph layout
+              (text-sm + text-xs) so the line-height drives the row
+              height. The skeleton bars sit inside as inline-block
+              ornaments — they animate but do not change the box height.
+              Result: no jump when the loaded items replace the
+              skeleton, just an in-place reveal. */}
+          <p className="text-sm font-medium">
+            <span className="inline-block h-3.5 w-32 animate-pulse rounded bg-muted align-middle motion-reduce:animate-none" />
+          </p>
+          <p className="text-xs text-muted-foreground">
+            <span className="inline-block h-3 w-48 animate-pulse rounded bg-muted/60 align-middle motion-reduce:animate-none" />
+          </p>
         </li>
       ))}
     </ul>

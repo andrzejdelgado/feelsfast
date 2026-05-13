@@ -1,61 +1,59 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, Layers } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { essays, type Essay } from "@/lib/essays";
+import { categories, scenarios, type Scenario } from "@/lib/scenarios";
 import { cn } from "@/lib/utils";
 
 /**
- * Prev / next pager for the bottom of an individual Concepts essay.
+ * Prev / next pager for the bottom of an individual Scenario page.
  *
- * Reads the current essay slug from `usePathname` and finds its
- * neighbours in the canonical `essays` array. Renders a two-column
- * grid of cards — left for the previous essay, right for the next —
- * with the essay number, title, and one-line blurb so the visitor can
- * decide whether to keep going.
+ * Mirrors `<EssayNav>` — reads the current scenario slug from
+ * `usePathname`, finds its neighbours in the canonical `scenarios`
+ * array, and renders a two-column grid: previous on the left, next on
+ * the right.
  *
- * The first essay has only a "Next →" card on the right; the last has
- * only a "← Previous" card on the left. The slot for the missing side
- * stays empty so the layout does not jump.
- *
- * Sits between the body of the essay and the References list — the
- * MDX files render `<EssayNav />` immediately before `<ReferencesList />`.
+ * If the current scenario is the first or last in the canonical order,
+ * the empty slot is filled with a "Back to Scenarios" card so the
+ * layout stays balanced.
  */
-export function EssayNav() {
-  const pathname = usePathname();
+export function ScenarioNav() {
+  const pathname = usePathname() ?? "";
   const currentSlug = pathname.split("/").filter(Boolean)[1] ?? "";
-  const idx = essays.findIndex((e) => e.slug === currentSlug);
+  const idx = scenarios.findIndex((s) => s.slug === currentSlug);
   if (idx === -1) return null;
 
-  const prev = idx > 0 ? essays[idx - 1] : null;
-  const next = idx < essays.length - 1 ? essays[idx + 1] : null;
+  const prev = idx > 0 ? scenarios[idx - 1] : null;
+  const next = idx < scenarios.length - 1 ? scenarios[idx + 1] : null;
 
   return (
     <nav
-      aria-label="Essay navigation"
-      className="mt-16 grid grid-cols-1 gap-3 sm:grid-cols-2"
+      aria-label="Scenario navigation"
+      className="not-prose mt-16 grid grid-cols-1 gap-3 sm:grid-cols-2"
     >
-      <NavCard essay={prev} direction="prev" />
-      <NavCard essay={next} direction="next" />
+      <NavCard scenario={prev} direction="prev" />
+      <NavCard scenario={next} direction="next" />
     </nav>
   );
 }
 
 function NavCard({
-  essay,
+  scenario,
   direction,
 }: {
-  essay: Essay | null;
+  scenario: Scenario | null;
   direction: "prev" | "next";
 }) {
-  if (!essay) {
+  if (!scenario) {
     return <BackToIndexCard direction={direction} />;
   }
   const isNext = direction === "next";
+  const categoryLabel =
+    categories.find((c) => c.id === scenario.category)?.label ?? "";
   return (
     <Link
-      href={`/concepts/${essay.slug}`}
+      href={`/scenarios/${scenario.slug}`}
       className={cn(
         "group block rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary",
         isNext ? "text-right" : "text-left",
@@ -72,28 +70,26 @@ function NavCard({
         ) : (
           <ArrowLeft aria-hidden className="size-3" />
         )}
-        <span>{isNext ? "Next" : "Previous"} · Essay {essay.number}</span>
+        <span>
+          {isNext ? "Next" : "Previous"}
+          {categoryLabel ? ` · ${categoryLabel}` : ""}
+        </span>
       </p>
       <p className="mt-2 text-base font-medium leading-tight tracking-tight text-foreground">
-        {essay.title}
+        {scenario.title}
       </p>
       <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-        {essay.blurb}
+        {scenario.blurb}
       </p>
     </Link>
   );
 }
 
-/**
- * Filler card rendered in the empty EssayNav slot — for the first essay
- * (no Previous) and the last essay (no Next). Sends the reader back to
- * the Concepts index instead of leaving the layout lopsided.
- */
 function BackToIndexCard({ direction }: { direction: "prev" | "next" }) {
   const isNext = direction === "next";
   return (
     <Link
-      href="/concepts"
+      href="/scenarios"
       className={cn(
         "group block rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary",
         isNext ? "text-right" : "text-left",
@@ -105,14 +101,14 @@ function BackToIndexCard({ direction }: { direction: "prev" | "next" }) {
           isNext ? "flex-row-reverse" : "flex-row",
         )}
       >
-        <BookOpen aria-hidden className="size-3" />
-        <span>All essays</span>
+        <Layers aria-hidden className="size-3" />
+        <span>All scenarios</span>
       </p>
       <p className="mt-2 text-base font-medium leading-tight tracking-tight text-foreground">
-        Back to Concepts
+        Back to Scenarios
       </p>
       <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-        {essays.length} essays across foundations, practice, and AI — index page with filter pills.
+        {scenarios.length} scenarios across {categories.length} categories — index page with filter pills.
       </p>
     </Link>
   );

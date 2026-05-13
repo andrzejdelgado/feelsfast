@@ -1,4 +1,7 @@
+"use client";
+
 import { ArrowUpRight } from "lucide-react";
+import { usePathname } from "next/navigation";
 import type { Reference } from "./ReferencesProvider";
 
 /**
@@ -14,10 +17,23 @@ import type { Reference } from "./ReferencesProvider";
  * Accepts asterisk-italics in the citation string (e.g. `*Vision Research*`)
  * and renders them as `<em>` so journal names and book titles can be set in
  * italics without forcing the data file to be `.tsx`.
+ *
+ * Visibility is route-conditional: on essay pages (`/concepts/<slug>`) the
+ * desktop right-rail handles references, so this inline list is hidden at
+ * `lg:` and above. On scenario pages there is no right-rail, so the inline
+ * list shows at every breakpoint.
  */
 export function ReferencesList({ refs }: { refs: readonly Reference[] }) {
+  const pathname = usePathname() ?? "";
+  const isEssay = pathname.startsWith("/concepts/") && pathname !== "/concepts";
+
   return (
-    <section className="not-prose mt-16 lg:hidden" aria-label="References">
+    <section
+      className={
+        isEssay ? "not-prose mt-16 lg:hidden" : "not-prose mt-16"
+      }
+      aria-label="References"
+    >
       <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
         References · {refs.length}
       </p>

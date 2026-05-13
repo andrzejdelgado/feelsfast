@@ -1,7 +1,8 @@
 "use client";
 
 import { Play, RefreshCw } from "lucide-react";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
+import { CollapsibleDescription } from "@/components/CollapsibleDescription";
 import { cn } from "@/lib/utils";
 
 export type DemoConfig = {
@@ -18,6 +19,14 @@ export type DemoConfig = {
    *             together. Reset returns the card to idle.
    */
   runMode?: "auto" | "manual";
+  /**
+   * Tailwind utility(ies) that override the default `min-h-24
+   * md:min-h-32` floor of each panel's content area. Use this on demos
+   * whose loaded content is taller than the default, so the idle
+   * placeholder reserves the same height and the card doesn't jump
+   * when Run is pressed. Example: `"min-h-[11rem] md:min-h-[18rem]"`.
+   */
+  panelMinHeight?: string;
 };
 
 /**
@@ -39,6 +48,9 @@ type DemoRunnerProps = {
   Naive: React.ComponentType<DemoSideProps>;
   /** The tuned ("On") component — applies the relevant perception patterns. */
   Tuned: React.ComponentType<DemoSideProps>;
+  /** Optional footer content (e.g. "Appears in" strip) rendered inside
+   *  the card below the panels, separated by an edge-to-edge divider. */
+  footer?: React.ReactNode;
 };
 
 const newSeed = () => Math.floor(Math.random() * 0xffffffff);
@@ -69,30 +81,63 @@ const newSeed = () => Math.floor(Math.random() * 0xffffffff);
  * Accessibility: ARIA live regions on each side, keyboard-operable
  * controls, motion-reduce honoured by child demos.
  */
-export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
+export function DemoRunner({
+  config,
+  Naive,
+  Tuned,
+  footer,
+}: DemoRunnerProps) {
   const isManual = config.runMode === "manual";
   const [runId, setRunId] = useState(isManual ? 0 : 1);
   const [seed, setSeed] = useState(newSeed);
   const headingId = useId();
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   const isRunning = runId > 0;
+
+  /**
+   * Center the demo in the viewport so Run + both panels are visible
+   * at once. Mobile UX win — without this, clicking Run from the top
+   * of the card leaves panel 2 below the fold and the animation
+   * starts before the user is looking at it.
+   *
+   * `setTimeout(0)` lets React render the new state before we scroll;
+   * `prefers-reduced-motion` users get an instant jump instead of the
+   * smooth glide.
+   */
+  const scrollIntoCenter = () => {
+    setTimeout(() => {
+      const prefersReducedMotion =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      sectionRef.current?.scrollIntoView({
+        behavior: prefersReducedMotion ? "instant" : "smooth",
+        block: "center",
+      });
+    }, 0);
+  };
 
   const start = () => {
     setSeed(newSeed());
     setRunId((id) => id + 1);
+    scrollIntoCenter();
   };
 
   const reset = () => {
     if (isManual) {
       setRunId(0);
+      // No scroll on manual reset — the user is clearing the demo,
+      // not re-running it.
     } else {
       setSeed(newSeed());
       setRunId((id) => id + 1);
+      scrollIntoCenter();
     }
   };
 
   return (
     <section
+      ref={sectionRef}
       aria-labelledby={headingId}
       className="my-8 rounded-lg border border-border bg-card p-6"
     >
@@ -102,9 +147,7 @@ export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
             {config.title}
           </h3>
           {config.description ? (
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              {config.description}
-            </p>
+            <CollapsibleDescription text={config.description} />
           ) : null}
         </div>
         {config.timeBand ? (
@@ -127,7 +170,14 @@ export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
             <Play aria-hidden className="size-3.5" />
             Run
           </button>
-        ) : null}
+        ) : (
+          <span
+            className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground"
+            aria-label="Interactive demo — activate it inside the cards"
+          >
+            Interactive
+          </span>
+        )}
         <button
           type="button"
           onClick={reset}
@@ -138,15 +188,19 @@ export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
         </button>
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <DemoSide label="Off">
+      <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <DemoSide label="Off" minHeightClass={config.panelMinHeight}>
           {isRunning ? (
             <Naive key={`naive-${runId}`} seed={seed} />
           ) : (
             <IdlePlaceholder />
           )}
         </DemoSide>
-        <DemoSide label="On" highlighted>
+        <DemoSide
+          label="On"
+          highlighted
+          minHeightClass={config.panelMinHeight}
+        >
           {isRunning ? (
             <Tuned key={`tuned-${runId}`} seed={seed} />
           ) : (
@@ -154,6 +208,12 @@ export function DemoRunner({ config, Naive, Tuned }: DemoRunnerProps) {
           )}
         </DemoSide>
       </div>
+
+      {footer ? (
+        <div className="-mx-6 mt-6 border-t border-border px-6 pt-4">
+          {footer}
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -169,10 +229,14 @@ function IdlePlaceholder() {
 function DemoSide({
   label,
   highlighted = false,
+  minHeightClass,
   children,
 }: {
   label: "Off" | "On";
   highlighted?: boolean;
+  /** Override for the panel content's min-height. When unset, the
+   *  default `min-h-24 md:min-h-32` floor applies. */
+  minHeightClass?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -191,7 +255,10 @@ function DemoSide({
         {label}
       </p>
       <div
-        className="mt-3 flex min-h-[8rem] flex-1 flex-col"
+        className={cn(
+          "mt-3 flex flex-1 flex-col",
+          minHeightClass ?? "min-h-24 md:min-h-32",
+        )}
         aria-live="polite"
         aria-busy="false"
       >

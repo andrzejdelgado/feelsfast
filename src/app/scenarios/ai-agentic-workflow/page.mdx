@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/naive";
 import { TunedAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Agentic workflow
+
+<ScenarioMeta slug="ai-agentic-workflow" />
 
 
 Long-running agents — Deep Research, Devin, Cursor agent runs, browse-and-summarise tools, multi-step refactors — push past the 10-second wall Nielsen 1993 <Cite id="nielsen-1993" label="Nielsen 1993" /> placed at the edge of attention. By minute two the user is in another tab, has switched contexts, has half-forgotten what they asked for. The perception layer's job is no longer to compress the wait — the wait is the work — but to keep the agent legible *to a user who is no longer looking*.
@@ -62,6 +65,6 @@ Background hand-off is the right escape past two minutes. A "Notify me when done
 5. **`prefers-reduced-motion`** — the spinner becomes a static dot, the bar's width transition becomes instantaneous, the cross-row state changes happen without animation. The information remains; only the motion is suppressed.
 6. **Long-running agent + tab-blur** — pair with a Web Notification (with explicit user permission) for users who navigate away. The notification text should mirror the final phase's status: "Report ready" not "Process completed."
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

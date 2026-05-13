@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveFileUpload } from "@/demos/file-upload/naive";
 import { TunedFileUpload } from "@/demos/file-upload/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # File upload (batch)
+
+<ScenarioMeta slug="file-upload-batch" />
 
 
 The user picks twelve files and clicks Upload. The wall-clock time crosses ten seconds easily — past the unit-task boundary, the user is going to disengage if the perception layer does not earn its keep. The pattern stack is bigger than the single-file case, but the principles are the same.
@@ -57,6 +60,6 @@ The other failure: serialising the uploads when they could be parallel. A batch 
 4. **Cancellation must be keyboard-reachable** for each file and for the batch.
 5. **Don't trap focus** on the queue — the user might want to navigate elsewhere while it runs.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

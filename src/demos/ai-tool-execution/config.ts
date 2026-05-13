@@ -3,9 +3,13 @@ import type { DemoConfig } from "@/components/DemoRunner";
 export const config: DemoConfig = {
   title: "Tool execution",
   description:
-    "An agent reads a file, searches the codebase, edits a file, and runs a typecheck. Naive: opaque \"Working…\" spinner for the full duration. Tuned: each tool call streams in as the agent runs it, with its own running / done state.",
+    "An agent reads a file, searches the codebase, and runs a typecheck. Naive: opaque \"Working…\" spinner for the full duration. Tuned: each tool call streams in as the agent runs it, with its own running / done state.",
   timeBand: "1 – 10 S",
   runMode: "manual",
+  // Reserve the loaded-state height of the 3-step tuned list (each
+  // item with always-rendered title + detail) + the trailing "Done."
+  // so neither panel jumps as steps complete.
+  panelMinHeight: "min-h-[226px]",
 };
 
 export type ToolStep = {
@@ -20,25 +24,19 @@ export const STEPS: readonly ToolStep[] = [
   {
     id: "read",
     label: "Read package.json",
-    detail: "Found react@19, next@16, tailwindcss@4",
-    durationMs: 350,
+    detail: "Found 3 dependencies",
+    durationMs: 500,
   },
   {
     id: "search",
-    label: "Search for useState across src",
-    detail: "14 matches in 8 files",
-    durationMs: 1100,
-  },
-  {
-    id: "edit",
-    label: "Edit src/components/SearchBox.tsx",
-    detail: "Replaced useState with useDeferredValue",
-    durationMs: 700,
+    label: "Search useState",
+    detail: "14 matches",
+    durationMs: 1200,
   },
   {
     id: "typecheck",
-    label: "Run npm run typecheck",
-    detail: "No errors. 0 warnings.",
-    durationMs: 1500,
+    label: "Run typecheck",
+    detail: "0 errors",
+    durationMs: 1800,
   },
 ];

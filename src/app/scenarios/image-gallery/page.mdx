@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveImageGallery } from "@/demos/image-gallery/naive";
 import { TunedImageGallery } from "@/demos/image-gallery/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Image gallery
+
+<ScenarioMeta slug="image-gallery" />
 
 
 Image-heavy layouts are the worst-case for naive loading. A grid of six photos at 250 KB each is a megabyte and a half on the wire — and the eye notices every tile that is missing. A user who sees six gray boxes backfilling in arbitrary order experiences six separate waits, one per tile, each registering as absence. The same six images backed by LQIP placeholders register as a single resolution event — the layout was already there, the detail is what is arriving.
@@ -55,6 +58,6 @@ The other failure mode is trying to LQIP everything. Icons, logos, UI chrome —
 4. **Focus order** must not depend on load order. If the gallery is keyboard-navigable, tab order is set by the layout, not by which image happens to load first.
 5. **Lazy-load only off-screen images.** `loading="lazy"` (or its IntersectionObserver equivalent) prevents work for images the user has not scrolled to — but never apply it to above-the-fold tiles, where the LQIP needs to be in the first paint.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { DemoRunner, type DemoConfig } from "@/components/DemoRunner";
+import { SwipeableRow } from "@/components/SwipeableRow";
 import { cn } from "@/lib/utils";
 import { demoContext } from "@/lib/relations";
 
@@ -146,7 +147,7 @@ type DemoEntry =
   | {
       /** Used as the React `key` and as the demoKey for cross-link lookup. */
       key: string;
-      Custom: React.ComponentType;
+      Custom: React.ComponentType<{ footer?: React.ReactNode }>;
     };
 
 type Band = {
@@ -161,7 +162,7 @@ const bands: Band[] = [
     id: "instant",
     label: "0–100 MS",
     description:
-      "Instant input. The user has not started waiting yet. Patterns here give a head-start, not a status — pre-action feedback, optimistic flips, direct-manipulation latency budgets. Anything that announces a wait at this scale damages the experience.",
+      "Instant input. The user has not started waiting yet. Anything that announces a wait at this scale damages the experience.",
     demos: [
       { demoKey: "optimistic-actions", config: optimisticActionsConfig, Naive: NaiveOptimisticActions, Tuned: TunedOptimisticActions },
       { key: "map-interactions", Custom: MapInteractionsCard },
@@ -174,7 +175,7 @@ const bands: Band[] = [
     id: "responsive",
     label: "100 MS – 1 S",
     description:
-      "Perceptible, but no determinate progress yet. Cues say \"active, working\" without claiming an end-point — indeterminate spinners, top-edge trickle bars, a brief pulse on the affected element.",
+      "Cues say \"active, working\" without claiming an end-point, like indeterminate spinners, progress bars, a brief pulse or bounce.",
     demos: [
       { demoKey: "technique-spinner", config: spinnerConfig, Naive: NaiveSpinner, Tuned: TunedSpinner },
       { demoKey: "technique-trickle-bar", config: trickleBarConfig, Naive: NaiveTrickleBar, Tuned: TunedTrickleBar },
@@ -237,7 +238,7 @@ export function PlaygroundContent() {
     <article className="py-12">
       <header className="mx-auto max-w-4xl px-8 lg:px-12 xl:px-16">
         <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          {totalDemos} demos · 4 time bands
+          {totalDemos} demos
         </p>
         <h1 className="mt-2 text-4xl font-medium leading-tight tracking-tight">
           Playground
@@ -245,25 +246,39 @@ export function PlaygroundContent() {
       </header>
 
       <div className="sticky top-14 z-10 mt-6 border-b border-border bg-background/95 backdrop-blur md:top-0">
-        <div
-          className="mx-auto flex max-w-4xl flex-wrap items-center gap-2 px-8 py-4 lg:px-12 xl:px-16"
+        <SwipeableRow
+          wrapAt="md"
           role="group"
-          aria-label="Filter demos by time band"
+          ariaLabel="Filter demos by time band"
+          className="mx-auto max-w-4xl px-8 py-4 lg:px-12 xl:px-16"
         >
           <FilterPill
             label="All"
             active={filter === "all"}
-            onClick={() => setFilter("all")}
+            onClick={() => {
+              setFilter("all");
+              setTimeout(
+                () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                0,
+              );
+            }}
           />
           {bands.map((band) => (
             <FilterPill
               key={band.id}
               label={band.label}
               active={filter === band.id}
-              onClick={() => setFilter(band.id)}
+              onClick={() => {
+                setFilter(band.id);
+                setTimeout(() => {
+                  document
+                    .getElementById(`band-${band.id}`)
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }, 0);
+              }}
             />
           ))}
-        </div>
+        </SwipeableRow>
       </div>
 
       <div className="mx-auto mt-12 max-w-4xl space-y-12 px-8 lg:px-12 xl:px-16">
@@ -271,7 +286,7 @@ export function PlaygroundContent() {
           <section key={band.id} aria-labelledby={`band-${band.id}`}>
             <h2
               id={`band-${band.id}`}
-              className="font-mono text-xs font-medium uppercase tracking-wider text-primary"
+              className="scroll-mt-24 font-mono text-xs font-medium uppercase tracking-wider text-primary"
             >
               {band.label} · {band.demos.length}{" "}
               {band.demos.length === 1 ? "demo" : "demos"}
@@ -280,21 +295,26 @@ export function PlaygroundContent() {
               {band.description}
             </p>
 
-            <div className="mt-6 space-y-6">
+            <div className="mt-8 space-y-14">
               {band.demos.map((demo) => {
                 const demoKey = "Custom" in demo ? demo.key : demo.demoKey;
+                const ctx = demoContext(demoKey);
+                const footer =
+                  ctx.scenarios.length > 0 ? (
+                    <AppearsInStrip demoKey={demoKey} />
+                  ) : null;
                 return (
                   <div key={demoKey}>
                     {"Custom" in demo ? (
-                      <demo.Custom />
+                      <demo.Custom footer={footer} />
                     ) : (
                       <DemoRunner
                         config={demo.config}
                         Naive={demo.Naive}
                         Tuned={demo.Tuned}
+                        footer={footer}
                       />
                     )}
-                    <AppearsInStrip demoKey={demoKey} />
                   </div>
                 );
               })}
@@ -321,7 +341,7 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "inline-flex items-center rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
+        "inline-flex shrink-0 items-center rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
         active
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border bg-card text-muted-foreground hover:border-primary hover:text-foreground",
@@ -343,7 +363,7 @@ function AppearsInStrip({ demoKey }: { demoKey: string }) {
   if (ctx.scenarios.length === 0) return null;
 
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-2 px-1 text-xs">
+    <div className="flex flex-wrap items-center gap-2 text-xs">
       <span className="font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">
         Appears in
       </span>
@@ -353,10 +373,7 @@ function AppearsInStrip({ demoKey }: { demoKey: string }) {
           href={`/scenarios/${s.slug}`}
           className="inline-flex items-center rounded-md border border-border bg-card px-2 py-0.5 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
         >
-          <span className="mr-1 font-mono text-[0.6875rem] uppercase tracking-wider opacity-70">
-            Scenario
-          </span>
-          <span>{s.title}</span>
+          {s.title}
         </Link>
       ))}
     </div>

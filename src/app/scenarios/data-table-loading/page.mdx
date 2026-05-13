@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Data table loading
+
+<ScenarioMeta slug="data-table-loading" />
 
 
 The user clicks a column header to sort, types into a filter box, or changes the page size. The table re-queries; the user waits for the new data. The naive answer is to blank the table during the query. The tuned answer is to keep the layout intact, render skeleton rows that match the column widths, and dim the previous data while the new query is in flight.
@@ -55,6 +58,6 @@ The other failure: skeleton rows for *interactive* table operations. A search in
 4. **Match `tabular-nums` font feature** on numeric columns so the skeleton's width prediction holds.
 5. **Stale-state dim should not strip ARIA**. The previous row data is still announceable; an opacity change is purely visual.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

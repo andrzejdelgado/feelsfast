@@ -3,6 +3,8 @@ import { ArrowUpRight } from "lucide-react";
 import { ArticleWrapper } from "@/components/ArticleWrapper";
 import { Cite } from "@/components/Cite";
 import { CodeBlock } from "@/components/CodeBlock";
+import { EssayMeta } from "@/components/EssayMeta";
+import { ScenarioMeta } from "@/components/ScenarioMeta";
 
 /**
  * True when the href points off-site. Anchor links (`#foo`), site-relative
@@ -155,6 +157,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       );
     },
     Cite,
+    EssayMeta,
+    ScenarioMeta,
     wrapper: ({ children }) => <ArticleWrapper>{children}</ArticleWrapper>,
   };
 }

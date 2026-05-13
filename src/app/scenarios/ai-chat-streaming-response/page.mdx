@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
 import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # AI · Chat / streaming response
+
+<ScenarioMeta slug="ai-chat-streaming-response" />
 
 
 The user submits a prompt to an AI surface. The total time to last token is roughly the same on both sides — call it 5–6 seconds. The naive surface goes blank for those seconds, then drops the full response in at the end. The tuned surface fills the same wait with a brief thinking state and a token-by-token reveal pacing the response to a natural reading rhythm. Same clock, very different experience.
@@ -55,6 +58,6 @@ The other failure mode: streaming the response *too fast*. Token reveal at 5 ms 
 4. **Don't strip semantics during streaming.** If the model produces markdown — code blocks, lists, headings — render them with the right elements as the tokens accumulate. A streaming `<pre><code>` block reads better than a paragraph that retroactively becomes a code block.
 5. **Cancellation must be reachable from keyboard.** Escape by convention; surface it visibly the first few times.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveDataExport } from "@/demos/data-export/naive";
 import { TunedDataExport } from "@/demos/data-export/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Data export / download generation
+
+<ScenarioMeta slug="data-export-download" />
 
 
 Generating a download is one of the few perception scenarios where the work is genuinely long — sometimes minutes — and there is nothing the perception layer can do to compress it. What it can do is keep the user oriented while the work runs, and offer a hand-off when the wait crosses the threshold past which they will leave the tab. A spinner does neither. A determinate progress bar with row-count milestones, contextual engagement copy, and an email-when-ready escape hatch does both.
@@ -57,6 +60,6 @@ For exports that genuinely take minutes — billing reports, GDPR data-subject a
 4. **Visible cancellation** for the long tail. The email hand-off is not a cancellation — it is a continuation.
 5. **`prefers-reduced-motion`** — the bar's width transition is a property change and stays. Strip any rib animation.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

@@ -152,7 +152,7 @@ function Panel({
   return (
     <div
       className={cn(
-        "rounded-md border bg-card p-3",
+        "rounded-md border bg-card p-3 text-left",
         highlighted ? "border-primary" : "border-border",
       )}
     >

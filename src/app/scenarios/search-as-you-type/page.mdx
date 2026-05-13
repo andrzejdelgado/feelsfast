@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveSearchAsYouType } from "@/demos/search-as-you-type/naive";
 import { TunedSearchAsYouType } from "@/demos/search-as-you-type/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Search as you type
+
+<ScenarioMeta slug="search-as-you-type" />
 
 
 The user types into a search box. Each keystroke could either kick off an expensive filter that blocks the input, or trigger a deferred filter that runs as low-priority work while the input stays responsive. The difference between the two — same dataset, same filter logic, same artificial work per keystroke — is whether the user feels they are typing or fighting.
@@ -54,6 +57,6 @@ The most common failure mode in production: a debounce-only solution that *does*
 3. **Keyboard arrow navigation** for picking results without leaving the input. Down-arrow into the list, Up-arrow back, Enter to commit, Escape to clear.
 4. **Don't trap focus during typing.** The input is the user's home; results should never steal focus mid-type.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

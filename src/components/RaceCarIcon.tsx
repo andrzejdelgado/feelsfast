@@ -2,17 +2,18 @@ import { cn } from "@/lib/utils";
 
 /**
  * Race-car icon — renders the unmodified bitmap from `/public/car.png`
- * via an `<img>`, preserving every original pixel. A CSS hue / saturation
- * filter shifts the bitmap's reds toward the platform accent (Claude
- * orange) while keeping the relative light / dark structure intact, so
- * the car carries the brand palette without the source pixels being
- * re-authored.
+ * via an `<img>`, preserving every original pixel. A `sepia → hue-rotate
+ * → saturate` filter chain collapses the bitmap's full palette into the
+ * Claude-orange / AI-gradient family: sepia first replaces all chroma
+ * with a single brown-orange hue, then hue-rotate shifts that hue to
+ * sit on top of Claude orange (#d97757). Result — the wheels (originally
+ * near-black), the body (originally red), and the highlights all read as
+ * shades of orange, so the car lives entirely inside the brand accent
+ * palette rather than carrying its bitmap's incidental greys.
  *
  * One animation layer sells speed without modifying the bitmap: five
- * staggered wind streaks behind the car (left of the bitmap). Earlier
- * versions overlaid per-wheel diagonal spoke pixels; those were removed
- * because the pixels read as noise close to the wheels rather than as
- * a spinning hub.
+ * staggered wind streaks behind the car (left of the bitmap), filled in
+ * a peach tone sampled from the AI page's gradient (#ecaa89).
  *
  * Loops forever and intentionally does not honour
  * `prefers-reduced-motion` (deliberate request).
@@ -38,11 +39,11 @@ export function RaceCarIcon({
         style={{ shapeRendering: "crispEdges", overflow: "visible" }}
         xmlns="http://www.w3.org/2000/svg"
       >
-        <rect x="0" y="20" width="8"  height="2" fill="#5e5d59" className="rc-wind-1" />
-        <rect x="0" y="24" width="12" height="2" fill="#5e5d59" className="rc-wind-2" />
-        <rect x="0" y="28" width="8"  height="2" fill="#5e5d59" className="rc-wind-3" />
-        <rect x="0" y="32" width="12" height="2" fill="#5e5d59" className="rc-wind-4" />
-        <rect x="0" y="36" width="8"  height="2" fill="#5e5d59" className="rc-wind-5" />
+        <rect x="0" y="20" width="8"  height="2" fill="#ecaa89" className="rc-wind-1" />
+        <rect x="0" y="24" width="12" height="2" fill="#ecaa89" className="rc-wind-2" />
+        <rect x="0" y="28" width="8"  height="2" fill="#ecaa89" className="rc-wind-3" />
+        <rect x="0" y="32" width="12" height="2" fill="#ecaa89" className="rc-wind-4" />
+        <rect x="0" y="36" width="8"  height="2" fill="#ecaa89" className="rc-wind-5" />
       </svg>
 
       {/* Car bitmap — unmodified pixels, accent-shifted via CSS filter */}
@@ -53,7 +54,8 @@ export function RaceCarIcon({
         style={{
           imageRendering: "pixelated",
           objectFit: "contain",
-          filter: "hue-rotate(18deg) saturate(0.78) brightness(1.05)",
+          filter:
+            "sepia(1) saturate(2.6) hue-rotate(-18deg) brightness(1.08)",
         }}
       />
 

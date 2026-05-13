@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Auth / OAuth flow
+
+<ScenarioMeta slug="auth-oauth" />
 
 
 Sign in. Or click "Continue with Google" and round-trip through a third-party. The wait is one to several seconds — most of it the network handshake the user can do nothing about. The perception layer cannot shorten the handshake; it can ensure the wait is filled with affordances rather than blank.
@@ -49,6 +52,6 @@ OAuth handshakes can fail for reasons the user did not cause — third-party out
 3. **Don't trap on the spinner.** A 10-second OAuth round-trip with no escape locks the user.
 4. **`prefers-reduced-motion`** for the redirect transition.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

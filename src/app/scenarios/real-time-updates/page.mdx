@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveRealTimeUpdates } from "@/demos/real-time-updates/naive";
 import { TunedRealTimeUpdates } from "@/demos/real-time-updates/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Real-time updates / live data
+
+<ScenarioMeta slug="real-time-updates" />
 
 
 Live feeds — Slack threads, Linear activity, GitHub PR queues, build dashboards — share a perception failure mode that is easy to overlook because nothing is *broken*: when a new event arrives, the list reorders silently. The user, whose eyes were elsewhere, has to re-scan the entire list to find what changed. The new entry is delivered, but the user does not perceive it as new.
@@ -59,6 +62,6 @@ For high-frequency feeds — chat with hundreds of messages per minute, log stre
 4. **Time labels** — relative time ("3 s ago") is more useful than absolute on a fast feed, but include the absolute time in `title` or `aria-label` for users who need precision.
 5. **Pause control** for cognitive accessibility — users with attention-related disabilities benefit from a "Pause feed" control that suspends incoming animations without disconnecting the data flow.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

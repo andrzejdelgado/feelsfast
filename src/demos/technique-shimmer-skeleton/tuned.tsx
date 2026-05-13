@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { seededGamma } from "@/lib/jitter";
 import { TOTAL_DURATION_P50_MS } from "./config";
 
@@ -34,20 +35,38 @@ export function TunedShimmerSkeleton({ seed = 1 }: { seed?: number }) {
     };
   }, []);
 
-  if (loaded) return <Card />;
-
+  // The outer card always renders the loaded text (invisible while
+  // waiting) so its height is locked from the first paint and matches
+  // the Naive panel exactly. The shimmer skeleton overlays during the
+  // wait — no height change when the real content arrives.
   return (
-    <div className="space-y-2.5 rounded-md border border-border bg-background p-3">
-      <ShimmerBlock className="h-3 w-32" />
-      <ShimmerBlock className="h-2.5 w-full" />
-      <ShimmerBlock className="h-2.5 w-5/6" />
-      <ShimmerBlock className="h-2.5 w-2/3" />
-      <style>{`
-        @keyframes shimmer-sweep {
-          0%   { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-      `}</style>
+    <div className="relative rounded-md border border-border bg-background p-3 text-sm">
+      <p className={cn("font-medium", !loaded && "invisible")}>
+        Q3 sprint goals
+      </p>
+      <p
+        className={cn(
+          "mt-2.5 text-xs leading-relaxed text-muted-foreground",
+          !loaded && "invisible",
+        )}
+      >
+        Ship perceived-performance demos. Migrate staging. Cut Q3 release branch
+        on Friday.
+      </p>
+      {!loaded ? (
+        <div className="pointer-events-none absolute inset-3 space-y-2.5">
+          <ShimmerBlock className="h-3 w-32" />
+          <ShimmerBlock className="h-2.5 w-full" />
+          <ShimmerBlock className="h-2.5 w-5/6" />
+          <ShimmerBlock className="h-2.5 w-2/3" />
+          <style>{`
+            @keyframes shimmer-sweep {
+              0%   { background-position: 200% 0; }
+              100% { background-position: -200% 0; }
+            }
+          `}</style>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -63,17 +82,5 @@ function ShimmerBlock({ className }: { className: string }) {
         animation: "shimmer-sweep 1400ms linear infinite",
       }}
     />
-  );
-}
-
-function Card() {
-  return (
-    <div className="space-y-2.5 rounded-md border border-border bg-background p-3 text-sm">
-      <p className="font-medium">Q3 sprint goals</p>
-      <p className="text-xs leading-relaxed text-muted-foreground">
-        Ship perceived-performance demos. Migrate staging. Cut Q3 release branch
-        on Friday.
-      </p>
-    </div>
   );
 }

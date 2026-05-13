@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { seededGamma } from "@/lib/jitter";
 import {
+  COLS_DESKTOP,
+  ROWS_DESKTOP,
   TILE_LOAD_P50_MS,
-  VIEWPORT,
   tileColor,
   tileKey,
 } from "./config";
@@ -15,6 +16,10 @@ type Props = {
   centerY: number;
   /** Bumped on every Replay so the demo state resets in lock-step with Off. */
   seed?: number;
+  /** Grid column count. Defaults to the desktop value. */
+  cols?: number;
+  /** Grid row count. Defaults to the desktop value. */
+  rows?: number;
 };
 
 /**
@@ -28,7 +33,13 @@ type Props = {
  * 60 % opaque, then fade to full as their seeded simulated load
  * completes.
  */
-export function TunedMapInteractions({ centerX, centerY, seed = 1 }: Props) {
+export function TunedMapInteractions({
+  centerX,
+  centerY,
+  seed = 1,
+  cols = COLS_DESKTOP,
+  rows = ROWS_DESKTOP,
+}: Props) {
   const [loaded, setLoaded] = useState<Set<string>>(new Set([tileKey(0, 0)]));
   const timeoutsRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
     new Map(),
@@ -36,9 +47,10 @@ export function TunedMapInteractions({ centerX, centerY, seed = 1 }: Props) {
 
   // Compute the visible tile set during render (pure).
   const tiles: { x: number; y: number; key: string }[] = [];
-  const half = Math.floor(VIEWPORT / 2);
-  for (let dy = -half; dy < VIEWPORT - half; dy++) {
-    for (let dx = -half; dx < VIEWPORT - half; dx++) {
+  const halfX = Math.floor(cols / 2);
+  const halfY = Math.floor(rows / 2);
+  for (let dy = -halfY; dy < rows - halfY; dy++) {
+    for (let dx = -halfX; dx < cols - halfX; dx++) {
       const x = centerX + dx;
       const y = centerY + dy;
       tiles.push({ x, y, key: tileKey(x, y) });
@@ -88,7 +100,7 @@ export function TunedMapInteractions({ centerX, centerY, seed = 1 }: Props) {
   return (
     <div
       className="relative grid w-full overflow-hidden rounded-md border border-border bg-muted"
-      style={{ gridTemplateColumns: `repeat(${VIEWPORT}, 1fr)` }}
+      style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
     >
       {tiles.map((t) => {
         const isLoaded = loaded.has(t.key);

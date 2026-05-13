@@ -29,7 +29,7 @@ export function TunedSkeletonSimple({ seed = 1 }: { seed?: number }) {
 
 function Skeleton() {
   return (
-    <div className="space-y-2 rounded-md border border-border bg-background p-3">
+    <div className="min-h-[6rem] space-y-2 rounded-md border border-border bg-background p-3">
       <div className="h-4 w-2/3 rounded bg-muted" />
       <div className="h-3 w-full rounded bg-muted" />
       <div className="h-3 w-3/4 rounded bg-muted" />
@@ -39,7 +39,7 @@ function Skeleton() {
 
 function Card() {
   return (
-    <div className="rounded-md border border-border bg-background p-3 text-sm">
+    <div className="min-h-[6rem] rounded-md border border-border bg-background p-3 text-sm">
       <p className="font-medium">Q3 sprint goals</p>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
         Ship perceived-performance demos. Migrate staging.

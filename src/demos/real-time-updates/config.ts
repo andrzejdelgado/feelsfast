@@ -7,6 +7,11 @@ export const config: DemoConfig = {
     "A live activity feed with new events arriving at random intervals. Naive: items pop in instantly with no register. Tuned: items slide in with a brief highlight that fades, so the eye knows what is new.",
   timeBand: "0–100 MS",
   runMode: "manual",
+  // Reserve exactly the loaded-list height (3 items + 2 gaps on mobile,
+  // 5 items + 4 gaps at md+) so the panel content area matches the
+  // loaded `<ul>` exactly — no jump from idle, no empty space below
+  // the items once they arrive.
+  panelMinHeight: "min-h-[130px] md:min-h-[227px]",
 };
 
 export const EVENT_INTERVAL_P50_MS = 1500;

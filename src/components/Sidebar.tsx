@@ -69,7 +69,7 @@ export function Sidebar() {
           GitHub
         </a>
         <span className="font-mono text-[0.6875rem] uppercase tracking-wider">
-          v0.9 · phase 4
+          v1.0 · phase 4
         </span>
       </div>
     </nav>

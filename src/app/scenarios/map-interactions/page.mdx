@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { MapInteractionsCard } from "@/components/MapInteractionsCard";
 import { references } from "@/lib/refs/scenario-map-interactions";
 
@@ -12,6 +13,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Map interactions
+
+<ScenarioMeta slug="map-interactions" />
 
 
 Maps are the canonical case for direct-manipulation perception failure. The user drags the canvas; tiles need to load; if the tile load *blocks* the drag, the manipulation stops feeling direct and starts feeling stop-and-go. The perceptual ceiling here is brutal — Jota et al. 2013 <Cite id="jota-2013" label="Jota et al. 2013" /> puts the just-noticeable-difference for direct-touch dragging at ~33 ms; Ng et al. 2012 <Cite id="ng-2012" label="Ng et al. 2012" /> resolved single-millisecond differences in trained users. There is no realistic budget for "pan, then wait for tiles, then update." The pan has to be free; the tiles have to catch up.
@@ -54,6 +57,6 @@ For touch devices, the gesture is `pointermove` with high-frequency events; the 
 4. **Touch targets** — pan controls should be ≥ 44×44 px (Apple HIG / Material guidance). The demo's 28×28 px controls are visual only; production maps would size them up.
 5. **Focus return** — after a pan, focus stays on the control that was pressed (or on the map canvas itself if the user was using arrow keys). Never reset focus to the page top.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

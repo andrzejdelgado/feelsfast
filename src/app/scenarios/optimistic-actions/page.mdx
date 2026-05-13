@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
 import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Optimistic actions (like, save, undo)
+
+<ScenarioMeta slug="optimistic-actions" />
 
 
 The user clicks "Like." The naive answer is to wait for the server before the heart fills in — a small button with a small wait, but a wait the user feels every time. The tuned answer is to flip the heart immediately, send the request in the background, and roll back visibly if the rare failure case fires. At 99 % success the user's experience is sub-perceptible feedback; at 1 % they get an honest, recoverable error.
@@ -55,6 +58,6 @@ For irreversible actions — payments, deletions without undo, irreversible stat
 4. **`prefers-reduced-motion`** — the heart's fill transition reduces to an instant colour change.
 5. **Keyboard parity** — Space and Enter trigger the same optimistic flip on focused buttons. The press animation can be skipped for keyboard activations.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

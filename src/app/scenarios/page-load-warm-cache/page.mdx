@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Page load (warm cache)
+
+<ScenarioMeta slug="page-load-warm-cache" />
 
 
 A returning user. The bundle is cached. The route data was prefetched on hover or at viewport entry. There is no real wait — and yet the naive surface still flashes a blank between the previous page and the new one. The tuned surface treats the navigation as a transition between two states of the same document, not as a new document fetch.
@@ -52,6 +55,6 @@ The other failure: applying View Transitions to pages that are not actually warm
 3. **Don't trap announcements.** Assistive tech ignores the transition itself, but if the new page's heading or main landmark renders late, the announcement comes late.
 4. **Layout stability** — even with View Transitions, late data should reserve its space. Don't ship a transition into an unstable layout.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

@@ -4,6 +4,7 @@ import {
   essays,
   essaysByCategory,
 } from "@/lib/essays";
+import { getEssayReadTime } from "@/lib/read-time";
 import { ConceptsCategorizedList } from "@/components/ConceptsCategorizedList";
 
 export const metadata: Metadata = {
@@ -16,7 +17,10 @@ export default function ConceptsPage() {
   const groups = essayCategories
     .map((category) => ({
       category,
-      items: essaysByCategory(category.id),
+      items: essaysByCategory(category.id).map((essay) => ({
+        ...essay,
+        readTime: getEssayReadTime(essay.slug),
+      })),
     }))
     .filter((g) => g.items.length > 0);
 

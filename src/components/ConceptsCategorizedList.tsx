@@ -5,9 +5,11 @@ import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Essay, EssayCategory, EssayCategoryMeta } from "@/lib/essays";
 
+type EssayWithReadTime = Essay & { readTime: number };
+
 type CategorizedGroup = {
   category: EssayCategoryMeta;
-  items: readonly Essay[];
+  items: readonly EssayWithReadTime[];
 };
 
 type FilterValue = "all" | EssayCategory;
@@ -112,7 +114,7 @@ function FilterPill({
   );
 }
 
-function EssayCard({ essay }: { essay: Essay }) {
+function EssayCard({ essay }: { essay: EssayWithReadTime }) {
   const isReadable = essay.status === "published";
   const className = `block rounded-lg border border-border bg-card p-5 transition-colors ${
     isReadable ? "hover:border-primary" : "opacity-70"
@@ -120,27 +122,13 @@ function EssayCard({ essay }: { essay: Essay }) {
 
   const inner = (
     <>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <p className="text-lg font-medium tracking-tight">{essay.title}</p>
-        <span className="shrink-0 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
-          Essay {essay.number}
-        </span>
-      </div>
+      <p className="text-lg font-medium tracking-tight">{essay.title}</p>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
         {essay.blurb}
       </p>
-      {essay.citations.length > 0 ? (
-        <div className="mt-4 flex flex-wrap items-center gap-1.5">
-          {essay.citations.map((cite) => (
-            <span
-              key={cite}
-              className="inline-flex items-center rounded-sm border border-border bg-background px-1.5 py-0.5 font-mono text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
-            >
-              {cite}
-            </span>
-          ))}
-        </div>
-      ) : null}
+      <p className="mt-4 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary">
+        {essay.readTime} min read
+      </p>
     </>
   );
 

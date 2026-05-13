@@ -1,5 +1,6 @@
 import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
+import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
 import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
@@ -15,6 +16,8 @@ export const metadata = {
 <RegisterReferences refs={references} />
 
 # Form submission
+
+<ScenarioMeta slug="form-submission" />
 
 
 The user fills out a form and clicks Submit. What happens between the click and the success page determines whether the form feels responsive or laggy. There are three layers to tune — pre-action feedback, optimistic submission for low-rejection cases, and determinate progress for the long tail — and they stack to push the perceived submission time below Doherty 1982's <Cite id="doherty-1982" label="Doherty 1982" /> productivity-cliff.
@@ -57,6 +60,6 @@ For multi-step forms with non-trivial state, pair this scenario with the [multi-
 4. **Focus management on rollback** — move focus to the failed field (or to the error message) so keyboard users find the problem.
 5. **`prefers-reduced-motion: reduce`** for the press animation — collapse to a colour change.
 
-## References
+<ScenarioNav />
 
 <ReferencesList refs={references} />

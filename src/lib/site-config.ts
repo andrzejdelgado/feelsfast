@@ -6,6 +6,7 @@ import {
   Library,
   Sparkles,
   Type,
+  WandSparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -32,10 +33,11 @@ export type SidebarItem = {
 
 export const sidebarSections: SidebarItem[] = [
   { label: "Home", href: "/", icon: Home },
-  { label: "Skill", href: "/skill", icon: Sparkles, badge: "New" },
+  { label: "Skill", href: "/skill", icon: WandSparkles, badge: "New" },
   { label: "Concepts", href: "/concepts", icon: BookOpen },
   { label: "Scenarios", href: "/scenarios", icon: Layers },
   { label: "Playground", href: "/playground", icon: FlaskConical },
+  { label: "AI", href: "/ai", icon: Sparkles, badge: "New" },
   { label: "Glossary", href: "/glossary", icon: Type },
   { label: "References", href: "/references", icon: Library },
 ];

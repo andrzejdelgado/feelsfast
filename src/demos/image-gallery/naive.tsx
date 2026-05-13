@@ -42,7 +42,7 @@ export function NaiveImageGallery({ seed = 1 }: { seed?: number }) {
             key={tile.id}
             aria-label={tile.label}
             aria-busy={!isLoaded}
-            className="aspect-square w-full rounded bg-muted"
+            className="aspect-square w-full rounded"
             style={
               isLoaded
                 ? { backgroundImage: tile.gradient }

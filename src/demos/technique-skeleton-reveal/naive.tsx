@@ -44,7 +44,7 @@ export function NaiveSkeletonReveal({ seed = 1 }: { seed?: number }) {
         Next article
         <ChevronRight aria-hidden className="size-3" />
       </button>
-      <div className="min-h-[6rem] rounded-md border border-border bg-background p-3">
+      <div className="min-h-[148px] rounded-md border border-border bg-background p-3 md:min-h-[110px]">
         {loading ? null : (
           <>
             <p className="text-sm font-medium">{article.title}</p>

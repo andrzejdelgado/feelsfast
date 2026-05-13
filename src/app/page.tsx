@@ -1,11 +1,18 @@
-import { ArrowRight, BookOpen, FlaskConical, Layers } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  FlaskConical,
+  Layers,
+  Sparkles,
+  Triangle,
+  WandSparkles,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CopyButton } from "@/components/CopyButton";
 import { DemoRunner } from "@/components/DemoRunner";
 import { HeroPerceptionDemo } from "@/components/HeroPerceptionDemo";
-import { RaceCarIcon } from "@/components/RaceCarIcon";
 
 import { config as shimmerConfig } from "@/demos/technique-shimmer-skeleton/config";
 import { NaiveShimmerSkeleton } from "@/demos/technique-shimmer-skeleton/naive";
@@ -22,40 +29,35 @@ const stats = [
   {
     label: "Doherty 1982",
     headline: "400 ms",
-    body: "is the productivity cliff. Doherty & Thadani measured terminal users across IBM and found a non-linear curve: when response times dropped under 400 ms, productivity jumped — programmer transactions per hour rose 106 % moving from 3 s to 0.3 s. 400 ms is not a round target; it is where their data measurably bends. Modern Web Vitals' INP target of 200 ms sits below that cliff with margin to spare. Every \"sub-second response\" goal you have seen in a sprint planning meeting traces back here.",
+    body: "is the productivity cliff. Sub-second response time produces measurable productivity gains. It's the foundational empirical finding the rest of the field rests on.",
   },
   {
     label: "Nielsen 1993",
     headline: "0.1 / 1 / 10 s",
-    body: "are the perception thresholds. Below 0.1 s an interaction feels instant to the user. Past 1 s flow breaks and the user notices things are being loaded for them. Past 10 s the user's attention drifts away from the task entirely. This changes how designers and engineers should address different load-times in different scenarios.",
-  },
-  {
-    label: "Harrison et al. 2010",
-    headline: "+12%",
-    body: "perceived speed-up from a backwards-decelerating progress bar with backwards-moving ribs — at the same real duration. A single CSS animation buys you a perceptual gain you would otherwise need engineering to find.",
+    body: "are the perception thresholds. Below 0.1 s feels instant to the user. Past 1 s flow breaks, making the user notice the loading. Past 10 s the user's attention drifts away from the task entirely.",
   },
 ] as const;
 
 const bands = [
   {
     label: "0–100 MS",
-    title: "Instant input",
-    body: "The user does not notice they had to wait. In this timeframe everything feels instantaneous. This is the holy grail of load-times — rarely achievable for objective reasons. Yet if a product can make the user believe that things are instant, it gains trust and expands the chance of better revenue (in the end, everything is about the money). In the 0–100 ms territory the win comes through sneaky tactics: pre-action feedback, optimistic flips, direct-manipulation latency budgets.",
+    title: "Instant",
+    body: "In such a timeframe everything happens instantaneously. Making things happen in an instant creates trust. This perception of time can be achieved through sneaky tactics: pre-action feedback, optimistic flips, direct-manipulation latency budgets.",
   },
   {
     label: "100 MS – 1 S",
-    title: "Perceptible wait",
-    body: 'This range is bearable, even though the attention span of the youngest generations is, by newer studies, shrinking dramatically. Anything that lasts up to a second is still digestible. The choice is wide: one second of staring at an information abyss, or a second filled with a helpful cue that things are progressing and will be done very soon. In this band, cues say "I\'m active, I\'m working, I\'ll be done sooner than you think" without claiming an end-point. Indeterminate spinners, marquee or infinite progress bars, three-dot bounces, oscillating, bouncing, or pulsating artefacts. The system is honest about not knowing how long this will take, yet movement makes time pass faster.',
+    title: "Responsive",
+    body: "This range is bearable, even with the shrinking attention span of the youngest generations. The choice is: one second of staring at the information abyss, or one second filled with a helpful cue. This is the territory of indeterminate spinners, infinite progress bars, oscillating, bouncing or pulsating load artefacts.",
   },
   {
     label: "1 – 10 S",
-    title: "Engaged wait",
-    body: "This is the territory where most perception techniques live — where designers and engineers show their craft in making the user believe that fully loaded content is just around the corner. The whole point is to make the user consciously wait for the result while cues hint at real work happening. In other words: different techniques mask the absence of the final result with content-true artefacts, their movement, their presence — static, shimmering, or pulsating skeletons or their approximations, finite progress bars, percentage counters, and more variants that reduce perceived time further in certain scenarios.",
+    title: "Engaged",
+    body: "The range where designers and engineers can show their craft and skill in making the user believe that fully loaded content is just around the corner. Content-true artefacts: static, shimmering, or pulsating skeletons, finite progress bars, percentage counters, with many more variants.",
   },
   {
     label: "10 S+",
-    title: "Past the wall",
-    body: "When things last more than 10 seconds, the user loses interest in the task that was put in motion. Techniques in this territory have a completely different goal: they either redirect the user's attention elsewhere, or turn the wait into a \"meaning moment.\" Patterns here are about giving them something to do or freeing them from the wait entirely — engaging copy or visuals, branded sequences, process reveals, foreground-to-background hand-offs, temporary entertainment or engagement.",
+    title: "Long",
+    body: 'In this territory the user loses interest or attention to the task. The goal is to redirect them onto something else, or to turn the wait into a "meaning moment." Hence the usage of engaging copy or visuals, process unveiling, foreground-to-background hand-offs, providing temporary entertainment or engagement.',
   },
 ] as const;
 
@@ -65,48 +67,72 @@ const tour = [
     icon: BookOpen,
     label: "Concepts",
     count: "10 essays",
-    body: "The science of perceived performance — from Miller's 17-transaction taxonomy to the decision rule for which loading affordance to show in which time band, and what changes when the wait is AI.",
+    body: "Miller's transaction taxonomy, Doherty's 400 ms threshold, the decision rule for which loading affordance fits which time band — and what changes when the wait is AI.",
   },
   {
     href: "/scenarios",
     icon: Layers,
     label: "Scenarios",
     count: "24 user flows",
-    body: "Each flow with a side-by-side naive / tuned demo so the perception gap is visible in seconds.",
+    body: "Real flows — navigation, forms, search, upload, chat — each with a side-by-side naive / tuned demo so the perception gap is visible in seconds.",
+  },
+  {
+    href: "/ai",
+    icon: Sparkles,
+    label: "AI",
+    count: "2 essays · 5 flows",
+    body: "AI surfaces in one cut — chat, inline completion, tool execution, long compute, agentic workflows — with the essays on why AI waits are different.",
   },
   {
     href: "/playground",
     icon: FlaskConical,
     label: "Playground",
-    count: "38 demos",
-    body: "Every demo on the platform, organised by time band and filterable. The technique gallery.",
+    count: "32 demos",
+    body: "Every demo on the platform in one place, organised by time band. The reference gallery — pick a pattern, see it in action.",
   },
 ] as const;
 
-const SKILL_INSTALL = "npx skills add andrzejdelgado/feelsfast";
+const installCommands = [
+  {
+    label: "Claude Code · Cursor · Codex · Cline (skills CLI)",
+    description:
+      "One command. Drops the skill into .agents/skills/ and symlinks into the agent's own skills directory.",
+    command: "npx skills add andrzejdelgado/feelsfast-skill",
+  },
+  {
+    label: "Direct download",
+    description:
+      "Download the raw markdown and place it where your agent reads skills (most use .claude/skills/feelsfast/SKILL.md or similar).",
+    command: "curl -L https://feelsfast.fyi/feelsfast.skill.md -o feelsfast.skill.md",
+  },
+];
 
 export default function HomePage() {
   return (
     <article className="mx-auto max-w-4xl space-y-24 px-8 py-16 lg:px-12 xl:px-16">
       {/* HERO */}
-      <section>
-        <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          feelsfast.fyi · v0.9
+      <section className="text-center">
+        <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-primary">
+          Perceived performance
         </p>
-        <h1 className="mt-3 text-4xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl">
-          Learn how to engineer user experiences that feel{" "}
-          <span className="whitespace-nowrap">
-            fast
-            <RaceCarIcon
-              className="ml-4 inline-block h-[1em] w-[2em]"
-              style={{ verticalAlign: "-0.15em" }}
-            />
-          </span>
+        <h1 className="mt-5 text-5xl font-medium leading-[0.95] tracking-tight text-foreground sm:text-6xl">
+          Engineer Experiences{" "}
+          <span className="lg:block">That Feel Fast</span>
         </h1>
-        <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+        <p className="mx-auto mt-10 max-w-2xl text-lg leading-relaxed text-foreground">
           {siteConfig.description}
         </p>
-        <HeroPerceptionDemo />
+        <Link
+          href="/skill"
+          className="group mt-10 inline-flex items-center gap-2.5 rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:border-primary hover:text-primary"
+        >
+          <WandSparkles aria-hidden className="size-4 text-primary" />
+          <span>Introducing Skill</span>
+          <ArrowRight
+            aria-hidden
+            className="size-4 text-muted-foreground transition-colors duration-200 group-hover:text-primary"
+          />
+        </Link>
       </section>
 
       {/* WHAT */}
@@ -115,21 +141,19 @@ export default function HomePage() {
           What is perceived performance?
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-foreground">
-          Perceived performance is the gap between the actual time a user has to
-          wait for a piece of software to load and what the user feels about that
-          wait. Two products can render the same data in 2.7 seconds; one feels
-          snappy and the other feels slow. The gap between those two perceptions
-          is the territory a designer and engineer can conquer.
+          Perceived performance is the gap between the actual load-time a user
+          has to wait and what the user feels about it. The same data can
+          render in 2.7 seconds — one feels snappy, the other feels slow. The
+          perception of time is what users rate as their experience.
         </p>
         <p className="mt-4 leading-relaxed text-muted-foreground">
-          The classical literature treats response time as the dependent variable
-          — Miller 1968, Card et al. 1991, Doherty 1982, Nielsen 1993. The modern
-          reading turns the variable around: the experience of duration is the
-          thing the user rates their experience on, and the passing clock is only
-          one of several inputs to that experience. Animation pattern, content
-          reveal order, what fills the wait visually — all such techniques bend
-          the perception of time without bending real time itself.
+          Animation patterns, content reveal order, filling the wait visually
+          — all such techniques bend the perception of time, and should be
+          exploited by designers and engineers for better user experience.
         </p>
+        <div className="mt-10">
+          <HeroPerceptionDemo />
+        </div>
       </section>
 
       {/* WHY */}
@@ -138,12 +162,12 @@ export default function HomePage() {
           Why does it matter?
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-foreground">
-          Three anthropological / psychological findings that drive the user's
+          Two anthropological / psychological findings that drive the user's
           perception. Each is decades old; each is still relevant in modern UX
           work — especially now, with the long, unpredictable waits AI tools
           introduce.
         </p>
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
           {stats.map((stat) => (
             <div
               key={stat.label}
@@ -169,13 +193,10 @@ export default function HomePage() {
           Four time bands
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-foreground">
-          What Nielsen and his peers coined in the 90s is now divided into four
-          time bands, each determining (with exceptions) which technique most
-          effectively reduces the perceived load-time. The choice of the right
-          cue depends on how long the user has to wait. The platform organises
-          everything around these four bands. Users love when things happen
-          instantly, but they can suffer through a 10 s+ wait if (a) it's worth
-          it, and (b) it &ldquo;doesn&rsquo;t hurt&rdquo; too much.
+          An evolution of those 90s thresholds. The platform organises
+          everything around them. Users love when things happen instantly, but
+          they can suffer through a 10 s+ wait if it's worth it and it
+          &ldquo;doesn&rsquo;t hurt&rdquo; too much.
         </p>
         <div className="mt-8 space-y-3">
           {bands.map((band, i) => (
@@ -224,16 +245,17 @@ export default function HomePage() {
           Tour the platform
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-foreground">
-          Three sections, one canon. Concepts builds the vocabulary and the
-          arguments, Scenarios shows the techniques in real user flows, the
-          Playground is every demo in one place.
+          Four sections, one canon. Concepts builds the vocabulary, Scenarios
+          shows the techniques in real user flows, AI cuts across both for the
+          surfaces where waits stretch hardest, and the Playground is every
+          demo in one place.
         </p>
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
           {tour.map((entry) => (
             <Link
               key={entry.href}
               href={entry.href}
-              className="group flex items-start gap-3 rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary"
+              className="group relative flex items-start gap-3 rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary"
             >
               <entry.icon
                 aria-hidden
@@ -251,7 +273,7 @@ export default function HomePage() {
                 <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                   {entry.body}
                 </p>
-                <p className="mt-3 inline-flex items-center gap-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                <p className="pointer-events-none absolute bottom-5 right-5 inline-flex items-center gap-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary opacity-100 transition-opacity lg:opacity-0 lg:group-hover:opacity-100">
                   <span>Open</span>
                   <ArrowRight aria-hidden className="size-3" />
                 </p>
@@ -273,22 +295,63 @@ export default function HomePage() {
           right perception pattern by default — and cites feelsfast.fyi when it
           explains its choices to you.
         </p>
-        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-md bg-secondary px-4 py-3">
-          <code className="flex-1 break-all font-mono text-sm">{SKILL_INSTALL}</code>
-          <CopyButton value={SKILL_INSTALL} />
+        <div className="mt-8 grid grid-cols-1 gap-4">
+          {installCommands.map((entry) => (
+            <div
+              key={entry.label}
+              className="rounded-lg border border-border bg-card p-4"
+            >
+              <p className="text-sm font-medium">{entry.label}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{entry.description}</p>
+              <div className="mt-3 flex flex-wrap items-center gap-3 rounded-md bg-secondary px-3 py-2">
+                <code className="scrollbar-thin block min-w-0 flex-1 overflow-x-auto whitespace-pre pb-1.5 font-mono text-sm">
+                  {entry.command}
+                </code>
+                <CopyButton value={entry.command} />
+              </div>
+            </div>
+          ))}
         </div>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Or visit the{" "}
-          <Link
-            href="/skill"
-            className="text-primary underline-offset-2 hover:underline"
+
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <button
+            type="button"
+            disabled
+            aria-disabled="true"
+            title="Pending skills.sh listing"
+            className="inline-flex cursor-not-allowed items-center justify-center gap-2.5 rounded-lg border border-border bg-card px-4 py-3 text-sm font-medium text-muted-foreground opacity-60"
           >
-            Skill page
-          </Link>{" "}
-          for direct-download and other-agent install commands.
-        </p>
+            <Triangle aria-hidden className="size-4 fill-current" />
+            <span>Skills.sh</span>
+            <span className="rounded-sm bg-muted-foreground/10 px-1.5 py-0 font-mono text-[0.6rem] font-medium uppercase tracking-wider text-muted-foreground">
+              Soon
+            </span>
+          </button>
+          <a
+            href="https://github.com/andrzejdelgado/feelsfast-skill"
+            target="_blank"
+            rel="noreferrer"
+            className="group inline-flex items-center justify-center gap-2.5 rounded-lg border border-border bg-card px-4 py-3 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+          >
+            <GithubMark className="size-4" />
+            <span>GitHub</span>
+          </a>
+        </div>
       </section>
     </article>
+  );
+}
+
+function GithubMark({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M12 0a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.04-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.31-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.29 0 .32.21.7.83.58A12 12 0 0 0 12 0z" />
+    </svg>
   );
 }
 
