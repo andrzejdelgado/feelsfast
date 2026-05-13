@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ArrowUpRight, Check, Hash, Search } from "lucide-react";
+import { SwipeableRow } from "@/components/SwipeableRow";
 import { ALL_CATEGORIES } from "@/lib/refs/all";
 import { cn } from "@/lib/utils";
 
@@ -119,10 +120,10 @@ export function ReferencesContent() {
               />
             </label>
 
-            <div
-              className="flex flex-wrap items-center gap-2"
+            <SwipeableRow
+              wrapAt="md"
               role="group"
-              aria-label="Filter by source kind"
+              ariaLabel="Filter by source kind"
             >
               <FilterPill
                 label="All"
@@ -139,7 +140,7 @@ export function ReferencesContent() {
                 active={kindFilter === "industry"}
                 onClick={() => setKindFilter("industry")}
               />
-            </div>
+            </SwipeableRow>
           </div>
 
           {query.trim() || kindFilter !== "all" ? (
@@ -248,7 +249,7 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "inline-flex items-center rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
+        "inline-flex shrink-0 items-center rounded-full border px-3 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider transition-colors",
         active
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border bg-card text-muted-foreground hover:border-primary hover:text-foreground",

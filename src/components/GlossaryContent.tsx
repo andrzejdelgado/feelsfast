@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowRight, Check, Hash, Search } from "lucide-react";
+import { SwipeableRow } from "@/components/SwipeableRow";
 import { glossary } from "@/lib/glossary";
 import { cn } from "@/lib/utils";
 
@@ -118,10 +119,15 @@ export function GlossaryContent() {
             />
           </label>
 
-          <div
-            className="mt-2 -mx-0.5 flex flex-wrap items-center gap-x-0.5"
+          {/* A–Z jump strip — single swipeable row on mobile (iOS-style
+              horizontal scroll with edge fades), wrapped flex row at
+              md+. Mirrors the pattern used on Scenarios + Playground +
+              Concepts. */}
+          <SwipeableRow
+            wrapAt="md"
             role="navigation"
-            aria-label="Jump to letter"
+            ariaLabel="Jump to letter"
+            className="-mx-0.5 mt-2 gap-x-0.5"
           >
             {LETTERS.map((letter) => {
               const occupied = occupiedLetters.has(letter);
@@ -129,7 +135,7 @@ export function GlossaryContent() {
                 <a
                   key={letter}
                   href={`#letter-${letter}`}
-                  className="inline-flex h-6 min-w-6 items-center justify-center rounded-sm px-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary transition-colors hover:bg-primary/10"
+                  className="inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-sm px-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-primary transition-colors hover:bg-primary/10"
                 >
                   {letter}
                 </a>
@@ -137,13 +143,13 @@ export function GlossaryContent() {
                 <span
                   key={letter}
                   aria-hidden
-                  className="inline-flex h-6 min-w-6 items-center justify-center rounded-sm px-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground/40"
+                  className="inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-sm px-1 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground/40"
                 >
                   {letter}
                 </span>
               );
             })}
-          </div>
+          </SwipeableRow>
 
           {query.trim() ? (
             <p className="mt-3 font-mono text-[0.6875rem] font-medium uppercase tracking-wider text-muted-foreground">

@@ -53,10 +53,14 @@ export function ReadingProgress() {
     };
   }, []);
 
+  // On mobile the 56 px MobileNav header sits at `top-0`, so the bar
+  // hugs the bottom edge of that header (top-14) instead of overlaying
+  // the page title. On md+ there's no mobile header — the bar drops
+  // back to the viewport top.
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 bg-transparent"
+      className="pointer-events-none fixed inset-x-0 top-14 z-50 h-0.5 bg-transparent md:top-0"
     >
       <div
         className="h-full bg-primary transition-[width] duration-100 ease-out motion-reduce:transition-none"
