@@ -13,6 +13,7 @@ import Link from "next/link";
 import { CopyButton } from "@/components/CopyButton";
 import { DemoRunner } from "@/components/DemoRunner";
 import { HeroPerceptionDemo } from "@/components/HeroPerceptionDemo";
+import { JsonLd, websiteSchema } from "@/components/JsonLd";
 
 import { config as shimmerConfig } from "@/demos/technique-shimmer-skeleton/config";
 import { NaiveShimmerSkeleton } from "@/demos/technique-shimmer-skeleton/naive";
@@ -21,8 +22,12 @@ import { TunedShimmerSkeleton } from "@/demos/technique-shimmer-skeleton/tuned";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
-  title: siteConfig.name,
-  description: siteConfig.description,
+  title: {
+    absolute: "Perceived Performance — Make Loading Feel Fast",
+  },
+  description:
+    "Loading states, skeleton screens, progress bars, and AI streaming UX. Interactive demos that show what makes a UI feel fast and how to build it.",
+  alternates: { canonical: "/" },
 };
 
 const stats = [
@@ -110,6 +115,7 @@ const installCommands = [
 export default function HomePage() {
   return (
     <article className="mx-auto max-w-4xl space-y-24 px-8 py-16 lg:px-12 xl:px-16">
+      <JsonLd data={websiteSchema()} />
       {/* HERO */}
       <section className="text-center">
         <p className="font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-primary">

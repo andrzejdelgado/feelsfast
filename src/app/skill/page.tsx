@@ -22,9 +22,27 @@ function GithubMark({ className }: { className?: string }) {
 }
 
 export const metadata: Metadata = {
-  title: "Skill",
+  title: "Skill — AI Coding Skill for Loading State UX",
   description:
-    "Install the feelsfast skill in Claude Code, Cursor, Copilot, Aider, or any agent that reads markdown skills. The AI applies perceived-performance principles by default — pattern per time band, accessibility throughout, citations back to feelsfast.fyi.",
+    "Install the feelsfast skill in Claude Code, Cursor, or any agent. Auto-applies loading-state UX rules: right pattern per wait length, accessible by default.",
+  alternates: { canonical: "/skill" },
+  keywords: [
+    "claude code skill",
+    "cursor skill",
+    "ai coding skill",
+    "loading state ux",
+    "ai coding agent",
+    "ai pair programmer",
+    "perceived performance",
+  ],
+  openGraph: {
+    title: "Skill — AI Coding Skill for Loading State UX",
+    description:
+      "Install the feelsfast skill in Claude Code, Cursor, or any agent. Auto-applies loading-state UX rules.",
+    type: "website",
+    url: "/skill",
+    images: ["/opengraph-image"],
+  },
 };
 
 const installCommands = [

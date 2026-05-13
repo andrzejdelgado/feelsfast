@@ -7,9 +7,26 @@ import {
 import { ScenariosCategorizedList } from "@/components/ScenariosCategorizedList";
 
 export const metadata: Metadata = {
-  title: "Scenarios",
+  title: "Scenarios — Loading State Patterns by Use Case",
   description:
-    "Twenty-four interaction types grouped by where in your product they live — navigation and loading, input and forms, content loading, file transfer, manipulation, and AI patterns. Each one paired with a side-by-side naive/tuned demo.",
+    "Twenty-four loading-state scenarios with side-by-side demos: navigation, forms, file upload, search, AI chat, drag-and-drop, optimistic UI, and more.",
+  alternates: { canonical: "/scenarios" },
+  keywords: [
+    "loading state ux",
+    "loading state examples",
+    "loading state patterns",
+    "skeleton screen examples",
+    "progress bar examples",
+    "ui loading patterns",
+  ],
+  openGraph: {
+    title: "Scenarios — Loading State Patterns by Use Case",
+    description:
+      "Twenty-four loading-state scenarios with side-by-side demos: navigation, forms, file upload, search, AI chat, drag-and-drop, optimistic UI.",
+    type: "website",
+    url: "/scenarios",
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function ScenariosPage() {

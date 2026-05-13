@@ -8,9 +8,26 @@ import { getEssayReadTime } from "@/lib/read-time";
 import { ConceptsCategorizedList } from "@/components/ConceptsCategorizedList";
 
 export const metadata: Metadata = {
-  title: "Concepts",
+  title: "Concepts — Perceived Performance Essays",
   description:
-    "Short, opinionated essays on the science of perceived performance — how humans perceive time, the canonical thresholds (Miller, Card, Doherty, Nielsen), the illusions you can exploit, where the perception layer breaks down, the decision rule for which loading affordance to ship at which time band, and what changes when the wait is AI.",
+    "Essays on perceived performance and loading-state UX: how humans perceive time, the anatomy of a wait, which loading affordance to ship when, and what changes for AI.",
+  alternates: { canonical: "/concepts" },
+  keywords: [
+    "perceived performance",
+    "loading states",
+    "loading state ux",
+    "loading ux best practices",
+    "wait time ux",
+    "loading screen design",
+  ],
+  openGraph: {
+    title: "Concepts — Perceived Performance Essays",
+    description:
+      "Essays on perceived performance and loading-state UX: how humans perceive time, the anatomy of a wait, which loading affordance to ship when.",
+    type: "website",
+    url: "/concepts",
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function ConceptsPage() {

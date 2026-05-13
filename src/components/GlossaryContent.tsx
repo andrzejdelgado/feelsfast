@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowRight, Check, Hash, Search } from "lucide-react";
+import { JsonLd, breadcrumbSchema, faqSchema } from "@/components/JsonLd";
 import { SwipeableRow } from "@/components/SwipeableRow";
 import { glossary } from "@/lib/glossary";
 import { cn } from "@/lib/utils";
@@ -86,8 +87,31 @@ export function GlossaryContent() {
       });
   }
 
+  // Build the full FAQ + breadcrumb structured data once per render so
+  // every term shows up as a "what is X" answer in search rich results.
+  const faqData = useMemo(
+    () =>
+      faqSchema(
+        glossary.map((entry) => ({
+          question: `What is ${entry.term}?`,
+          answer: entry.definition,
+        })),
+      ),
+    [],
+  );
+  const breadcrumbData = useMemo(
+    () =>
+      breadcrumbSchema([
+        { name: "Home", path: "/" },
+        { name: "Glossary", path: "/glossary" },
+      ]),
+    [],
+  );
+
   return (
     <article className="py-12">
+      <JsonLd data={faqData} />
+      <JsonLd data={breadcrumbData} />
       <header className="mx-auto max-w-4xl px-8 lg:px-12 xl:px-16">
         <p className="font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
           {glossary.length} terms

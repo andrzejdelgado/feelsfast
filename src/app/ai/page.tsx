@@ -25,9 +25,28 @@ import { TunedAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/tuned";
 import { config as aiAgenticWorkflowConfig } from "@/demos/ai-agentic-workflow/config";
 
 export const metadata: Metadata = {
-  title: "AI",
+  title: "AI — Loading States for Chat, Tools & Agents",
   description:
-    "AI surfaces concentrated in one place — the two essays that establish why AI waits are different, the five scenarios that cover the surface area (chat, inline completion, tool execution, long compute, agentic workflows), and a side-by-side naive / tuned demo for each.",
+    "Loading-state UX for AI: chat streaming, inline completion, tool execution, long compute, agentic workflows. Side-by-side naive / tuned demos for each.",
+  alternates: { canonical: "/ai" },
+  keywords: [
+    "ai chat loading",
+    "streaming response ui",
+    "ai loading state",
+    "typing indicator",
+    "ai inline completion ui",
+    "ai agent ui",
+    "ai tool call ui",
+    "ai thinking animation",
+  ],
+  openGraph: {
+    title: "AI — Loading States for Chat, Tools & Agents",
+    description:
+      "Loading-state UX for AI: chat streaming, inline completion, tool execution, long compute, agentic workflows.",
+    type: "website",
+    url: "/ai",
+    images: ["/opengraph-image"],
+  },
 };
 
 const SKILL_INSTALL = "npx skills add andrzejdelgado/feelsfast-skill";
