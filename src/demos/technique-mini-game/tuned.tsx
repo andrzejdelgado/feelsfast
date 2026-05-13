@@ -157,18 +157,21 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
       </div>
 
       <div className="relative h-24 w-full overflow-hidden rounded-md border border-border bg-background">
+        {/* Ground — 45° diagonal hatching (bottom-left → top-right)
+            filling the 12 px strip below the ground line. */}
+        <div
+          aria-hidden
+          className="absolute bottom-0 left-0 right-0 h-3"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(45deg, var(--border) 0 1px, transparent 1px 6px)",
+          }}
+        />
         <div
           aria-hidden
           className="absolute bottom-3 left-0 right-0 h-px bg-border"
         />
-        <div
-          aria-hidden
-          className={cn(
-            "absolute bottom-3 size-6 origin-bottom rounded-full bg-primary transition-transform duration-300 ease-out motion-reduce:transition-none",
-            isJumping ? "-translate-y-12" : "translate-y-0",
-          )}
-          style={{ left: `${RUNNER_X_PCT}%` }}
-        />
+        <Rabbit isJumping={isJumping} />
         {obstacles.map((o) => (
           <Mushroom key={o.id} spawnedAt={o.spawnedAt} />
         ))}
@@ -190,6 +193,51 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
           Space
         </kbd>
       </button>
+    </div>
+  );
+}
+
+/**
+ * Rabbit runner. Filled silhouette in `--primary` with a single
+ * background-coloured eye dot so the figure reads as a profile head
+ * even at 24 px. Position is fixed at `RUNNER_X_PCT`; the jump is a
+ * translateY transition on the wrapping div.
+ */
+function Rabbit({ isJumping }: { isJumping: boolean }) {
+  return (
+    <div
+      aria-hidden
+      className={cn(
+        "absolute bottom-3 size-6 origin-bottom transition-transform duration-300 ease-out motion-reduce:transition-none",
+        isJumping ? "-translate-y-12" : "translate-y-0",
+      )}
+      style={{ left: `${RUNNER_X_PCT}%` }}
+    >
+      <svg viewBox="0 0 24 24" className="size-full text-primary">
+        {/* Ears — two tall ovals, slightly leaned outward. */}
+        <ellipse
+          cx="9"
+          cy="6"
+          rx="1.6"
+          ry="4.5"
+          fill="currentColor"
+          transform="rotate(-8 9 6)"
+        />
+        <ellipse
+          cx="14"
+          cy="6"
+          rx="1.6"
+          ry="4.5"
+          fill="currentColor"
+          transform="rotate(8 14 6)"
+        />
+        {/* Body — large rounded oval covering torso + haunch. */}
+        <ellipse cx="11" cy="17" rx="7" ry="5.5" fill="currentColor" />
+        {/* Head — sits forward of the body, blends into it. */}
+        <circle cx="15" cy="13" r="4" fill="currentColor" />
+        {/* Eye — single background-coloured dot on the head. */}
+        <circle cx="16.2" cy="12" r="0.7" fill="var(--background)" />
+      </svg>
     </div>
   );
 }

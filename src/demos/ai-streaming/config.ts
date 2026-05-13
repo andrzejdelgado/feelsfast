@@ -6,10 +6,11 @@ export const config: DemoConfig = {
     "A chat-style assistant returns a short answer. Naive: total wait, then the full response drops in. Tuned: ~600 ms thinking state, then tokens stream at a natural reading pace.",
   timeBand: "1 – 10 S",
   runMode: "manual",
-  // Reserve the loaded-response card height. With the shortened
-  // unified response, both mobile and md+ wrap to 2 lines — same
-  // lock everywhere keeps idle → thinking → streaming → done flat.
-  panelMinHeight: "min-h-[79px]",
+  // Reserve the loaded-response card height. The response wraps to
+  // 2 lines on most viewports but to 3 lines on very narrow ones
+  // (≤ ~340 px) — lock to the 3-line natural so even the narrowest
+  // mobile never jumps between idle and streaming.
+  panelMinHeight: "min-h-[102px] sm:min-h-[79px]",
 };
 
 /** Single response used at every breakpoint — short enough that
