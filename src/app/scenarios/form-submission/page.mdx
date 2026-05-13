@@ -2,13 +2,22 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveIconFlip } from "@/demos/technique-icon-flip/naive";
+import { TunedIconFlip } from "@/demos/technique-icon-flip/tuned";
+import { config as iconFlipConfig } from "@/demos/technique-icon-flip/config";
+import { NaiveDecelBar } from "@/demos/technique-decel-bar/naive";
+import { TunedDecelBar } from "@/demos/technique-decel-bar/tuned";
+import { config as decelBarConfig } from "@/demos/technique-decel-bar/config";
+import { NaiveMousedown } from "@/demos/technique-mousedown/naive";
+import { TunedMousedown } from "@/demos/technique-mousedown/tuned";
+import { config as mousedownConfig } from "@/demos/technique-mousedown/config";
 import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
 import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
-import { config as demoConfig } from "@/demos/optimistic-actions/config";
+import { config as optimisticActionsConfig } from "@/demos/optimistic-actions/config";
 import { references } from "@/lib/refs/scenario-form-submission";
 
 export const metadata = {
-  title: "Form submission",
+  title: "Form Submission",
   description:
     "1 – 10 S band. The user submits a form. Pre-action feedback within 50 ms; optimistic UI when rejection rate is ≤ ~1 %; determinate progress when submission lasts past 1 s.",
   alternates: { canonical: "/scenarios/form-submission" }
@@ -16,7 +25,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Form submission
+# Form Submission
 
 <ScenarioMeta slug="form-submission" />
 
@@ -25,7 +34,7 @@ The user fills out a form and clicks Submit. What happens between the click and 
 
 This scenario spans bands. Most submissions land in the 1 – 10 S band on the wall clock; the perception layer is what compresses them into the 0 – 100 MS or 100 MS – 1 S band the user actually feels. Fitch's <Cite id="fitch" label="Fitch" /> 200 ms active-state animation covers the press feedback; Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> covers the determinate-progress fallback.
 
-<DemoRunner config={demoConfig} Naive={NaiveOptimisticActions} Tuned={TunedOptimisticActions} />
+<DemoRunner config={optimisticActionsConfig} Naive={NaiveOptimisticActions} Tuned={TunedOptimisticActions} />
 
 ## What is happening in the demo
 
@@ -60,6 +69,17 @@ For multi-step forms with non-trivial state, pair this scenario with the [multi-
 3. **Don't lose mid-flight user input** — if the user is still typing in another field when the optimistic submission fails, the rollback must not clobber their work.
 4. **Focus management on rollback** — move focus to the failed field (or to the error message) so keyboard users find the problem.
 5. **`prefers-reduced-motion: reduce`** for the press animation — collapse to a colour change.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={iconFlipConfig} Naive={NaiveIconFlip} Tuned={TunedIconFlip} />
+
+<DemoRunner config={decelBarConfig} Naive={NaiveDecelBar} Tuned={TunedDecelBar} />
+
+<DemoRunner config={mousedownConfig} Naive={NaiveMousedown} Tuned={TunedMousedown} />
 
 <ScenarioNav />
 

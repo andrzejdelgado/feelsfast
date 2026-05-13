@@ -2,13 +2,22 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaivePulsingOrb } from "@/demos/technique-pulsing-orb/naive";
+import { TunedPulsingOrb } from "@/demos/technique-pulsing-orb/tuned";
+import { config as pulsingOrbConfig } from "@/demos/technique-pulsing-orb/config";
+import { NaiveMarqueeBar } from "@/demos/technique-marquee-bar/naive";
+import { TunedMarqueeBar } from "@/demos/technique-marquee-bar/tuned";
+import { config as marqueeBarConfig } from "@/demos/technique-marquee-bar/config";
+import { NaiveTrickleBar } from "@/demos/technique-trickle-bar/naive";
+import { TunedTrickleBar } from "@/demos/technique-trickle-bar/tuned";
+import { config as trickleBarConfig } from "@/demos/technique-trickle-bar/config";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
-import { config as demoConfig } from "@/demos/list-fetch/config";
+import { config as listFetchConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-auth-oauth";
 
 export const metadata = {
-  title: "Auth / OAuth flow",
+  title: "OAuth Flow",
   description:
     "1 – 10 S band. Sign-in or third-party OAuth handshake. Pre-action feedback on the button, optimistic post-auth redirect, determinate progress for the round-trip.",
   alternates: { canonical: "/scenarios/auth-oauth" }
@@ -16,14 +25,14 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Auth / OAuth flow
+# OAuth Flow
 
 <ScenarioMeta slug="auth-oauth" />
 
 
 Sign in. Or click "Continue with Google" and round-trip through a third-party. The wait is one to several seconds — most of it the network handshake the user can do nothing about. The perception layer cannot shorten the handshake; it can ensure the wait is filled with affordances rather than blank.
 
-<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+<DemoRunner config={listFetchConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
 
 ## What is happening
 
@@ -52,6 +61,17 @@ OAuth handshakes can fail for reasons the user did not cause — third-party out
 2. **Focus management on the redirect** — land on the destination's main heading.
 3. **Don't trap on the spinner.** A 10-second OAuth round-trip with no escape locks the user.
 4. **`prefers-reduced-motion`** for the redirect transition.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={pulsingOrbConfig} Naive={NaivePulsingOrb} Tuned={TunedPulsingOrb} />
+
+<DemoRunner config={marqueeBarConfig} Naive={NaiveMarqueeBar} Tuned={TunedMarqueeBar} />
+
+<DemoRunner config={trickleBarConfig} Naive={NaiveTrickleBar} Tuned={TunedTrickleBar} />
 
 <ScenarioNav />
 

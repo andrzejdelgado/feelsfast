@@ -2,13 +2,19 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveMousedown } from "@/demos/technique-mousedown/naive";
+import { TunedMousedown } from "@/demos/technique-mousedown/tuned";
+import { config as mousedownConfig } from "@/demos/technique-mousedown/config";
+import { NaiveOptimisticActions } from "@/demos/optimistic-actions/naive";
+import { TunedOptimisticActions } from "@/demos/optimistic-actions/tuned";
+import { config as optimisticActionsConfig } from "@/demos/optimistic-actions/config";
 import { NaiveSearchAsYouType } from "@/demos/search-as-you-type/naive";
 import { TunedSearchAsYouType } from "@/demos/search-as-you-type/tuned";
-import { config as demoConfig } from "@/demos/search-as-you-type/config";
+import { config as searchAsYouTypeConfig } from "@/demos/search-as-you-type/config";
 import { references } from "@/lib/refs/scenario-chat-input";
 
 export const metadata = {
-  title: "Chat input (typing-time feedback)",
+  title: "Chat Input",
   description:
     "0–100 MS band. The user types into a chat composer. Input always responsive; cursor handling; optimistic message render on send.",
   alternates: { canonical: "/scenarios/chat-input" }
@@ -16,7 +22,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Chat input (typing-time feedback)
+# Chat Input
 
 <ScenarioMeta slug="chat-input" />
 
@@ -25,7 +31,7 @@ The user types into a chat composer. The input must echo inside the perceptual f
 
 The reuse-affinity is high: a chat composer is a search input plus a send button. Eizenberg's <Cite id="eizenberg" label="Eizenberg" /> production-surface argument is the same here — every perception trick must protect the input itself, not paper over it.
 
-<DemoRunner config={demoConfig} Naive={NaiveSearchAsYouType} Tuned={TunedSearchAsYouType} />
+<DemoRunner config={searchAsYouTypeConfig} Naive={NaiveSearchAsYouType} Tuned={TunedSearchAsYouType} />
 
 ## What is happening
 
@@ -51,6 +57,15 @@ Composer surfaces are pure production. A skeleton over the textarea, a spinner o
 2. **`aria-multiline="true"`** on textareas; let the browser handle line breaks correctly.
 3. **`prefers-reduced-motion`** for any markdown preview animations.
 4. **Keyboard send convention** — Enter to send, Shift+Enter for newline. Document it visibly the first few times.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={mousedownConfig} Naive={NaiveMousedown} Tuned={TunedMousedown} />
+
+<DemoRunner config={optimisticActionsConfig} Naive={NaiveOptimisticActions} Tuned={TunedOptimisticActions} />
 
 <ScenarioNav />
 

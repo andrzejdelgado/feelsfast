@@ -71,7 +71,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "01",
     slug: "page-load-cold",
-    title: "Page load (cold)",
+    title: "Cold Page Load",
     band: "1 – 10 S",
     category: "navigation-loading",
     ai: false,
@@ -83,7 +83,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "02",
     slug: "page-load-warm-cache",
-    title: "Page load (warm cache)",
+    title: "Warm Cache Page Load",
     band: "100 MS – 1 S",
     category: "navigation-loading",
     ai: false,
@@ -95,7 +95,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "03",
     slug: "route-navigation",
-    title: "Route navigation",
+    title: "Route Navigation",
     band: "100 MS – 1 S",
     category: "navigation-loading",
     ai: false,
@@ -107,7 +107,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "04",
     slug: "form-submission",
-    title: "Form submission",
+    title: "Form Submission",
     band: "1 – 10 S",
     category: "input-forms",
     ai: false,
@@ -119,7 +119,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "05",
     slug: "search-as-you-type",
-    title: "Search as you type",
+    title: "Search-as-you-type",
     band: "0–100 MS",
     category: "input-forms",
     ai: false,
@@ -131,7 +131,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "06",
     slug: "long-list-pagination",
-    title: "Long list / pagination",
+    title: "Long List Pagination",
     band: "100 MS – 1 S",
     category: "navigation-loading",
     ai: false,
@@ -143,7 +143,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "07",
     slug: "infinite-scroll",
-    title: "Infinite scroll",
+    title: "Infinite Scroll",
     band: "100 MS – 1 S",
     category: "navigation-loading",
     ai: false,
@@ -155,7 +155,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "08",
     slug: "image-gallery",
-    title: "Image gallery",
+    title: "Image Gallery",
     band: "1 – 10 S",
     category: "content-loading",
     ai: false,
@@ -167,7 +167,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "09",
     slug: "file-upload-single",
-    title: "File upload (single)",
+    title: "Single File Upload",
     band: "1 – 10 S",
     category: "upload-download",
     ai: false,
@@ -179,7 +179,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "10",
     slug: "file-upload-batch",
-    title: "File upload (batch)",
+    title: "Batch File Upload",
     band: "10 S+",
     category: "upload-download",
     ai: false,
@@ -191,7 +191,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "11",
     slug: "auth-oauth",
-    title: "Auth / OAuth flow",
+    title: "OAuth Flow",
     band: "1 – 10 S",
     category: "input-forms",
     ai: false,
@@ -203,7 +203,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "12",
     slug: "data-table-loading",
-    title: "Data table loading",
+    title: "Data Table Loading",
     band: "100 MS – 1 S",
     category: "content-loading",
     ai: false,
@@ -215,7 +215,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "13",
     slug: "data-export-download",
-    title: "Data export / download generation",
+    title: "Data Export Download",
     band: "10 S+",
     category: "upload-download",
     ai: false,
@@ -227,7 +227,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "14",
     slug: "real-time-updates",
-    title: "Real-time updates / live data",
+    title: "Real-time Updates",
     band: "0–100 MS",
     category: "content-loading",
     ai: false,
@@ -239,7 +239,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "15",
     slug: "chat-input",
-    title: "Chat input (typing-time feedback)",
+    title: "Chat Input",
     band: "0–100 MS",
     category: "input-forms",
     ai: false,
@@ -251,7 +251,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "16",
     slug: "ai-chat-streaming-response",
-    title: "Chat / streaming response",
+    title: "Chat Streaming Response",
     band: "1 – 10 S",
     category: "ai",
     ai: true,
@@ -263,7 +263,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "17",
     slug: "multi-step-wizard-checkout",
-    title: "Multi-step wizard / checkout",
+    title: "Multi-step Checkout",
     band: "1 – 10 S",
     category: "navigation-loading",
     ai: false,
@@ -275,7 +275,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "18",
     slug: "map-interactions",
-    title: "Map interactions",
+    title: "Map Interactions",
     band: "0–100 MS",
     category: "direct-manipulation",
     ai: false,
@@ -287,7 +287,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "19",
     slug: "drag-and-drop",
-    title: "Drag and drop",
+    title: "Drag and Drop",
     band: "0–100 MS",
     category: "direct-manipulation",
     ai: false,
@@ -299,7 +299,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "20",
     slug: "optimistic-actions",
-    title: "Optimistic actions (like, save, undo)",
+    title: "Optimistic Actions",
     band: "0–100 MS",
     category: "input-forms",
     ai: false,
@@ -311,7 +311,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "21",
     slug: "ai-long-compute-inference",
-    title: "Long compute / Inference",
+    title: "Long Compute Inference",
     band: "10 S+",
     category: "ai",
     ai: true,
@@ -323,7 +323,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "22",
     slug: "ai-inline-completion",
-    title: "Inline completion / suggestion",
+    title: "Inline Completion",
     band: "100 MS – 1 S",
     category: "ai",
     ai: true,
@@ -335,7 +335,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "23",
     slug: "ai-tool-execution",
-    title: "Tool execution / agentic step",
+    title: "Tool Execution",
     band: "1 – 10 S",
     category: "ai",
     ai: true,
@@ -347,7 +347,7 @@ export const scenarios: readonly Scenario[] = [
   {
     number: "24",
     slug: "ai-agentic-workflow",
-    title: "Agentic workflow",
+    title: "Agentic Workflow",
     band: "10 S+",
     category: "ai",
     ai: true,

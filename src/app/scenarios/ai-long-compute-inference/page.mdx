@@ -2,13 +2,28 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveBrandedStory } from "@/demos/technique-branded-story/naive";
+import { TunedBrandedStory } from "@/demos/technique-branded-story/tuned";
+import { config as brandedStoryConfig } from "@/demos/technique-branded-story/config";
+import { NaiveRotatingTips } from "@/demos/technique-rotating-tips/naive";
+import { TunedRotatingTips } from "@/demos/technique-rotating-tips/tuned";
+import { config as rotatingTipsConfig } from "@/demos/technique-rotating-tips/config";
+import { NaiveMiniGame } from "@/demos/technique-mini-game/naive";
+import { TunedMiniGame } from "@/demos/technique-mini-game/tuned";
+import { config as miniGameConfig } from "@/demos/technique-mini-game/config";
+import { NaivePulsingOrb } from "@/demos/technique-pulsing-orb/naive";
+import { TunedPulsingOrb } from "@/demos/technique-pulsing-orb/tuned";
+import { config as pulsingOrbConfig } from "@/demos/technique-pulsing-orb/config";
+import { NaiveNotifyComplete } from "@/demos/technique-notify-complete/naive";
+import { TunedNotifyComplete } from "@/demos/technique-notify-complete/tuned";
+import { config as notifyCompleteConfig } from "@/demos/technique-notify-complete/config";
 import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
 import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
-import { config as demoConfig } from "@/demos/ai-streaming/config";
+import { config as aiStreamingConfig } from "@/demos/ai-streaming/config";
 import { references } from "@/lib/refs/scenario-ai-long-compute-inference";
 
 export const metadata = {
-  title: "AI · Long compute / Inference",
+  title: "Long Compute Inference",
   description:
     "10 S+ band. Long-running AI inference — image generation, complex analysis, deep agentic reasoning. Engagement, progress where measurable, tool-call transparency where applicable.",
   alternates: { canonical: "/scenarios/ai-long-compute-inference" }
@@ -16,7 +31,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# AI · Long compute / Inference
+# Long Compute Inference
 
 <ScenarioMeta slug="ai-long-compute-inference" />
 
@@ -25,7 +40,7 @@ The user submits a request that is going to take 30 seconds or more. Image gener
 
 This scenario sits in the 10 S+ band. Block & Zakay 1997's <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> meta-analysis frames the trade-off — engagement compresses prospective duration while expanding retrospective duration; the design decision is whether you have made that trade deliberately. Fitch's <Cite id="fitch" label="Fitch" /> Slack and FIFA examples are the canonical references; Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> is the determinate-progress fallback where the inference reports phases.
 
-<DemoRunner config={demoConfig} Naive={NaiveAIStreaming} Tuned={TunedAIStreaming} />
+<DemoRunner config={aiStreamingConfig} Naive={NaiveAIStreaming} Tuned={TunedAIStreaming} />
 
 ## What is happening
 
@@ -58,6 +73,21 @@ The cleaner answer for repeat-use AI inference: ship determinate progress where 
 2. **`aria-busy="true"`** during the inference; flip on completion.
 3. **`prefers-reduced-motion: reduce`** — replace cross-fades and pulse animations with static states.
 4. **Always provide a way out** — visible cancellation, visible "do in background", visible re-attempt on failure.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={brandedStoryConfig} Naive={NaiveBrandedStory} Tuned={TunedBrandedStory} />
+
+<DemoRunner config={rotatingTipsConfig} Naive={NaiveRotatingTips} Tuned={TunedRotatingTips} />
+
+<DemoRunner config={miniGameConfig} Naive={NaiveMiniGame} Tuned={TunedMiniGame} />
+
+<DemoRunner config={pulsingOrbConfig} Naive={NaivePulsingOrb} Tuned={TunedPulsingOrb} />
+
+<DemoRunner config={notifyCompleteConfig} Naive={NaiveNotifyComplete} Tuned={TunedNotifyComplete} />
 
 <ScenarioNav />
 

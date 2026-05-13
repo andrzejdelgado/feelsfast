@@ -2,13 +2,19 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveDecelBar } from "@/demos/technique-decel-bar/naive";
+import { TunedDecelBar } from "@/demos/technique-decel-bar/tuned";
+import { config as decelBarConfig } from "@/demos/technique-decel-bar/config";
+import { NaiveCounter } from "@/demos/technique-counter/naive";
+import { TunedCounter } from "@/demos/technique-counter/tuned";
+import { config as counterConfig } from "@/demos/technique-counter/config";
 import { NaiveFileUpload } from "@/demos/file-upload/naive";
 import { TunedFileUpload } from "@/demos/file-upload/tuned";
-import { config as demoConfig } from "@/demos/file-upload/config";
+import { config as fileUploadConfig } from "@/demos/file-upload/config";
 import { references } from "@/lib/refs/scenario-file-upload-single";
 
 export const metadata = {
-  title: "File upload (single)",
+  title: "Single File Upload",
   description:
     "1 – 10 S band. Single file upload. Determinate progress with backwards-decelerating animation; optimistic file metadata render; success affordance.",
   alternates: { canonical: "/scenarios/file-upload-single" }
@@ -16,7 +22,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# File upload (single)
+# Single File Upload
 
 <ScenarioMeta slug="file-upload-single" />
 
@@ -25,7 +31,7 @@ The user picks a file and clicks Upload. The bytes have to transfer; there is re
 
 This scenario is the canonical use case for [determinate progress](/glossary#determinate-progress). Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> set the floor — ~86 % of participants preferred a percent-done bar over a blank wait. Harrison et al. 2010 <Cite id="harrison-2010" label="Harrison et al. 2010" /> raised it — backwards-decelerating ribs add another ~11–12 % of perceived speed-up. Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> covers the 1 – 10 S band most single-file uploads sit inside.
 
-<DemoRunner config={demoConfig} Naive={NaiveFileUpload} Tuned={TunedFileUpload} />
+<DemoRunner config={fileUploadConfig} Naive={NaiveFileUpload} Tuned={TunedFileUpload} />
 
 ## What is happening in the demo
 
@@ -58,6 +64,15 @@ The other failure: shipping the bar without the success affordance. A bar that h
 3. **Polite live region announcement** at completion ("Upload complete") so screen-reader users register the success.
 4. **Visible cancellation** for the long tail. Pair with [cancellation affordance](/glossary#cancellation) — the principle is the same.
 5. **`prefers-reduced-motion`** — strip the rib animation; the width transition is a property change and stays.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={decelBarConfig} Naive={NaiveDecelBar} Tuned={TunedDecelBar} />
+
+<DemoRunner config={counterConfig} Naive={NaiveCounter} Tuned={TunedCounter} />
 
 <ScenarioNav />
 

@@ -2,13 +2,19 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveRotatingTips } from "@/demos/technique-rotating-tips/naive";
+import { TunedRotatingTips } from "@/demos/technique-rotating-tips/tuned";
+import { config as rotatingTipsConfig } from "@/demos/technique-rotating-tips/config";
+import { NaiveNotifyComplete } from "@/demos/technique-notify-complete/naive";
+import { TunedNotifyComplete } from "@/demos/technique-notify-complete/tuned";
+import { config as notifyCompleteConfig } from "@/demos/technique-notify-complete/config";
 import { NaiveAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/naive";
 import { TunedAiAgenticWorkflow } from "@/demos/ai-agentic-workflow/tuned";
-import { config as demoConfig } from "@/demos/ai-agentic-workflow/config";
+import { config as aiAgenticWorkflowConfig } from "@/demos/ai-agentic-workflow/config";
 import { references } from "@/lib/refs/scenario-ai-agentic-workflow";
 
 export const metadata = {
-  title: "Agentic workflow",
+  title: "Agentic Workflow",
   description:
     "10 S+ band. A multi-step agent — plan, research, synthesise, verify, write — runs for ~20 s. Naive: spinner. Tuned: timeline of phases with current step highlighted, sub-step progress within each phase, and cancellation always available.",
   alternates: { canonical: "/scenarios/ai-agentic-workflow" }
@@ -16,7 +22,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Agentic workflow
+# Agentic Workflow
 
 <ScenarioMeta slug="ai-agentic-workflow" />
 
@@ -27,7 +33,7 @@ The two perception levers at this scale are (1) phase-level transparency that le
 
 This scenario is in the 10 S+ band Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> placed past the unit-task limit. The Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame is the budget for each individual phase-state transition — when "Synthesise findings" turns from pending to running, that change has to land within a perceptual frame of the previous phase finishing. Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> covers the per-phase determinate progress where the agent has measurable units (sources read, citations verified). Harrison et al. 2010 <Cite id="harrison-2010" label="Harrison et al. 2010" /> covers the perceptual speed-up the per-phase bar can claim from a backwards-decelerating animation.
 
-<DemoRunner config={demoConfig} Naive={NaiveAiAgenticWorkflow} Tuned={TunedAiAgenticWorkflow} />
+<DemoRunner config={aiAgenticWorkflowConfig} Naive={NaiveAiAgenticWorkflow} Tuned={TunedAiAgenticWorkflow} />
 
 ## What is happening in the demo
 
@@ -65,6 +71,15 @@ Background hand-off is the right escape past two minutes. A "Notify me when done
 4. **Cancellation must be keyboard-accessible** and announced when activated. The "Stopping after current phase…" message should be `role="status"`.
 5. **`prefers-reduced-motion`** — the spinner becomes a static dot, the bar's width transition becomes instantaneous, the cross-row state changes happen without animation. The information remains; only the motion is suppressed.
 6. **Long-running agent + tab-blur** — pair with a Web Notification (with explicit user permission) for users who navigate away. The notification text should mirror the final phase's status: "Report ready" not "Process completed."
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={rotatingTipsConfig} Naive={NaiveRotatingTips} Tuned={TunedRotatingTips} />
+
+<DemoRunner config={notifyCompleteConfig} Naive={NaiveNotifyComplete} Tuned={TunedNotifyComplete} />
 
 <ScenarioNav />
 

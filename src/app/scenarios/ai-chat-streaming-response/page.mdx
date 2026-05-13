@@ -2,13 +2,22 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveThreeDotBounce } from "@/demos/technique-three-dot-bounce/naive";
+import { TunedThreeDotBounce } from "@/demos/technique-three-dot-bounce/tuned";
+import { config as threeDotBounceConfig } from "@/demos/technique-three-dot-bounce/config";
+import { NaiveThinkingGradient } from "@/demos/technique-thinking-gradient/naive";
+import { TunedThinkingGradient } from "@/demos/technique-thinking-gradient/tuned";
+import { config as thinkingGradientConfig } from "@/demos/technique-thinking-gradient/config";
+import { NaivePulsingOrb } from "@/demos/technique-pulsing-orb/naive";
+import { TunedPulsingOrb } from "@/demos/technique-pulsing-orb/tuned";
+import { config as pulsingOrbConfig } from "@/demos/technique-pulsing-orb/config";
 import { NaiveAIStreaming } from "@/demos/ai-streaming/naive";
 import { TunedAIStreaming } from "@/demos/ai-streaming/tuned";
-import { config as demoConfig } from "@/demos/ai-streaming/config";
+import { config as aiStreamingConfig } from "@/demos/ai-streaming/config";
 import { references } from "@/lib/refs/scenario-ai-chat-streaming-response";
 
 export const metadata = {
-  title: "AI · Chat / streaming response",
+  title: "Chat Streaming Response",
   description:
     "1–10 S band, AI tag. The assistant returns a ~200-character answer. Naive: total wait, then full response drops in. Tuned: ~600 ms thinking state, then tokens stream at a natural reading pace.",
   alternates: { canonical: "/scenarios/ai-chat-streaming-response" }
@@ -16,7 +25,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# AI · Chat / streaming response
+# Chat Streaming Response
 
 <ScenarioMeta slug="ai-chat-streaming-response" />
 
@@ -25,7 +34,7 @@ The user submits a prompt to an AI surface. The total time to last token is roug
 
 This scenario sits in the 1–10 S band. Card et al. 1991's <Cite id="card-1991" label="Card et al. 1991" /> ~100 ms perceptual frame sets the cadence floor for the token reveal. Block & Zakay 1997's <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> filled-duration principle is the underlying mechanism — streaming converts an empty wait into a filled one. Myers 1985's <Cite id="myers-1985" label="Myers 1985" /> indeterminate-feedback baseline is what the thinking state covers during time-to-first-token.
 
-<DemoRunner config={demoConfig} Naive={NaiveAIStreaming} Tuned={TunedAIStreaming} />
+<DemoRunner config={aiStreamingConfig} Naive={NaiveAIStreaming} Tuned={TunedAIStreaming} />
 
 ## What is happening in the demo
 
@@ -58,6 +67,17 @@ The other failure mode: streaming the response *too fast*. Token reveal at 5 ms 
 3. **`motion-safe:`** on the thinking dots and the cursor. For reduced-motion users, the dots stay static (still informative) and the cursor disappears entirely.
 4. **Don't strip semantics during streaming.** If the model produces markdown — code blocks, lists, headings — render them with the right elements as the tokens accumulate. A streaming `<pre><code>` block reads better than a paragraph that retroactively becomes a code block.
 5. **Cancellation must be reachable from keyboard.** Escape by convention; surface it visibly the first few times.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={threeDotBounceConfig} Naive={NaiveThreeDotBounce} Tuned={TunedThreeDotBounce} />
+
+<DemoRunner config={thinkingGradientConfig} Naive={NaiveThinkingGradient} Tuned={TunedThinkingGradient} />
+
+<DemoRunner config={pulsingOrbConfig} Naive={NaivePulsingOrb} Tuned={TunedPulsingOrb} />
 
 <ScenarioNav />
 

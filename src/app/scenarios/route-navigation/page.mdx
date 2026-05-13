@@ -2,13 +2,22 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveTopBar } from "@/demos/technique-top-bar/naive";
+import { TunedTopBar } from "@/demos/technique-top-bar/tuned";
+import { config as topBarConfig } from "@/demos/technique-top-bar/config";
+import { NaiveTrickleBar } from "@/demos/technique-trickle-bar/naive";
+import { TunedTrickleBar } from "@/demos/technique-trickle-bar/tuned";
+import { config as trickleBarConfig } from "@/demos/technique-trickle-bar/config";
+import { NaiveSkeletonSimple } from "@/demos/technique-skeleton-simple/naive";
+import { TunedSkeletonSimple } from "@/demos/technique-skeleton-simple/tuned";
+import { config as skeletonSimpleConfig } from "@/demos/technique-skeleton-simple/config";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
-import { config as demoConfig } from "@/demos/list-fetch/config";
+import { config as listFetchConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-route-navigation";
 
 export const metadata = {
-  title: "Route navigation",
+  title: "Route Navigation",
   description:
     "100 MS – 1 S band. Click a link, get a new page. Prefetch on hover, View Transitions for the handoff, optimistic redirect for the action chain. The wait should be invisible most of the time.",
   alternates: { canonical: "/scenarios/route-navigation" }
@@ -16,7 +25,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Route navigation
+# Route Navigation
 
 <ScenarioMeta slug="route-navigation" />
 
@@ -25,7 +34,7 @@ The user clicks a link. A new page should appear. The naive answer is to wait fo
 
 Most navigations sit in the 100 MS – 1 S band. The goal is to push them into the 0–100 MS perceptual frame Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> describe — the navigation feels caused by the user, not awaited. Miller 1968's <Cite id="miller-1968" label="Miller 1968" /> simple-inquiry tier is the fallback budget for the cases where prefetching missed; Fitch's <Cite id="fitch" label="Fitch" /> predictive-preloading work is what gets you below it most of the time.
 
-<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+<DemoRunner config={listFetchConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
 
 ## What is happening in the demo
 
@@ -61,6 +70,17 @@ The other failure: applying View Transitions across routes that are visually unr
 3. **`prefers-reduced-motion: reduce`** for the View Transitions cross-fade.
 4. **Focus management on transition** — when the new route renders, focus the main heading or a stable landmark so keyboard users land where the action is.
 5. **Don't fire screen-reader announcements on prefetch.** The user has not yet committed; an announcement before they release is premature.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={topBarConfig} Naive={NaiveTopBar} Tuned={TunedTopBar} />
+
+<DemoRunner config={trickleBarConfig} Naive={NaiveTrickleBar} Tuned={TunedTrickleBar} />
+
+<DemoRunner config={skeletonSimpleConfig} Naive={NaiveSkeletonSimple} Tuned={TunedSkeletonSimple} />
 
 <ScenarioNav />
 

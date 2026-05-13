@@ -2,13 +2,19 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveTopBar } from "@/demos/technique-top-bar/naive";
+import { TunedTopBar } from "@/demos/technique-top-bar/tuned";
+import { config as topBarConfig } from "@/demos/technique-top-bar/config";
+import { NaiveSkeletonReveal } from "@/demos/technique-skeleton-reveal/naive";
+import { TunedSkeletonReveal } from "@/demos/technique-skeleton-reveal/tuned";
+import { config as skeletonRevealConfig } from "@/demos/technique-skeleton-reveal/config";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
-import { config as demoConfig } from "@/demos/list-fetch/config";
+import { config as listFetchConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-page-load-warm-cache";
 
 export const metadata = {
-  title: "Page load (warm cache)",
+  title: "Warm Cache Page Load",
   description:
     "100 MS – 1 S band. Returning user with cached assets. The naive surface still flashes a blank. The tuned surface uses the View Transitions API plus prefetched data so the previous page cross-fades into the new one.",
   alternates: { canonical: "/scenarios/page-load-warm-cache" }
@@ -16,7 +22,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Page load (warm cache)
+# Warm Cache Page Load
 
 <ScenarioMeta slug="page-load-warm-cache" />
 
@@ -25,7 +31,7 @@ A returning user. The bundle is cached. The route data was prefetched on hover o
 
 This scenario sits in the 100 MS – 1 S band and usually lands on the fast end of it. Miller 1968's <Cite id="miller-1968" label="Miller 1968" /> simple-inquiry tier is where most warm-cache loads belong — the network round-trip is shorter than the perceptual frame Card et al. 1991 <Cite id="card-1991" label="Card et al. 1991" /> measured. The wait is essentially gone; what remains is whether the visual handoff feels instantaneous or jarring.
 
-<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+<DemoRunner config={listFetchConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
 
 ## What is happening in the demo
 
@@ -55,6 +61,15 @@ The other failure: applying View Transitions to pages that are not actually warm
 2. **Manage focus across the transition.** When the new page renders, focus the main heading (or a stable landmark) so keyboard users land on the right element.
 3. **Don't trap announcements.** Assistive tech ignores the transition itself, but if the new page's heading or main landmark renders late, the announcement comes late.
 4. **Layout stability** — even with View Transitions, late data should reserve its space. Don't ship a transition into an unstable layout.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={topBarConfig} Naive={NaiveTopBar} Tuned={TunedTopBar} />
+
+<DemoRunner config={skeletonRevealConfig} Naive={NaiveSkeletonReveal} Tuned={TunedSkeletonReveal} />
 
 <ScenarioNav />
 

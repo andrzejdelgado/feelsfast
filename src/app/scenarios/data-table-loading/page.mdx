@@ -2,13 +2,22 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveSkeletonTrue } from "@/demos/technique-skeleton-true/naive";
+import { TunedSkeletonTrue } from "@/demos/technique-skeleton-true/tuned";
+import { config as skeletonTrueConfig } from "@/demos/technique-skeleton-true/config";
+import { NaiveShimmerSkeleton } from "@/demos/technique-shimmer-skeleton/naive";
+import { TunedShimmerSkeleton } from "@/demos/technique-shimmer-skeleton/tuned";
+import { config as shimmerSkeletonConfig } from "@/demos/technique-shimmer-skeleton/config";
+import { NaiveSkeletonPulse } from "@/demos/technique-skeleton-pulse/naive";
+import { TunedSkeletonPulse } from "@/demos/technique-skeleton-pulse/tuned";
+import { config as skeletonPulseConfig } from "@/demos/technique-skeleton-pulse/config";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
-import { config as demoConfig } from "@/demos/list-fetch/config";
+import { config as listFetchConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-data-table-loading";
 
 export const metadata = {
-  title: "Data table loading",
+  title: "Data Table Loading",
   description:
     "100 MS – 1 S band. Sort, filter, paginate a table. Column-aligned skeleton rows; stale-while-revalidate on repeated queries.",
   alternates: { canonical: "/scenarios/data-table-loading" }
@@ -16,7 +25,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Data table loading
+# Data Table Loading
 
 <ScenarioMeta slug="data-table-loading" />
 
@@ -25,7 +34,7 @@ The user clicks a column header to sort, types into a filter box, or changes the
 
 This scenario sits in the 100 MS – 1 S band. Most data-table queries on cached data should land here; complex aggregations push into the 1–10 S band where [skeleton screens](/glossary#skeleton-screen) become the primary affordance. Myers 1985's <Cite id="myers-1985" label="Myers 1985" /> indeterminate-feedback principle is the underlying reason a skeleton beats a blank table; James 1890 <Cite id="james-1890" label="James 1890" /> is why the skeleton fills the prospective-empty wait; Doherty 1982 <Cite id="doherty-1982" label="Doherty 1982" /> explains why stale-while-revalidate on repeated queries pays off in measured productivity.
 
-<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+<DemoRunner config={listFetchConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
 
 ## What is happening in the demo
 
@@ -58,6 +67,17 @@ The other failure: skeleton rows for *interactive* table operations. A search in
 3. **Keep table headers and column structure visible** during the load — only the cells should skeleton-fade. Otherwise screen readers lose orientation.
 4. **Match `tabular-nums` font feature** on numeric columns so the skeleton's width prediction holds.
 5. **Stale-state dim should not strip ARIA**. The previous row data is still announceable; an opacity change is purely visual.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={skeletonTrueConfig} Naive={NaiveSkeletonTrue} Tuned={TunedSkeletonTrue} />
+
+<DemoRunner config={shimmerSkeletonConfig} Naive={NaiveShimmerSkeleton} Tuned={TunedShimmerSkeleton} />
+
+<DemoRunner config={skeletonPulseConfig} Naive={NaiveSkeletonPulse} Tuned={TunedSkeletonPulse} />
 
 <ScenarioNav />
 

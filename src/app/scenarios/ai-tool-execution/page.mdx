@@ -2,13 +2,16 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaivePulsingOrb } from "@/demos/technique-pulsing-orb/naive";
+import { TunedPulsingOrb } from "@/demos/technique-pulsing-orb/tuned";
+import { config as pulsingOrbConfig } from "@/demos/technique-pulsing-orb/config";
 import { NaiveAiToolExecution } from "@/demos/ai-tool-execution/naive";
 import { TunedAiToolExecution } from "@/demos/ai-tool-execution/tuned";
-import { config as demoConfig } from "@/demos/ai-tool-execution/config";
+import { config as aiToolExecutionConfig } from "@/demos/ai-tool-execution/config";
 import { references } from "@/lib/refs/scenario-ai-tool-execution";
 
 export const metadata = {
-  title: "Tool execution / agentic step",
+  title: "Tool Execution",
   description:
     "1 – 10 S band. Agent reads files, runs queries, edits code. Naive: opaque \"Working…\" spinner. Tuned: each tool call streams in as the agent runs it, with status icons and result detail. Cancellation always available.",
   alternates: { canonical: "/scenarios/ai-tool-execution" }
@@ -16,7 +19,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Tool execution / agentic step
+# Tool Execution
 
 <ScenarioMeta slug="ai-tool-execution" />
 
@@ -27,7 +30,7 @@ This is the perception scenario where AI agents either build trust or don't. Too
 
 This scenario is in the 1 – 10 S band Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> describes for unit-task latency. Each individual tool-call status update has to clear the Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame so the stream registers as live, not as a series of state mutations. The Doherty 1982 <Cite id="doherty-1982" label="Doherty 1982" /> ~400 ms productivity break covers the time-to-first-tool-call — past it, the agent feels stalled before it has even started. The Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> finding that progress indicators outperform blank waits extends to non-numeric progress: a list of completed tool calls is a percent-done indicator with the percent implied by the count.
 
-<DemoRunner config={demoConfig} Naive={NaiveAiToolExecution} Tuned={TunedAiToolExecution} />
+<DemoRunner config={aiToolExecutionConfig} Naive={NaiveAiToolExecution} Tuned={TunedAiToolExecution} />
 
 ## What is happening in the demo
 
@@ -64,6 +67,13 @@ Cancellation needs a graceful path. Hard-killing an agent mid-tool-call can leav
 3. **`role="status"`** on the cancel button's "Stopping…" message so the cancellation is announced.
 4. **Focus management** — when the user clicks Cancel, focus stays on the cancel button (now showing the cancellation in progress) until the agent confirms the stop.
 5. **`prefers-reduced-motion`** — the spinner reduces to a static dot indicator; the appearance / disappearance of rows is instantaneous instead of animated.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={pulsingOrbConfig} Naive={NaivePulsingOrb} Tuned={TunedPulsingOrb} />
 
 <ScenarioNav />
 

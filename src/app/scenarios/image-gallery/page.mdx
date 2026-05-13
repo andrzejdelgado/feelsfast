@@ -2,13 +2,19 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveImageBrand } from "@/demos/technique-image-brand/naive";
+import { TunedImageBrand } from "@/demos/technique-image-brand/tuned";
+import { config as imageBrandConfig } from "@/demos/technique-image-brand/config";
+import { NaiveImageColor } from "@/demos/technique-image-color/naive";
+import { TunedImageColor } from "@/demos/technique-image-color/tuned";
+import { config as imageColorConfig } from "@/demos/technique-image-color/config";
 import { NaiveImageGallery } from "@/demos/image-gallery/naive";
 import { TunedImageGallery } from "@/demos/image-gallery/tuned";
-import { config as demoConfig } from "@/demos/image-gallery/config";
+import { config as imageGalleryConfig } from "@/demos/image-gallery/config";
 import { references } from "@/lib/refs/scenario-image-gallery";
 
 export const metadata = {
-  title: "Image gallery",
+  title: "Image Gallery",
   description:
     "1 – 10 S band. A grid of images that load at varying rates. Naive: blank tiles backfill in arbitrary order. Tuned: blurred LQIP placeholders carry the dominant colour from the first paint, then resolve into the full image.",
   alternates: { canonical: "/scenarios/image-gallery" }
@@ -16,7 +22,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Image gallery
+# Image Gallery
 
 <ScenarioMeta slug="image-gallery" />
 
@@ -25,7 +31,7 @@ Image-heavy layouts are the worst-case for naive loading. A grid of six photos a
 
 This scenario sits in the 1 – 10 S band Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> describes. The Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame is what the LQIP placeholder honours — the dominant colour is in place before the user can register the layout as empty. Nielsen 1993 <Cite id="nielsen-1993" label="Nielsen 1993" /> sets the 1-second floor the unaugmented gallery breaks; the placeholder collapses the wait by replacing it with content.
 
-<DemoRunner config={demoConfig} Naive={NaiveImageGallery} Tuned={TunedImageGallery} />
+<DemoRunner config={imageGalleryConfig} Naive={NaiveImageGallery} Tuned={TunedImageGallery} />
 
 ## What is happening in the demo
 
@@ -58,6 +64,15 @@ The other failure mode is trying to LQIP everything. Icons, logos, UI chrome —
 3. **`prefers-reduced-motion`** — the blur-to-sharp transition is decorative. Strip the transition to an instant swap; the LQIP-to-final state-change is the signal.
 4. **Focus order** must not depend on load order. If the gallery is keyboard-navigable, tab order is set by the layout, not by which image happens to load first.
 5. **Lazy-load only off-screen images.** `loading="lazy"` (or its IntersectionObserver equivalent) prevents work for images the user has not scrolled to — but never apply it to above-the-fold tiles, where the LQIP needs to be in the first paint.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={imageBrandConfig} Naive={NaiveImageBrand} Tuned={TunedImageBrand} />
+
+<DemoRunner config={imageColorConfig} Naive={NaiveImageColor} Tuned={TunedImageColor} />
 
 <ScenarioNav />
 

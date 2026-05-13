@@ -4,11 +4,11 @@ import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveSearchAsYouType } from "@/demos/search-as-you-type/naive";
 import { TunedSearchAsYouType } from "@/demos/search-as-you-type/tuned";
-import { config as demoConfig } from "@/demos/search-as-you-type/config";
+import { config as searchAsYouTypeConfig } from "@/demos/search-as-you-type/config";
 import { references } from "@/lib/refs/scenario-search-as-you-type";
 
 export const metadata = {
-  title: "Search as you type",
+  title: "Search-as-you-type",
   description:
     "0–100 MS band. The user types into a search box; each keystroke triggers either an expensive filter that blocks the input or a deferred filter that lets the input stay instant. The difference is whether the user feels they are typing or fighting.",
   alternates: { canonical: "/scenarios/search-as-you-type" }
@@ -16,7 +16,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Search as you type
+# Search-as-you-type
 
 <ScenarioMeta slug="search-as-you-type" />
 
@@ -25,7 +25,7 @@ The user types into a search box. Each keystroke could either kick off an expens
 
 This scenario sits in the 0–100 MS band. Card-Moran-Newell's <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame is the upper bound for input responsiveness; Miller's <Cite id="miller-1968" label="Miller 1968" /> keystroke-echo tier is at 0.1 s for a reason. The naive side breaks both. The tuned side honours both.
 
-<DemoRunner config={demoConfig} Naive={NaiveSearchAsYouType} Tuned={TunedSearchAsYouType} />
+<DemoRunner config={searchAsYouTypeConfig} Naive={NaiveSearchAsYouType} Tuned={TunedSearchAsYouType} />
 
 ## What is happening in the demo
 

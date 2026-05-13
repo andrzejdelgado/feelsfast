@@ -2,13 +2,16 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveSkeletonPulse } from "@/demos/technique-skeleton-pulse/naive";
+import { TunedSkeletonPulse } from "@/demos/technique-skeleton-pulse/tuned";
+import { config as skeletonPulseConfig } from "@/demos/technique-skeleton-pulse/config";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
-import { config as demoConfig } from "@/demos/list-fetch/config";
+import { config as listFetchConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-infinite-scroll";
 
 export const metadata = {
-  title: "Infinite scroll",
+  title: "Infinite Scroll",
   description:
     "100 MS – 1 S band. Continuous content stream as the user scrolls. Predictive preload before the bottom; layout stability during reflows; intersection observer for the trigger.",
   alternates: { canonical: "/scenarios/infinite-scroll" }
@@ -16,7 +19,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Infinite scroll
+# Infinite Scroll
 
 <ScenarioMeta slug="infinite-scroll" />
 
@@ -25,7 +28,7 @@ The user keeps scrolling. The list keeps growing. The naive answer is to wait fo
 
 This scenario sits in the 100 MS – 1 S band most of the time. The trigger is what changes from [long-list-pagination](/scenarios/long-list-pagination) — instead of an explicit "Next" click, scroll position is the signal.
 
-<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+<DemoRunner config={listFetchConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
 
 ## What is happening
 
@@ -51,6 +54,13 @@ Infinite scroll itself is contested as a UX pattern — it disrupts back-button 
 2. **Live region announcement** every N batches, not every batch — too many announcements is noise.
 3. **Keyboard navigation** must reach new content as it lands.
 4. **Don't hijack scroll position** when the new content appears.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={skeletonPulseConfig} Naive={NaiveSkeletonPulse} Tuned={TunedSkeletonPulse} />
 
 <ScenarioNav />
 

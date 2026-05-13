@@ -2,13 +2,25 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveNotifyComplete } from "@/demos/technique-notify-complete/naive";
+import { TunedNotifyComplete } from "@/demos/technique-notify-complete/tuned";
+import { config as notifyCompleteConfig } from "@/demos/technique-notify-complete/config";
+import { NaiveRotatingTips } from "@/demos/technique-rotating-tips/naive";
+import { TunedRotatingTips } from "@/demos/technique-rotating-tips/tuned";
+import { config as rotatingTipsConfig } from "@/demos/technique-rotating-tips/config";
+import { NaiveBrandedStory } from "@/demos/technique-branded-story/naive";
+import { TunedBrandedStory } from "@/demos/technique-branded-story/tuned";
+import { config as brandedStoryConfig } from "@/demos/technique-branded-story/config";
+import { NaiveMiniGame } from "@/demos/technique-mini-game/naive";
+import { TunedMiniGame } from "@/demos/technique-mini-game/tuned";
+import { config as miniGameConfig } from "@/demos/technique-mini-game/config";
 import { NaiveDataExport } from "@/demos/data-export/naive";
 import { TunedDataExport } from "@/demos/data-export/tuned";
-import { config as demoConfig } from "@/demos/data-export/config";
+import { config as dataExportConfig } from "@/demos/data-export/config";
 import { references } from "@/lib/refs/scenario-data-export-download";
 
 export const metadata = {
-  title: "Data export / download generation",
+  title: "Data Export Download",
   description:
     "10 S+ band. Server compiles a 5,000-row CSV. Naive: opaque spinner. Tuned: row-count milestones, engagement copy, and an email-when-ready hand-off when the wait runs long.",
   alternates: { canonical: "/scenarios/data-export-download" }
@@ -16,7 +28,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Data export / download generation
+# Data Export Download
 
 <ScenarioMeta slug="data-export-download" />
 
@@ -25,7 +37,7 @@ Generating a download is one of the few perception scenarios where the work is g
 
 This scenario lives in the 10 S+ band Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> placed past the unit-task limit. Nielsen 1993 <Cite id="nielsen-1993" label="Nielsen 1993" /> drew the 10-second wall — past it, the user's attention is no longer reliably on the task, and a hand-off (background work, notification, email) is the correct register. Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> covers the determinate progress bar that does the work *up to* the wall; Harrison et al. 2010 <Cite id="harrison-2010" label="Harrison et al. 2010" /> covers the backwards-decelerating animation that buys an extra ~12 % perceived speed-up at no real cost.
 
-<DemoRunner config={demoConfig} Naive={NaiveDataExport} Tuned={TunedDataExport} />
+<DemoRunner config={dataExportConfig} Naive={NaiveDataExport} Tuned={TunedDataExport} />
 
 ## What is happening in the demo
 
@@ -60,6 +72,19 @@ For exports that genuinely take minutes — billing reports, GDPR data-subject a
 3. **Polite live region** for completion ("Export ready") so screen-reader users register the state change without monitoring the bar.
 4. **Visible cancellation** for the long tail. The email hand-off is not a cancellation — it is a continuation.
 5. **`prefers-reduced-motion`** — the bar's width transition is a property change and stays. Strip any rib animation.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={notifyCompleteConfig} Naive={NaiveNotifyComplete} Tuned={TunedNotifyComplete} />
+
+<DemoRunner config={rotatingTipsConfig} Naive={NaiveRotatingTips} Tuned={TunedRotatingTips} />
+
+<DemoRunner config={brandedStoryConfig} Naive={NaiveBrandedStory} Tuned={TunedBrandedStory} />
+
+<DemoRunner config={miniGameConfig} Naive={NaiveMiniGame} Tuned={TunedMiniGame} />
 
 <ScenarioNav />
 

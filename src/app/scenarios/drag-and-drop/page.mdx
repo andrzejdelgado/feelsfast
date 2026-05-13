@@ -4,11 +4,11 @@ import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveDragAndDrop } from "@/demos/drag-and-drop/naive";
 import { TunedDragAndDrop } from "@/demos/drag-and-drop/tuned";
-import { config as demoConfig } from "@/demos/drag-and-drop/config";
+import { config as dragAndDropConfig } from "@/demos/drag-and-drop/config";
 import { references } from "@/lib/refs/scenario-drag-and-drop";
 
 export const metadata = {
-  title: "Drag and drop",
+  title: "Drag and Drop",
   description:
     "0–100 MS band. Reorder a list by dragging. Naive: no in-flight feedback, server round-trip blocks the reorder. Tuned: live drop-target indicator, optimistic placement on drop, server commit in the background.",
   alternates: { canonical: "/scenarios/drag-and-drop" }
@@ -16,7 +16,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Drag and drop
+# Drag and Drop
 
 <ScenarioMeta slug="drag-and-drop" />
 
@@ -27,7 +27,7 @@ The perception failure mode in naive web reorder is rarely the latency of the ac
 
 This scenario sits in the 0–100 MS band the Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> perceptual frame defines. The grab itself, the drop-target indicator, and the post-drop landing animation all need to fire inside that frame for the manipulation to feel direct.
 
-<DemoRunner config={demoConfig} Naive={NaiveDragAndDrop} Tuned={TunedDragAndDrop} />
+<DemoRunner config={dragAndDropConfig} Naive={NaiveDragAndDrop} Tuned={TunedDragAndDrop} />
 
 ## What is happening in the demo
 

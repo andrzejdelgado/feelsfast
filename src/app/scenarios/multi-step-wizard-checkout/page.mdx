@@ -2,13 +2,22 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveSkeletonSimple } from "@/demos/technique-skeleton-simple/naive";
+import { TunedSkeletonSimple } from "@/demos/technique-skeleton-simple/tuned";
+import { config as skeletonSimpleConfig } from "@/demos/technique-skeleton-simple/config";
+import { NaiveTrickleBar } from "@/demos/technique-trickle-bar/naive";
+import { TunedTrickleBar } from "@/demos/technique-trickle-bar/tuned";
+import { config as trickleBarConfig } from "@/demos/technique-trickle-bar/config";
+import { NaiveMousedown } from "@/demos/technique-mousedown/naive";
+import { TunedMousedown } from "@/demos/technique-mousedown/tuned";
+import { config as mousedownConfig } from "@/demos/technique-mousedown/config";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
-import { config as demoConfig } from "@/demos/list-fetch/config";
+import { config as listFetchConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-multi-step-wizard-checkout";
 
 export const metadata = {
-  title: "Multi-step wizard / checkout",
+  title: "Multi-step Checkout",
   description:
     "1 – 10 S band. Linear multi-step flow. Predictive preload of the next step while the user fills the current one; optimistic redirect on submit; preserved state across rollbacks.",
   alternates: { canonical: "/scenarios/multi-step-wizard-checkout" }
@@ -16,7 +25,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Multi-step wizard / checkout
+# Multi-step Checkout
 
 <ScenarioMeta slug="multi-step-wizard-checkout" />
 
@@ -25,7 +34,7 @@ Multi-step flows — checkouts, onboarding, signup wizards — are the cleanest 
 
 This scenario sits in the 1 – 10 S band on each step, but the perception layer pushes most transitions into the 0 – 100 MS Card-Moran-Newell perceptual frame. Fitch's <Cite id="fitch" label="Fitch" /> form-step preloading framing is the canonical reference; Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> sets the budget the perception layer is collapsing.
 
-<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+<DemoRunner config={listFetchConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
 
 ## What is happening
 
@@ -56,6 +65,17 @@ The other failure: optimistic step transitions on validation-heavy steps. If a s
 2. **Step indicator** with `aria-current="step"` on the active step.
 3. **Preserve form state on rollback** — never clobber user input.
 4. **`prefers-reduced-motion`** for the step transition animation.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={skeletonSimpleConfig} Naive={NaiveSkeletonSimple} Tuned={TunedSkeletonSimple} />
+
+<DemoRunner config={trickleBarConfig} Naive={NaiveTrickleBar} Tuned={TunedTrickleBar} />
+
+<DemoRunner config={mousedownConfig} Naive={NaiveMousedown} Tuned={TunedMousedown} />
 
 <ScenarioNav />
 

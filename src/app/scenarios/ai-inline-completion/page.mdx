@@ -4,11 +4,11 @@ import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
 import { NaiveInlineCompletion } from "@/demos/ai-inline-completion/naive";
 import { TunedInlineCompletion } from "@/demos/ai-inline-completion/tuned";
-import { config as demoConfig } from "@/demos/ai-inline-completion/config";
+import { config as aiInlineCompletionConfig } from "@/demos/ai-inline-completion/config";
 import { references } from "@/lib/refs/scenario-ai-inline-completion";
 
 export const metadata = {
-  title: "Inline completion / suggestion",
+  title: "Inline Completion",
   description:
     "100 MS – 1 S band. AI suggestion appears as ghost text while the user types — Cursor / Copilot / v0 territory. Naive: a request fires on every keystroke and stale suggestions race in. Tuned: 200 ms debounce, abort on next keystroke, fresh suggestion every time.",
   alternates: { canonical: "/scenarios/ai-inline-completion" }
@@ -16,7 +16,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Inline completion / suggestion
+# Inline Completion
 
 <ScenarioMeta slug="ai-inline-completion" />
 
@@ -25,7 +25,7 @@ Inline completion is the perception case where the AI runs while the user is *st
 
 This scenario sits across the 0–100 MS and 100 MS – 1 S bands. The keystroke echo itself must clear the Card-Moran-Newell <Cite id="card-moran-newell-1983" label="Card, Moran & Newell 1983" /> ~100 ms perceptual frame — the input has to feel responsive even while a model is working. The suggestion display lives in the 100 MS – 1 S band Miller 1968 <Cite id="miller-1968" label="Miller 1968" /> describes for "immediate response." Doherty 1982's <Cite id="doherty-1982" label="Doherty 1982" /> ~400 ms productivity break gives the rough budget for how long the suggestion can take before users feel it as friction. Arapakis et al. 2014 <Cite id="arapakis-2014" label="Arapakis et al. 2014" /> says below 500 ms most users do not consciously notice the latency at all.
 
-<DemoRunner config={demoConfig} Naive={NaiveInlineCompletion} Tuned={TunedInlineCompletion} />
+<DemoRunner config={aiInlineCompletionConfig} Naive={NaiveInlineCompletion} Tuned={TunedInlineCompletion} />
 
 ## What is happening in the demo
 

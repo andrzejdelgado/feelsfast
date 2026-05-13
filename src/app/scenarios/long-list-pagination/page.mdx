@@ -2,13 +2,19 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveSkeletonPulse } from "@/demos/technique-skeleton-pulse/naive";
+import { TunedSkeletonPulse } from "@/demos/technique-skeleton-pulse/tuned";
+import { config as skeletonPulseConfig } from "@/demos/technique-skeleton-pulse/config";
+import { NaiveTrickleBar } from "@/demos/technique-trickle-bar/naive";
+import { TunedTrickleBar } from "@/demos/technique-trickle-bar/tuned";
+import { config as trickleBarConfig } from "@/demos/technique-trickle-bar/config";
 import { NaiveListFetch } from "@/demos/list-fetch/naive";
 import { TunedListFetch } from "@/demos/list-fetch/tuned";
-import { config as demoConfig } from "@/demos/list-fetch/config";
+import { config as listFetchConfig } from "@/demos/list-fetch/config";
 import { references } from "@/lib/refs/scenario-long-list-pagination";
 
 export const metadata = {
-  title: "Long list / pagination",
+  title: "Long List Pagination",
   description:
     "100 MS – 1 S band. The user scrolls or paginates through a long list. Skeleton rows for the next page; predictive preload as the user approaches the boundary so the wait is invisible most of the time.",
   alternates: { canonical: "/scenarios/long-list-pagination" }
@@ -16,7 +22,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Long list / pagination
+# Long List Pagination
 
 <ScenarioMeta slug="long-list-pagination" />
 
@@ -25,7 +31,7 @@ The user scrolls through a 200-item list, or clicks "Next" on a paginated table.
 
 This scenario sits in the 100 MS – 1 S band. Miller 1968's <Cite id="miller-1968" label="Miller 1968" /> simple-inquiry tier is roughly the latency budget for a paginated query. James 1890's <Cite id="james-1890" label="James 1890" /> filled-duration principle frames why the skeleton rows fill the wait. Fitch's <Cite id="fitch" label="Fitch" /> predictive-preloading framing is what shrinks the wait further by starting the fetch before the user signals.
 
-<DemoRunner config={demoConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
+<DemoRunner config={listFetchConfig} Naive={NaiveListFetch} Tuned={TunedListFetch} />
 
 ## What is happening in the demo
 
@@ -58,6 +64,15 @@ The other failure: shipping skeleton rows that do not match the final row. A ske
 3. **Live region announcement** when a substantial batch of new items appears, so screen-reader users on long lists know the count changed.
 4. **Keyboard navigation**: arrow keys / page-down should reach new content as it becomes available, not get stuck at the previous boundary.
 5. **Don't hijack scroll position.** When new content appears at the bottom, the user's scroll position must not jump.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={skeletonPulseConfig} Naive={NaiveSkeletonPulse} Tuned={TunedSkeletonPulse} />
+
+<DemoRunner config={trickleBarConfig} Naive={NaiveTrickleBar} Tuned={TunedTrickleBar} />
 
 <ScenarioNav />
 

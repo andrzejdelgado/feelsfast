@@ -5,7 +5,7 @@ import { MapInteractionsCard } from "@/components/MapInteractionsCard";
 import { references } from "@/lib/refs/scenario-map-interactions";
 
 export const metadata = {
-  title: "Map interactions",
+  title: "Map Interactions",
   description:
     "0–100 MS band. Pan around a tile-backed map. Naive: pan locks input until the tiles load. Tuned: pan is always responsive — the viewport shifts immediately, tiles fade in underneath as each finishes loading.",
   alternates: { canonical: "/scenarios/map-interactions" }
@@ -13,7 +13,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# Map interactions
+# Map Interactions
 
 <ScenarioMeta slug="map-interactions" />
 
@@ -57,6 +57,7 @@ For touch devices, the gesture is `pointermove` with high-frequency events; the 
 3. **`prefers-reduced-motion`** — the tile fade and the pan transition both reduce to instant state changes. The cursor-to-content coupling is content, not motion.
 4. **Touch targets** — pan controls should be ≥ 44×44 px (Apple HIG / Material guidance). The demo's 28×28 px controls are visual only; production maps would size them up.
 5. **Focus return** — after a pan, focus stays on the control that was pressed (or on the map canvas itself if the user was using arrow keys). Never reset focus to the page top.
+
 
 <ScenarioNav />
 

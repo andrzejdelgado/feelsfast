@@ -2,13 +2,25 @@ import { RegisterReferences } from "@/components/RegisterReferences";
 import { ReferencesList } from "@/components/References";
 import { ScenarioNav } from "@/components/ScenarioNav";
 import { DemoRunner } from "@/components/DemoRunner";
+import { NaiveDecelBar } from "@/demos/technique-decel-bar/naive";
+import { TunedDecelBar } from "@/demos/technique-decel-bar/tuned";
+import { config as decelBarConfig } from "@/demos/technique-decel-bar/config";
+import { NaiveRotatingTips } from "@/demos/technique-rotating-tips/naive";
+import { TunedRotatingTips } from "@/demos/technique-rotating-tips/tuned";
+import { config as rotatingTipsConfig } from "@/demos/technique-rotating-tips/config";
+import { NaiveNotifyComplete } from "@/demos/technique-notify-complete/naive";
+import { TunedNotifyComplete } from "@/demos/technique-notify-complete/tuned";
+import { config as notifyCompleteConfig } from "@/demos/technique-notify-complete/config";
+import { NaiveMiniGame } from "@/demos/technique-mini-game/naive";
+import { TunedMiniGame } from "@/demos/technique-mini-game/tuned";
+import { config as miniGameConfig } from "@/demos/technique-mini-game/config";
 import { NaiveFileUpload } from "@/demos/file-upload/naive";
 import { TunedFileUpload } from "@/demos/file-upload/tuned";
-import { config as demoConfig } from "@/demos/file-upload/config";
+import { config as fileUploadConfig } from "@/demos/file-upload/config";
 import { references } from "@/lib/refs/scenario-file-upload-batch";
 
 export const metadata = {
-  title: "File upload (batch)",
+  title: "Batch File Upload",
   description:
     "10 S+ band. Multi-file upload with parallel transfers. Per-file determinate progress; aggregate progress at the top; engagement cue past 10 s; background sync option.",
   alternates: { canonical: "/scenarios/file-upload-batch" }
@@ -16,7 +28,7 @@ export const metadata = {
 
 <RegisterReferences refs={references} />
 
-# File upload (batch)
+# Batch File Upload
 
 <ScenarioMeta slug="file-upload-batch" />
 
@@ -25,7 +37,7 @@ The user picks twelve files and clicks Upload. The wall-clock time crosses ten s
 
 This scenario sits in the 10 S+ band. The perception layer carries it through the [time-aware feedback](/glossary#time-aware-feedback) progression: per-file determinate progress, aggregate progress at the top, engagement cue past the 10 s boundary, background sync option for the long tail. Myers 1985 <Cite id="myers-1985" label="Myers 1985" /> covers the per-file determinate signal; Block & Zakay 1997 <Cite id="block-zakay-1997" label="Block & Zakay 1997" /> covers the engagement trade past 10 s; Doherty 1982 <Cite id="doherty-1982" label="Doherty 1982" /> is the background-sync rationale.
 
-<DemoRunner config={demoConfig} Naive={NaiveFileUpload} Tuned={TunedFileUpload} />
+<DemoRunner config={fileUploadConfig} Naive={NaiveFileUpload} Tuned={TunedFileUpload} />
 
 ## What is happening
 
@@ -60,6 +72,19 @@ The other failure: serialising the uploads when they could be parallel. A batch 
 3. **Polite live region** for batch-level state changes ("3 of 12 complete") — every minute or two, not every file.
 4. **Cancellation must be keyboard-reachable** for each file and for the batch.
 5. **Don't trap focus** on the queue — the user might want to navigate elsewhere while it runs.
+
+
+## Other patterns that fit
+
+Same band, same surface — switch in whichever maps best to your UI.
+
+<DemoRunner config={decelBarConfig} Naive={NaiveDecelBar} Tuned={TunedDecelBar} />
+
+<DemoRunner config={rotatingTipsConfig} Naive={NaiveRotatingTips} Tuned={TunedRotatingTips} />
+
+<DemoRunner config={notifyCompleteConfig} Naive={NaiveNotifyComplete} Tuned={TunedNotifyComplete} />
+
+<DemoRunner config={miniGameConfig} Naive={NaiveMiniGame} Tuned={TunedMiniGame} />
 
 <ScenarioNav />
 
