@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Branded story sequence",
+  title: "Branded Story Sequence",
   description:
     "Slack-style cold-boot pattern. Naive: a single \"Loading…\" line for the full ~12 s. Tuned: a paced sequence of branded frames — wordmark, tagline, skeleton, near-ready — each fading to the next over the wait. The user reads the wait as the app composing itself, not as absence.",
   timeBand: "10 S+",

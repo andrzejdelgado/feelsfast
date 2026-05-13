@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Blurred image",
+  title: "Blurred Image",
   description:
     "Six images load at varying rates. Naive: blank tiles until each finishes. Tuned: blurred LQIP placeholders resolve into the full image as it streams in.",
   timeBand: "1 – 10 S",

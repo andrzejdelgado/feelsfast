@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Mini interactive widget",
+  title: "Entertainment Loader",
   description:
     "T-Rex Run-style mini-game during a long wait. Naive: a spinner for the full duration. Tuned: a clickable runner game — press Jump to leap over incoming mushrooms. The wait stops being time the user is paying and becomes time they are spending. Block & Zakay 1997: filled time has shorter retrospective duration than empty time.",
   timeBand: "10 S+",

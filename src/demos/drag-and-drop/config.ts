@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Drag to reorder",
+  title: "Drag to Reorder",
   description:
     "Drag the handles to reorder the list. Naive: nothing visibly moves until you drop, then a server round-trip stalls the reorder. Tuned: live drop-position indicator while dragging, optimistic placement on drop, server commit in the background.",
   timeBand: "0–100 MS",

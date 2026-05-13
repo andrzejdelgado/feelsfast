@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "File upload",
+  title: "Determinate Progress Bar + Percentage Count",
   description:
     "Upload a 4.2 MB file. Naive: generic spinner with no progress signal. Tuned: optimistic filename render, determinate progress bar, success affordance with checkmark.",
   timeBand: "1 – 10 S",

@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Inline completion",
+  title: "Ghost-text Completion",
   description:
     "User types in a notes editor; the AI suggests an ending for the current line as ghost text. Naive: fires on every keystroke, no abort. Tuned: 200 ms debounce, abort on next keystroke, Tab to accept.",
   timeBand: "100 MS – 1 S",

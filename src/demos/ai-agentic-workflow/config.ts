@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Agentic workflow",
+  title: "Multistep Status List",
   description:
     "A multi-step agent — plan, research, write — runs for ~12 s. Naive: \"Running agent…\" for the duration. Tuned: timeline of phases with current step highlighted, sub-step progress within the research phase, and a final success line.",
   timeBand: "10 S+",

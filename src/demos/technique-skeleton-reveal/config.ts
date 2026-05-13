@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Skeleton-to-content reveal",
+  title: "Skeleton-to-Content Reveal",
   description:
     "Navigation transition. Naive: outgoing article → blank → incoming article. The blank frame reads as a stutter. Tuned: outgoing article → content-true skeleton of incoming article → real incoming article. The transition decouples the navigation from the data fetch — the user sees \"the next page is here, the data is on its way\" instead of \"the page broke.\"",
   timeBand: "1 – 10 S",

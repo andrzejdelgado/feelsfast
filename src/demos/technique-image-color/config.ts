@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Predominant-color image",
+  title: "Predominant-Color Image",
   description:
     "A 6-image gallery loading at varying rates. Naive: blank tiles until each image arrives. Tuned: each tile's dominant color fills the slot from frame zero (cheap to inline as a 1-pixel data-uri at upload time), then crossfades into the real image. The eye reads the colour as the image arriving.",
   timeBand: "1 – 10 S",

@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Search as you type",
+  title: "Incremental Search",
   description:
     "Same dataset, same filter logic, same artificial work per keystroke. The naive side blocks input on every keystroke; the tuned side uses React 19's useDeferredValue to keep the input instant while the filter catches up.",
   timeBand: "0 – 100 MS",

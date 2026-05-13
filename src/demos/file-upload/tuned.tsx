@@ -56,11 +56,18 @@ export function TunedFileUpload({ seed = 1 }: { seed?: number }) {
 
       {showFile ? (
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">{FILE.name}</span>
-            <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
-              {(FILE.size / 1024 / 1024).toFixed(1)} MB
+          <div className="flex items-baseline justify-between gap-3 text-sm">
+            <span className="flex min-w-0 items-baseline gap-2 truncate">
+              <span className="font-medium">{FILE.name}</span>
+              <span className="shrink-0 font-mono text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
+                {(FILE.size / 1024 / 1024).toFixed(1)} MB
+              </span>
             </span>
+            {phase === "uploading" ? (
+              <span className="shrink-0 font-mono text-[0.6875rem] uppercase tracking-wider tabular-nums text-primary">
+                {percent}%
+              </span>
+            ) : null}
           </div>
 
           {phase === "uploading" ? (

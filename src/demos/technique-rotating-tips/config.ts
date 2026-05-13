@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Rotating tips",
+  title: "Rotating Tips",
   description:
     "Engaging copy during a long wait. Naive: a static \"Loading…\" line for the full duration; the user has nothing to do but stare. Tuned: a \"Did you know?\" card cycles through a handful of perception facts every ~2.5 s with a soft cross-fade. Same wait — but the time fills with information instead of absence.",
   timeBand: "10 S+",

@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "List fetch",
+  title: "List Skeleton",
   description:
     "A small list of items loads from a synthetic API. The naive side waits silently; the tuned side shows skeletons that match the final layout.",
   timeBand: "1 – 10 S",

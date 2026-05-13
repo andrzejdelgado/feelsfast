@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Map pan",
+  title: "Direct Manipulation Pan",
   description:
     "Pan around a tile-backed map. Naive: pan locks input until the new tiles load. Tuned: pan is always responsive — the viewport shifts immediately, tiles fade in underneath as each finishes loading.",
   timeBand: "0–100 MS",

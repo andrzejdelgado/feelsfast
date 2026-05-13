@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Tool execution",
+  title: "Live Status Timeline",
   description:
     "An agent reads a file, searches the codebase, and runs a typecheck. Naive: opaque \"Working…\" spinner for the full duration. Tuned: each tool call streams in as the agent runs it, with its own running / done state.",
   timeBand: "1 – 10 S",

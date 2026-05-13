@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "AI · Streaming response",
+  title: "Animated Text Streaming",
   description:
     "A chat-style assistant returns a short answer. Naive: total wait, then the full response drops in. Tuned: ~600 ms thinking state, then tokens stream at a natural reading pace.",
   timeBand: "1 – 10 S",

@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Branded image skeleton",
+  title: "Branded Image Skeleton",
   description:
     "Same 6-image gallery, no dominant-color data available. Naive: blank tiles until each file lands. Tuned: each tile ships with the brand monogram centred on a neutral surface from frame zero. When the image arrives, it crossfades over the monogram. The slot reads as \"image is on its way from this brand\" rather than \"image is missing\". Useful when no per-image LQIP exists — cold cache, new content, third-party images.",
   timeBand: "1 – 10 S",

@@ -2,7 +2,7 @@ import type { DemoConfig } from "@/components/DemoRunner";
 import { mulberry32, seededGamma } from "@/lib/jitter";
 
 export const config: DemoConfig = {
-  title: "Real-time updates",
+  title: "Slide-in + Decay",
   description:
     "A live activity feed with new events arriving at random intervals. Naive: items pop in instantly with no register. Tuned: items slide in with a brief highlight that fades, so the eye knows what is new.",
   timeBand: "0–100 MS",

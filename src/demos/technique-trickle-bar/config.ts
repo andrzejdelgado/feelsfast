@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "NProgress trickle bar",
+  title: "Determinate Progress Bar",
   description:
     "Top-edge bar for sub-second waits. Naive: nothing happens between click and result. Tuned: a thin bar trickles to ~80 % over the first ~300 ms, holds calm at 80 %, then snaps to 100 % when the actual work lands. Lighter cousin of the gradient-overshoot bar — no animation in the held state, no completion claim made.",
   timeBand: "100 MS – 1 S",

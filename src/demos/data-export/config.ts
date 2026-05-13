@@ -1,7 +1,7 @@
 import type { DemoConfig } from "@/components/DemoRunner";
 
 export const config: DemoConfig = {
-  title: "Data export / download",
+  title: "Long-task Progress",
   description:
     "Server generates a 5,000-row CSV. Naive: opaque spinner past the 10-second wall. Tuned: row-count milestones, engagement copy, and an email-when-ready hand-off if the wait runs long.",
   timeBand: "10 S+",
