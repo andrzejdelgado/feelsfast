@@ -65,8 +65,7 @@ export function TunedThinkingGradient({ seed = 1 }: { seed?: number }) {
 function Response() {
   return (
     <p className="text-sm leading-relaxed text-foreground">
-      Yes — perceived performance is what your users actually judge you on. The
-      clock can say two seconds; the experience can feel like one.
+      Yes — that&apos;s perceived performance.
     </p>
   );
 }

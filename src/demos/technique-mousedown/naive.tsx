@@ -2,7 +2,7 @@
 
 import { Send } from "lucide-react";
 import { useRef, useState } from "react";
-import { SIMULATED_WORK_MS } from "./config";
+import { NAIVE_LATENCY_FACTOR, SIMULATED_WORK_MS } from "./config";
 
 /**
  * Naive — work fires on `click`, which only fires after the user
@@ -27,7 +27,7 @@ export function NaiveMousedown() {
     timeoutRef.current = setTimeout(() => {
       setLatency(performance.now() - startedAt.current);
       setPhase("done");
-    }, SIMULATED_WORK_MS);
+    }, SIMULATED_WORK_MS * NAIVE_LATENCY_FACTOR);
   };
 
   return <Layout phase={phase} latency={latency} onClick={onClick} />;

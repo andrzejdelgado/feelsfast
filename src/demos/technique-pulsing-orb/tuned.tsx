@@ -38,13 +38,13 @@ export function TunedPulsingOrb({ seed = 1 }: { seed?: number }) {
           Yes — that&apos;s exactly the right framing.
         </p>
       ) : (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" aria-label="Working">
           <span
             aria-hidden
             className="block size-2.5 rounded-full bg-primary motion-reduce:animate-none"
             style={{ animation: "orb-breath 1600ms ease-in-out infinite" }}
           />
-          <span className="sr-only">Working</span>
+          <span className="text-sm text-muted-foreground">Working</span>
         </div>
       )}
       <style>{`

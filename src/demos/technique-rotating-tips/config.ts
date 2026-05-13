@@ -6,6 +6,10 @@ export const config: DemoConfig = {
     "Engaging copy during a long wait. Naive: a static \"Loading…\" line for the full duration; the user has nothing to do but stare. Tuned: a \"Did you know?\" card cycles through a handful of perception facts every ~2.5 s with a soft cross-fade. Same wait — but the time fills with information instead of absence.",
   timeBand: "10 S+",
   runMode: "manual",
+  // Mobile: lock to the tallest tip card so different tips don't
+  // resize the panel as they rotate (and so Naive matches Tuned).
+  // md+ fits every tip inside the default min-h-32 floor.
+  panelMinHeight: "min-h-[141px] md:min-h-32",
 };
 
 export const TOTAL_DURATION_P50_MS = 12000;

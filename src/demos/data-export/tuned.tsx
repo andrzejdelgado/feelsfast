@@ -77,9 +77,9 @@ export function TunedDataExport({ seed = 1 }: { seed?: number }) {
             />
           </div>
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{message}</span>
-            <span className="font-mono tabular-nums">
-              {rowsDone.toLocaleString()} / {TOTAL_ROWS.toLocaleString()} rows
+            <span className="min-w-0 truncate">{message}</span>
+            <span className="shrink-0 font-mono tabular-nums">
+              {rowsDone.toLocaleString()} / {TOTAL_ROWS.toLocaleString()}
             </span>
           </div>
           {showEmailHandoff ? (

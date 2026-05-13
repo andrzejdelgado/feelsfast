@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { seededGamma } from "@/lib/jitter";
+import { ReportReady } from "./naive";
 import {
   JUMP_MS,
   OBSTACLE_TRAVEL_MS,
@@ -133,10 +134,13 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
 
   if (phase === "done") {
     return (
-      <div className="grid h-full min-h-[10rem] place-items-center rounded-md border border-border bg-background">
-        <p className="font-mono text-xs font-medium uppercase tracking-wider text-primary tabular-nums">
-          Score: {score}
-        </p>
+      <div className="grid h-full min-h-[10rem] place-items-center rounded-md border border-border bg-background p-4">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <p className="font-mono text-xs font-medium uppercase tracking-wider text-primary tabular-nums">
+            Score: {score}
+          </p>
+          <ReportReady />
+        </div>
       </div>
     );
   }
@@ -182,7 +186,7 @@ export function TunedMiniGame({ seed = 1 }: { seed?: number }) {
         className="flex w-full items-center justify-center gap-1.5 rounded-md border border-primary bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97]"
       >
         Jump
-        <kbd className="inline-flex items-center rounded-sm border border-primary-foreground/30 bg-primary-foreground/15 px-1 py-px font-mono text-[0.625rem] font-medium uppercase tracking-wider">
+        <kbd className="hidden items-center rounded-sm border border-primary-foreground/30 bg-primary-foreground/15 px-1 py-px font-mono text-[0.625rem] font-medium uppercase tracking-wider lg:inline-flex">
           Space
         </kbd>
       </button>

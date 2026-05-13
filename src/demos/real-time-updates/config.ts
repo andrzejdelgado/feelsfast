@@ -11,7 +11,7 @@ export const config: DemoConfig = {
   // 5 items + 4 gaps at md+) so the panel content area matches the
   // loaded `<ul>` exactly — no jump from idle, no empty space below
   // the items once they arrive.
-  panelMinHeight: "min-h-[130px] md:min-h-[227px]",
+  panelMinHeight: "min-h-[138px] md:min-h-[230px]",
 };
 
 export const EVENT_INTERVAL_P50_MS = 1500;
